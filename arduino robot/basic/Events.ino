@@ -22,7 +22,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 
-void init(){
+void on_init(){
   
 }
 
@@ -114,7 +114,7 @@ void on_motor(robot_event *ev){
   
 }
 
-void on_solenoid(robot_event *ev){
+void on_relay(robot_event *ev){
   
 }
 

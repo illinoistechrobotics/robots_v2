@@ -47,7 +47,7 @@ enum {
     ROBOT_EVENT_DISPLAY         = 0x40, // Display info events
     ROBOT_EVENT_TIMER           = 0x50, // Timer events
     ROBOT_EVENT_MOTOR           = 0x60, // Motor events
-    ROBOT_EVENT_SOLENOID        = 0x70, // Solenoid events for pneumatics and relays
+    ROBOT_EVENT_RELAY           = 0x70, // Relay events
     ROBOT_EVENT_POSE            = 0x80, // Pose events for states
     ROBOT_EVENT_ADC             = 0x90, // ADC events
     ROBOT_EVENT_VARIABLE        = 0xA0, // Variable events
@@ -60,14 +60,14 @@ enum {
     
   enum{
     TIMER_P1HZ     = 0x00,
-    TIMER_1HZ      = 0x01,
-    TIMER_2HZ      = 0x02,
-    TIMER_5HZ      = 0x03,
-    TIMER_10HZ     = 0x04,
-    TIMER_20HZ     = 0x05,
-    TIMER_25HZ     = 0x06,
-    TIMER_50HZ     = 0x07,
-    TIMER_100HZ    = 0x08
+    TIMER_1HZ      = 0x04,
+    TIMER_2HZ      = 0x08,
+    TIMER_5HZ      = 0x0C,
+    TIMER_10HZ     = 0x10,
+    TIMER_20HZ     = 0x14,
+    TIMER_25HZ     = 0x18,
+    TIMER_50HZ     = 0x1C,
+    TIMER_100HZ    = 0x20
   };
   
   enum{
@@ -160,6 +160,7 @@ public:
   unsigned long xtoi(const char *xs);
   int itox(unsigned long value, char *buf);
   
+  const static char HEARTBEAT_TIMEOUT = 4;
   char heartbeat;
   
   char buf[BUFFER_SIZE];
@@ -176,15 +177,15 @@ public:
   unsigned long  last_sent_50hz;
   unsigned long  last_sent_100hz;
   
-  char timerP1hz;
-  char timer1hz;
-  char timer2hz;
-  char timer5hz;
-  char timer10hz;
-  char timer20hz;
-  char timer25hz;
-  char timer50hz;
-  char timer100hz;
+  int timerP1hz;
+  int timer1hz;
+  int timer2hz;
+  int timer5hz;
+  int timer10hz;
+  int timer20hz;
+  int timer25hz;
+  int timer50hz;
+  int timer100hz;
   
 };
 #endif

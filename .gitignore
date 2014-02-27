@@ -3,7 +3,6 @@
 *.class
 
 # Package Files #
-*.jar
 *.war
 *.ear
 
@@ -22,10 +21,8 @@
 ###################
 *.com
 *.class
-*.dll
 *.exe
 *.o
-*.so
 
 # Packages #
 ############
@@ -85,7 +82,6 @@ tramp
 # Eclipse #
 ###########
 *.pydevproject
-.project
 .metadata
 bin/**
 tmp/**
@@ -95,7 +91,6 @@ tmp/**/*
 *.swp
 *~.nib
 local.properties
-.classpath
 .settings/
 .loadpath
 .externalToolBuilders/

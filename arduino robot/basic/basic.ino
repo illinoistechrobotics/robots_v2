@@ -29,7 +29,7 @@ Robot robot = Robot((HardwareSerial&)COMM, BAUDRATE, TIMER_25HZ_MASK | TIMER_100
 //The third argument sets the timers as a mask. These timers can not be changed at run time!!! 
 
 void setup() {
-  init();
+  on_init();
 }
 
 void loop() {
@@ -112,8 +112,8 @@ void loop() {
     case ROBOT_EVENT_MOTOR:
       on_motor(&ev);
       break;
-    case ROBOT_EVENT_SOLENOID:
-      on_solenoid(&ev);
+    case ROBOT_EVENT_RELAY:
+      on_relay(&ev);
       break;
     case ROBOT_EVENT_POSE:
       on_pose(&ev);
