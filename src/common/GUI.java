@@ -22,6 +22,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 package common;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -47,6 +48,8 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.*;
 
+import common.Robot.RobotEnum;
+import common.Timer.TimerEnum;
 import gnu.io.*;
 import net.java.games.input.Controller;
 import robots.*;
@@ -56,6 +59,7 @@ public class GUI extends Thread{
 
 	private JFrame frmIllinoisTechRobotics;
 	private JTextField txtMessage;
+	private JButton btnGeneralStatus;
 	private JRadioButton rdbtnXbee;
 	private JRadioButton rdbtnWifi;
 	private JTextField txtIPAddress;
@@ -70,12 +74,10 @@ public class GUI extends Thread{
 	private JSlider sldY1;
 	private JSlider sldY2;
 	
-	//Ghost
-	private JToggleButton btnGhostConnect;
-	
 	private Timer trSerialCommChecker;
 	private Timer trStanbyQueueReading;
 	private Queue queue = new Queue(1000);
+	private common.Timer timer = new common.Timer(queue);
 	private Serial serial = new Serial(queue, this);
 	private Ethernet ethernet = new Ethernet(queue, this);
 	private Joystick joy;
@@ -196,15 +198,30 @@ public class GUI extends Thread{
     }
 
 	public class StanbyQueueReading extends TimerTask{
-	       
+	    
+		int heartbeatcount = 0;
         public void run(){
     		while(queue.getSize() > 0)
     		{
-    			Event ev = queue.poll();
+    			Event ev = queue.take();
     			switch(ev.getCommand()){
     			case ROBOT_EVENT_CMD_HEARTBEAT:
     				//check the heartbeat and update connection status
+    				heartbeatcount = 0;
+    				btnGeneralStatus.setBackground(Color.GREEN);
+    				btnGeneralStatus.setText(Robot.RobotEnum.getRobot(ev.getIndex()).toString());
     				break;
+    			case ROBOT_EVENT_TIMER:
+    				serial.sendEvent(new Event(EventEnum.ROBOT_EVENT_CMD_HEARTBEAT,(short)RobotEnum.COMPUTER.getValue(),(short)0));
+    				if (ev.getIndex() == TimerEnum.TIMER_HEARTBEAT.value){
+    					Date d = new Date();
+    					//System.out.println(d.getTime());
+    					heartbeatcount++;
+    					if(heartbeatcount > 4){
+    						btnGeneralStatus.setBackground(Color.RED);
+    	    				btnGeneralStatus.setText("");
+    					}
+    				}
 				default:
 					break;
     			}
@@ -214,6 +231,7 @@ public class GUI extends Thread{
 	
 	public void init()
 	{
+		timer.start();
         trSerialCommChecker = new Timer();
         trSerialCommChecker.schedule(new deviceChecker(), 0, 5000);
         trStanbyQueueReading = new Timer();
@@ -223,44 +241,6 @@ public class GUI extends Thread{
 	private boolean running = false;
 	
 	private Ghost ghost;
-	
-	private class btnStartListener implements ActionListener{
-	  	public void actionPerformed(ActionEvent event){
-	  		JToggleButton btnTemp = (JToggleButton)event.getSource();
-	  		
-	  		if(running == true && btnTemp.getText().equals("Connect")){
-	  			btnTemp.setSelected(false);
-	  			return;
-  			}
-	  		
-	  		trStanbyQueueReading.cancel();
-	  		
-	  		Communication comm = null;
-	  		
-	  		if(rdbtnXbee.isSelected()){
-	  			comm = (Communication)serial;
-	  		}
-	  		else if(rdbtnWifi.isSelected()){
-	  			comm = (Communication)ethernet;
-	  		}
-	  		
-	  		if(btnTemp == btnGhostConnect){
-	  			if(btnTemp.getText().equals("Connect")){
-	  				btnTemp.setText("Disconnect");
-	  				running = true;
-	  				ghost = new Ghost(queue,comm);
-	  				ghost.start();
-	  			}
-	  			else
-	  			{
-	  				btnTemp.setText("Connect");
-	  				ghost.stopThread();
-	  				running = false;
-	  				trStanbyQueueReading.schedule(new StanbyQueueReading(), 0, 25);
-	  			}
-	  		}
-	   	}
-	}
 	
 	public void changeRobotStatus(int stat){
 		if(stat == 0){
@@ -409,6 +389,11 @@ public class GUI extends Thread{
 		chckbxJoystick.setSelected(true);
 		
 		JCheckBox chckbxKeyboard = new JCheckBox("Keyboard");
+		
+		btnGeneralStatus = new JButton("");
+		btnGeneralStatus.setBackground(Color.RED);
+		btnGeneralStatus.setEnabled(false);
+		
 		GroupLayout gl_panSettings = new GroupLayout(panSettings);
 		gl_panSettings.setHorizontalGroup(
 			gl_panSettings.createParallelGroup(Alignment.LEADING)
@@ -416,117 +401,76 @@ public class GUI extends Thread{
 					.addContainerGap()
 					.addGroup(gl_panSettings.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panSettings.createSequentialGroup()
-							.addComponent(lblTypeOffCommunication)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(rdbtnXbee)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(rdbtnWifi))
-						.addGroup(gl_panSettings.createSequentialGroup()
 							.addGroup(gl_panSettings.createParallelGroup(Alignment.LEADING)
 								.addComponent(lblSerialPort)
 								.addComponent(lblBaudRate))
 							.addGap(28)
 							.addGroup(gl_panSettings.createParallelGroup(Alignment.LEADING)
-								.addComponent(comboBox_BaudRate, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(comboBox_SerialPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-						.addGroup(gl_panSettings.createSequentialGroup()
-							.addComponent(lblInputDevice)
-							.addGap(18)
-							.addComponent(chckbxJoystick)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(chckbxKeyboard))
-						.addGroup(gl_panSettings.createSequentialGroup()
-							.addGroup(gl_panSettings.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblPortNumber)
-								.addComponent(lblIpAdress))
-							.addGap(18)
-							.addGroup(gl_panSettings.createParallelGroup(Alignment.LEADING)
-								.addComponent(txtIPAddress, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE)
-								.addComponent(txtPortNumber, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE))))
-					.addContainerGap(337, Short.MAX_VALUE))
+								.addComponent(comboBox_SerialPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(comboBox_BaudRate, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+						.addGroup(gl_panSettings.createParallelGroup(Alignment.LEADING)
+							.addGroup(gl_panSettings.createSequentialGroup()
+								.addComponent(lblTypeOffCommunication)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(rdbtnXbee)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(rdbtnWifi)
+								.addPreferredGap(ComponentPlacement.RELATED, 292, Short.MAX_VALUE)
+								.addComponent(btnGeneralStatus, GroupLayout.PREFERRED_SIZE, 111, GroupLayout.PREFERRED_SIZE))
+							.addGroup(gl_panSettings.createSequentialGroup()
+								.addComponent(lblInputDevice)
+								.addGap(18)
+								.addComponent(chckbxJoystick)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(chckbxKeyboard))
+							.addGroup(gl_panSettings.createSequentialGroup()
+								.addGroup(gl_panSettings.createParallelGroup(Alignment.LEADING)
+									.addComponent(lblPortNumber)
+									.addComponent(lblIpAdress))
+								.addGap(18)
+								.addGroup(gl_panSettings.createParallelGroup(Alignment.LEADING)
+									.addComponent(txtIPAddress, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE)
+									.addComponent(txtPortNumber, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)))))
+					.addContainerGap())
 		);
 		gl_panSettings.setVerticalGroup(
 			gl_panSettings.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panSettings.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblTypeOffCommunication)
-						.addComponent(rdbtnXbee)
-						.addComponent(rdbtnWifi))
-					.addGap(22)
-					.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblSerialPort)
-						.addComponent(comboBox_SerialPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblBaudRate)
-						.addComponent(comboBox_BaudRate, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(33)
-					.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblIpAdress)
-						.addComponent(txtIPAddress, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblPortNumber)
-						.addComponent(txtPortNumber, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(18)
-					.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblInputDevice)
-						.addComponent(chckbxJoystick)
-						.addComponent(chckbxKeyboard))
-					.addContainerGap(111, Short.MAX_VALUE))
+					.addGroup(gl_panSettings.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnGeneralStatus, GroupLayout.PREFERRED_SIZE, 34, GroupLayout.PREFERRED_SIZE)
+						.addGroup(gl_panSettings.createSequentialGroup()
+							.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblTypeOffCommunication)
+								.addComponent(rdbtnXbee)
+								.addComponent(rdbtnWifi))
+							.addGap(22)
+							.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblSerialPort)
+								.addComponent(comboBox_SerialPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblBaudRate)
+								.addComponent(comboBox_BaudRate, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addGap(33)
+							.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblIpAdress)
+								.addComponent(txtIPAddress, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblPortNumber)
+								.addComponent(txtPortNumber, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addGap(18)
+							.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblInputDevice)
+								.addComponent(chckbxJoystick)
+								.addComponent(chckbxKeyboard))))
+					.addContainerGap(121, Short.MAX_VALUE))
 		);
 		panSettings.setLayout(gl_panSettings);
 		
 		JPanel panFenrir = new JPanel();
 		tabbedPane.addTab("Fenrir", null, panFenrir, null);
-		
-		JPanel panGhost = new JPanel();
-		tabbedPane.addTab("Ghost", null, panGhost, null);
-		
-		JButton btnStatus = new JButton("");
-		btnStatus.setBounds(527, 12, 50, 35);
-		btnStatus.setBackground(Color.RED);
-		
-		JSlider sldLeftMotor = new JSlider();
-		sldLeftMotor.setBounds(23, 53, 16, 200);
-		sldLeftMotor.setValue(127);
-		sldLeftMotor.setMaximum(255);
-		sldLeftMotor.setOrientation(SwingConstants.VERTICAL);
-		
-		JSlider sldRightMotor = new JSlider();
-		sldRightMotor.setBounds(77, 53, 16, 200);
-		sldRightMotor.setValue(127);
-		sldRightMotor.setMaximum(255);
-		sldRightMotor.setOrientation(SwingConstants.VERTICAL);
-		
-		btnGhostConnect = new JToggleButton("Connect");
-		btnGhostConnect.addActionListener(new btnStartListener());
-		btnGhostConnect.setBounds(411, 21, 98, 26);
-		
-		JLabel lblLeft = new JLabel("Left");
-		lblLeft.setBounds(17, 26, 22, 16);
-		
-		JLabel lblRight = new JLabel("Right");
-		lblRight.setBounds(70, 26, 29, 16);
-		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(346, 166, 231, 166);
-		
-		JLabel lblNewLabel = new JLabel("Messages");
-		lblNewLabel.setBounds(342, 138, 68, 16);
-		panGhost.setLayout(null);
-		
-		JTextArea textArea_1 = new JTextArea();
-		scrollPane_1.setViewportView(textArea_1);
-		panGhost.add(scrollPane_1);
-		panGhost.add(lblNewLabel);
-		panGhost.add(lblLeft);
-		panGhost.add(sldLeftMotor);
-		panGhost.add(lblRight);
-		panGhost.add(sldRightMotor);
-		panGhost.add(btnGhostConnect);
-		panGhost.add(btnStatus);
 		
 		JPanel panGoliath = new JPanel();
 		tabbedPane.addTab("Goliath", null, panGoliath, null);

@@ -127,7 +127,7 @@ public class Queue {
 			temp = this.poll();
 			if(temp == null){
 				try{
-					Thread.sleep(5);
+					Thread.sleep(1);
 				}
 				catch(Exception e){
 					return null;

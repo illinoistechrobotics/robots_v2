@@ -50,7 +50,7 @@ public abstract class Robot extends Thread{
 	    	for(RobotEnum s : EnumSet.allOf(RobotEnum.class))
 	         lookup.put(s.getValue(), s);
 	    }
-	    public static RobotEnum getType(int value){
+	    public static RobotEnum getRobot(int value){
 	    	RobotEnum temp = lookup.get(value);
 	    	if(temp == null){
 	    		return UNKNOWN_ROBOT;
@@ -84,6 +84,7 @@ public abstract class Robot extends Thread{
 	
 	public void run()
 	{	
+		recv_q.flush(); //clear the queue
 		while(run){
 			try{
 				Event ev = recv_q.take();
@@ -138,7 +139,7 @@ public abstract class Robot extends Thread{
 						on_50hz_timer(ev);
 					else if (ev.getIndex() == TimerEnum.TIMER_100HZ.value)
 						on_100hz_timer(ev);
-					else if (ev.getIndex() == TimerEnum.TiMER_HEARTBEAT.value)
+					else if (ev.getIndex() == TimerEnum.TIMER_HEARTBEAT.value)
 						comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_CMD_HEARTBEAT,(short)RobotEnum.COMPUTER.getValue(),(short)0));
 					break;	
 				case ROBOT_EVENT_MOTOR:

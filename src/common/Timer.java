@@ -47,7 +47,7 @@ public class Timer extends Thread{
 		TIMER_25HZ		((short)0x06),
 		TIMER_50HZ		((short)0x07),
 		TIMER_100HZ		((short)0x08),
-		TiMER_HEARTBEAT ((short)0xFF);
+		TIMER_HEARTBEAT ((short)0xFF);
 		
 		public short value;
 		
@@ -80,9 +80,10 @@ public class Timer extends Thread{
 	    long  last_sent_100hz = 0;
 	    long  last_sent_heartbeat = 0;
 		
-		Date time = new Date();
+		
 		
 		while(run){
+			Date time = new Date();
 			try{
 				if(timerP1hz == true){
 					if((time.getTime()-last_sent_P1hz) > 10000){
@@ -139,8 +140,10 @@ public class Timer extends Thread{
 					}
 				}
 				if((time.getTime() - last_sent_heartbeat) > 100){
-					queue.put(new Event(EventEnum.ROBOT_EVENT_TIMER,TimerEnum.TiMER_HEARTBEAT.value,0));
+					last_sent_heartbeat = time.getTime();
+					queue.put(new Event(EventEnum.ROBOT_EVENT_TIMER,TimerEnum.TIMER_HEARTBEAT.value,0));
 				}
+				Thread.sleep(1);
 			}
 			catch(Exception e){	
 			}

@@ -26,6 +26,8 @@ Robot::Robot(){}
 Robot::~Robot(){}
 
 void Robot::init(HardwareSerial  &serial, long baud, int timer, int robot, char usb){
+  pinMode(led_pin, OUTPUT);
+  digitalWrite(led_pin, led_pos_logic);
   
   if(usb == 1){
     use_usb_serial = 1;
@@ -140,6 +142,7 @@ void Robot::readSerial(){
         if(checksum2 == checksum){
           if(event.command == ROBOT_EVENT_CMD_HEARTBEAT){
             heartbeat = 0;
+            digitalWrite(led_pin, !digitalRead(led_pin));
           }
           else{
             enqueue(&event);
@@ -336,6 +339,7 @@ void Robot::incHead(){
 void Robot::checkHeartBeat(){
   heartbeat++;
   if(heartbeat > HEARTBEAT_TIMEOUT){
+    digitalWrite(led_pin, led_pos_logic);
     robot_event failsafe;
     failsafe.command = ROBOT_EVENT_CMD_FAILSAFE;
     failsafe.index = 0;

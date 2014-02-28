@@ -127,7 +127,10 @@ public:
   void update();
   bool getEvent(robot_event *ev);
   void sendEvent(robot_event *ev);
-
+  
+  int led_pin = 13;
+  int led_pos_logic = 1;
+  
   private:
   char use_usb_serial;
   const static int QUEUE_SIZE = 10;
