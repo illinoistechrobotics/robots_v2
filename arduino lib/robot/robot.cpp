@@ -21,9 +21,22 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #include "robot.h"
-Robot::Robot(HardwareSerial  &serial, long baud, int timer, int robot){
-  Comm = &serial;
-  Comm->begin(baud);
+Robot::Robot(){}
+
+Robot::~Robot(){}
+
+void Robot::init(HardwareSerial  &serial, long baud, int timer, int robot, char usb){
+  
+  if(usb == 1){
+    use_usb_serial = 1;
+    Serial.begin(9600);
+  }
+  else{
+    use_usb_serial = 0;
+    Comm = &serial;
+    Comm->begin(baud);
+  }
+  
   queue.head_index = 0;
   queue.tail_index = 0;
   queue.length = 0;
@@ -54,14 +67,22 @@ Robot::Robot(HardwareSerial  &serial, long baud, int timer, int robot){
   timer25hz = timer & TIMER_25HZ_MASK;
   timer50hz = timer & TIMER_50HZ_MASK;
   timer100hz = timer & TIMER_100HZ_MASK;
-  
 }
+
+
 
 void Robot::readSerial(){
   robot_event event;
   unsigned long lTemp;
-  while(Comm->available()>0){
-    buf[length++] = Comm->read();
+  
+  
+  while((use_usb_serial == 1) ? Serial.available()>0 : Comm->available()>0){
+    
+    if(use_usb_serial == 1)
+        buf[length++] = Serial.read();
+    else     
+        buf[length++] = Comm->read();
+  
     switch(state){
     case LOOKING_FOR_HEADER:
       if(buf[0] == MESSAGE_HEADER){
@@ -260,7 +281,10 @@ void Robot::sendEvent(robot_event *ev){
   buf[i++] = '\n';
   buf[i++] = '\0';
   
-  Comm->print(buf);
+  if(use_usb_serial == 1)
+    Serial.print(buf);
+  else   
+    Comm->print(buf);
 }
 
 void Robot::enqueue(robot_event *ev){

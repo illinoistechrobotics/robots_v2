@@ -22,29 +22,34 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 package common;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import java.awt.EventQueue;
 import java.awt.event.*;
 
 import javax.swing.JFrame;
+
 import java.awt.Toolkit;
+
 import javax.swing.JTabbedPane;
+
 import java.awt.BorderLayout;
+
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
+
 import java.awt.Color;
+
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.*;
 
-
 import gnu.io.*;
 import net.java.games.input.Controller;
-
 import robots.*;
 
 
@@ -109,32 +114,28 @@ public class GUI extends Thread{
         			if(ethernet.isConnected() == true){
         				ethernet.stopThread();
         			}
-        			/*
-        			CommPortIdentifier[] com = Serial.getSerialPorts();
-        			//only change the layout if the number of ports changed and setting tab is in view
-        			if( com.length != comboBox_SerialPort.getItemCount()){
-        				String stemp = (String)comboBox_SerialPort.getSelectedItem();
-        				comboBox_SerialPort.removeAllItems();
-        				int ntemp = 0;
-        				for(int i=com.length-1; i>=0; i--){ //put them on in reverse order since high comm port is the more likely to be chosen
-        					comboBox_SerialPort.addItem(com[i].getName());
-        					if(stemp != null && stemp.equals(com[i].getName())){
-        						ntemp = com.length - 1 - i;
-        					}
-        				}
-        				if(serial.isOpen())
-        				{
-        					comboBox_SerialPort.addItem(serial.getPortName());
-        					ntemp = com.length;
-        				}
-        				comboBox_SerialPort.setSelectedIndex(ntemp); //select the previous selected comm port if exists
-        				if(serial.isOpen()){
-        					if(serial.getPortName().equals(comboBox_SerialPort.getSelectedItem().toString()) == false){
-        						serial.closeSerial();
-        					}
-        				}
+        			
+        			if(serial.isOpen() && !serial.getName().equals(comboBox_SerialPort.getSelectedIndex())){
+        				serial.closeSerial();
         			}
-        			*/
+        			
+        			List<CommPortIdentifier> com = Serial.getSerialPorts();
+        			//only change the layout if the number of ports changed and setting tab is in view
+        			if( com.size() != comboBox_SerialPort.getItemCount()){
+        				comboBox_SerialPort.removeAllItems();
+        				for(int i=com.size()-1; i>=0; i--){ //put them on in reverse order since high comm port is the more likely to be chosen
+        					comboBox_SerialPort.addItem(com.get(i).getName());
+        					if(serial.isOpen() && serial.getName().equals(com.get(i).getName())){
+        						comboBox_SerialPort.setSelectedIndex(i);
+        					}
+        				}
+        				
+        			}
+        			
+        			if(serial.isOpen() == false)
+        			{
+        				serial.OpenSerial(Integer.parseInt(comboBox_BaudRate.getSelectedItem().toString()),comboBox_SerialPort.getSelectedItem().toString());	
+        			}
         		}
         		else if(rdbtnWifi.isSelected()){
         			if(serial.isOpen()){
@@ -198,7 +199,6 @@ public class GUI extends Thread{
 	public class StanbyQueueReading extends TimerTask{
 	       
         public void run(){
-        	//remove queue items and dispose of them needed to display joystick values
     		while(queue.getSize() > 0)
     		{
     			Event ev = queue.poll();
@@ -232,6 +232,8 @@ public class GUI extends Thread{
 	  			return;
   			}
 	  		
+	  		trStanbyQueueReading.cancel();
+	  		
 	  		Communication comm = null;
 	  		
 	  		if(rdbtnXbee.isSelected()){
@@ -246,7 +248,6 @@ public class GUI extends Thread{
 	  				btnTemp.setText("Disconnect");
 	  				running = true;
 	  				ghost = new Ghost(queue,comm);
-	  				
 	  				ghost.start();
 	  			}
 	  			else
@@ -254,11 +255,12 @@ public class GUI extends Thread{
 	  				btnTemp.setText("Connect");
 	  				ghost.stopThread();
 	  				running = false;
+	  				trStanbyQueueReading.schedule(new StanbyQueueReading(), 0, 25);
 	  			}
 	  		}
 	   	}
 	}
-
+	
 	public void changeRobotStatus(int stat){
 		if(stat == 0){
 			//btnStatus.setBackground(Color.GREEN);
@@ -268,6 +270,7 @@ public class GUI extends Thread{
 		}
 	}
 	
+	//joystick page updates
 	public void updateButtonGUI(Event ev){
 		if(ev.getValue() == 0)
 			btnBut[ev.getIndex()].setBackground(Color.BLUE);
@@ -326,6 +329,20 @@ public class GUI extends Thread{
 		
 		rdbtnXbee = new JRadioButton("Xbee");
 		rdbtnXbee.setSelected(true);
+		rdbtnXbee.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(rdbtnXbee.isSelected()){
+					if(serial.isOpen() == false){
+						serial.OpenSerial(Integer.parseInt(comboBox_BaudRate.getSelectedItem().toString()),comboBox_SerialPort.getSelectedItem().toString());
+					}
+				}
+				else{
+					if(serial.isOpen()){
+						serial.closeSerial();
+					}
+				}
+			}
+		});
 		
 		rdbtnWifi = new JRadioButton("WiFi");
 		

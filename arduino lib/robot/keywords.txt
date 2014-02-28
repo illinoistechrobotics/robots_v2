@@ -11,6 +11,7 @@ Robot	KEYWORD1
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
+init	KEYWORD2
 getEvent	KEYWORD2
 sendEvent	KEYWORD2
 update	KEYWORD2

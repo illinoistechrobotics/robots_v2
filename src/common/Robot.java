@@ -22,8 +22,49 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 package common;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
+import common.Event.ValueType;
+import common.Timer.TimerEnum;
+
 public abstract class Robot extends Thread{
 
+	public enum RobotEnum
+	{
+		
+		ROSLUND		(0),
+		FENRIR		(1),
+		GOLIATH		(2),
+		REAPER		(3),
+		PENGUIN		(4),
+		MONGOL		(5),
+		GHOST		(6),
+		COMPUTER	(0xF0),
+		UNKNOWN_ROBOT	(0xFF);
+		
+		private int value;
+		private static final Map<Integer,RobotEnum> lookup = new HashMap<Integer,RobotEnum>();
+	    static {
+	    	for(RobotEnum s : EnumSet.allOf(RobotEnum.class))
+	         lookup.put(s.getValue(), s);
+	    }
+	    public static RobotEnum getType(int value){
+	    	RobotEnum temp = lookup.get(value);
+	    	if(temp == null){
+	    		return UNKNOWN_ROBOT;
+	    	}
+	    	return temp;
+	    }
+		private RobotEnum(int v){
+	    	this.value = v;
+	    }
+		public int getValue(){
+	    	return this.value;
+	    }
+	}
+	
 	Queue recv_q;
 	Communication comm;
 	
@@ -59,6 +100,7 @@ public abstract class Robot extends Thread{
 					on_command_code(ev);
 					break;
 				case ROBOT_EVENT_CMD_HEARTBEAT:
+					//need to update GUI
 					on_heartbeat(ev);
 					break;
 				case ROBOT_EVENT_STATUS:
@@ -86,16 +128,18 @@ public abstract class Robot extends Thread{
 					on_display(ev);
 					break;
 				case ROBOT_EVENT_TIMER:
-					if(ev.getIndex() == 1)
+					if(ev.getIndex() == TimerEnum.TIMER_1HZ.value)
 						on_1hz_timer(ev);
-					else if(ev.getIndex() == 2)
+					else if(ev.getIndex() == TimerEnum.TIMER_10HZ.value)
 						on_10hz_timer(ev);
-					else if (ev.getIndex() == 3)
+					else if (ev.getIndex() == TimerEnum.TIMER_25HZ.value)
 						on_25hz_timer(ev);
-					else if (ev.getIndex() == 4)
+					else if (ev.getIndex() == TimerEnum.TIMER_50HZ.value)
 						on_50hz_timer(ev);
-					else if (ev.getIndex() == 5)
+					else if (ev.getIndex() == TimerEnum.TIMER_100HZ.value)
 						on_100hz_timer(ev);
+					else if (ev.getIndex() == TimerEnum.TiMER_HEARTBEAT.value)
+						comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_CMD_HEARTBEAT,(short)RobotEnum.COMPUTER.getValue(),(short)0));
 					break;	
 				case ROBOT_EVENT_MOTOR:
 					on_motor(ev);

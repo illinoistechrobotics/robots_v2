@@ -109,13 +109,13 @@ public class Serial extends Communication implements SerialPortEventListener {
 	 */
 	public static ArrayList<CommPortIdentifier> getSerialPorts(){
 		try{
-			ArrayList<CommPortIdentifier> CommPortList = new ArrayList<CommPortIdentifier>();
+			ArrayList<CommPortIdentifier> commPortList = new ArrayList<CommPortIdentifier>();
 			Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
 			while(portEnum.hasMoreElements()){
 				CommPortIdentifier port = (CommPortIdentifier)portEnum.nextElement();
-				CommPortList.add(port);
+				commPortList.add(port);
 			}
-			return CommPortList;
+			return commPortList;
 		}
 		catch(Exception e){
 			System.out.println(e.toString());

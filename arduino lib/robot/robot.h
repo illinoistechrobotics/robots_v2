@@ -120,13 +120,16 @@ public:
     UNKNOWN_ROBOT = 0xFF
   };
   
-  Robot(HardwareSerial &serial, long baud, int timer, int robot);
-  //Robot(usb_serial_calss &serial, long baud);
+  Robot();
+  ~Robot();
+  
+  void init(HardwareSerial &serial, long baud, int timer, int robot, char usb);
   void update();
   bool getEvent(robot_event *ev);
   void sendEvent(robot_event *ev);
 
   private:
+  char use_usb_serial;
   const static int QUEUE_SIZE = 10;
   const static int BUFFER_SIZE = 64;
   typedef struct {
