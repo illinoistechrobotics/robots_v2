@@ -22,7 +22,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 package common;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -206,6 +205,8 @@ public class GUI extends Thread{
     			case ROBOT_EVENT_CMD_HEARTBEAT:
     				//check the heartbeat and update connection status
     				break;
+				default:
+					break;
     			}
     		}
         }

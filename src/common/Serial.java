@@ -137,7 +137,7 @@ public class Serial extends Communication implements SerialPortEventListener {
 	
 	private final String HEADER = "U";
 	private final String FOOTER = "\n";
-	private String sBuf = new String();
+	private StringBuilder sBuf = new StringBuilder();
 	private byte[] buf = new byte[1];
 	private int length = 0;
 	private ReadState state = ReadState.LOOKING_FOR_HEADER;
@@ -146,41 +146,50 @@ public class Serial extends Communication implements SerialPortEventListener {
 		if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			try {
 				while((length = input.read(buf,0,1))>0){
-					sBuf.concat(new String(buf, 0, length));
+	
+					sBuf.append(new String(buf, 0, length));
+					
 					switch(state){
 					case LOOKING_FOR_HEADER:
-						if(sBuf.contains(HEADER)){
-							sBuf = sBuf.substring(sBuf.indexOf(HEADER)); //remove data in front of header
+						if(sBuf.indexOf(HEADER) != -1){
+							sBuf.delete(0, sBuf.indexOf(HEADER)); //remove data in front of header
 							state = ReadState.READING_DATA;
 						}
 						else{
-							sBuf = ""; //remove everything since no valid data
+							sBuf.delete(0, sBuf.length()); //remove everything since no valid data
 						}
 						break;
 					case READING_DATA:
-						if(sBuf.contains(FOOTER)){
+						if(sBuf.indexOf(FOOTER) != -1){
 							state = ReadState.CALCULATE_CHECKSUM;
+							//continue to CALCULATE_CHECKSUM;
 						}
 						else if(sBuf.indexOf(HEADER,1)>-1)
 						{
 							//new header "start over"
-							sBuf = sBuf.substring(sBuf.indexOf(HEADER,1));
+							sBuf.delete(0,sBuf.indexOf(HEADER,1));
+							break;
 						}
-						break;
+						else
+						{
+							break;
+						}
+						//break left out
 					case CALCULATE_CHECKSUM:
 
 						Event ev = new Event();
 						String fullMessage = sBuf.substring(0, sBuf.indexOf(FOOTER));
 						String checksumMessage = fullMessage.substring(1, fullMessage.indexOf("*"));
-						sBuf = sBuf.substring(sBuf.indexOf(FOOTER));
+						sBuf.delete(0,sBuf.indexOf(FOOTER)+1);
 						int checksum = 0;
-						for(int i = 2; i < checksumMessage.length(); i++) //checksum not include the start byte
+						for(int i = 0; i < checksumMessage.length(); i++) //checksum not include the start byte
 						{
 							checksum = checksum^(((int)checksumMessage.charAt(i))&0xFF);
 						}
 
 
-						String[] token = fullMessage.split(",*");
+						String[] token = fullMessage.split("[U,\\*]");
+						
 
 						if(Integer.parseInt(token[5],16) == checksum )
 						{
@@ -223,6 +232,7 @@ public class Serial extends Communication implements SerialPortEventListener {
 				}
 			}
 			catch(Exception e){
+				System.out.println("Error with parsing message.");
 			}
 		}
 	}
