@@ -20,3 +20,56 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+
+#include <Servo.h>
+
+#define MOTOR0 9
+#define MOTOR1 10
+#define MOTOR2 11
+#define MOTOR3 12
+
+#define MIN_PULSEWIDTH 1000
+#define MAX_PULSEWIDTH 2000
+
+Servo motor0;
+Servo motor1;
+Servo motor2;
+Servo motor3;
+
+
+void initMotors(){
+  throttle_input = 0;
+  output_motors = false;
+  
+  motor0.attach(MOTOR0);
+  motor1.attach(MOTOR1);
+  motor2.attach(MOTOR2);
+  motor3.attach(MOTOR3);
+  
+  motor0.writeMicroseconds(MIN_PULSEWIDTH);
+  motor1.writeMicroseconds(MIN_PULSEWIDTH);
+  motor2.writeMicroseconds(MIN_PULSEWIDTH);
+  motor3.writeMicroseconds(MIN_PULSEWIDTH);
+}
+
+void calc_motors_plus(){
+  motor_value[0] = constrain(throttle_input - pid_output.pitch - pid_output.yaw + angle_off.pitch + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
+  motor_value[1] = constrain(throttle_input - pid_output.roll + pid_output.yaw + angle_off.pitch + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
+  motor_value[2] = constrain(throttle_input + pid_output.pitch - pid_output.yaw + angle_off.pitch + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
+  motor_value[3] = constrain(throttle_input + pid_output.roll + pid_output.yaw + angle_off.pitch + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
+}
+
+void output(){
+  if(output_motors == true && robot.failsafe == false){
+    motor0.writeMicroseconds(motor_value[0]);
+    motor1.writeMicroseconds(motor_value[1]);
+    motor2.writeMicroseconds(motor_value[2]);
+    motor3.writeMicroseconds(motor_value[3]);
+  }
+  else{
+    motor0.writeMicroseconds(MIN_PULSEWIDTH);
+    motor1.writeMicroseconds(MIN_PULSEWIDTH);
+    motor2.writeMicroseconds(MIN_PULSEWIDTH);
+    motor3.writeMicroseconds(MIN_PULSEWIDTH);
+  }
+}

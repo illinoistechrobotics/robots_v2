@@ -21,7 +21,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#define GEDC6 Serial2
+#define GEDC6 Serial1
 #define GEDC6_BAUD 115600
 enum{
     LOOKING_FOR_HEADER,
@@ -41,6 +41,11 @@ int gedc6_length = 0;
 int gedc6_state = LOOKING_FOR_HEADER;
 
 void initGEDC6(){
+  sensor.pitch = 0.0;
+  sensor.roll = 0.0;
+  sensor.yaw = 0.0;
+  sensor_temp = 0.0;
+  sensor_valid = false;
   GEDC6.begin(GEDC6_BAUD);
   delay(1000);
   GEDC6.println(INIT_MESSAGE);
@@ -111,6 +116,9 @@ void readGEDC6(){
         int checksum2 = xtoi(cToken);
         if(checksum2 == checksum){
           sensor_valid = true;
+          PID();
+          calc_motors_plus();
+          output();
         }
         gedc6_state = LOOKING_FOR_HEADER;
       }

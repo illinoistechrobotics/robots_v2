@@ -26,7 +26,9 @@ Robot::Robot(){}
 Robot::~Robot(){}
 
 void Robot::init(HardwareSerial  &serial, long baud, int timer, int robot, char usb){
-
+  
+  failsafe = true;
+  
   led_pin = 13;
   led_pos_logic = 1;
   
@@ -360,6 +362,7 @@ void Robot::checkHeartBeat(){
   heartbeat++;
   if(heartbeat > HEARTBEAT_TIMEOUT){
     digitalWrite(led_pin, led_pos_logic);
+    failsafe = true;
     robot_event failsafe;
     failsafe.command = ROBOT_EVENT_CMD_FAILSAFE;
     failsafe.index = 0;

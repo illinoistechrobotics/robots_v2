@@ -53,7 +53,6 @@ import common.Timer.TimerEnum;
 import gnu.io.*;
 import net.java.games.input.Controller;
 import robots.*;
-import java.awt.GridLayout;
 
 
 public class GUI extends Thread{
@@ -74,6 +73,23 @@ public class GUI extends Thread{
 	private JSlider sldX2;
 	private JSlider sldY1;
 	private JSlider sldY2;
+	
+	public JButton btnPenguinConnected;
+	public JToggleButton tglbtnConnectToRobot;
+	public JSlider sldRoll;
+	public JSlider sldPitch;
+	public JButton btnUpdatePid;
+	public JSlider sldMot1;
+	public JSlider sldMot2;
+	public JSlider sldMot3;
+	public JSlider sldMot4;
+	public JLabel lblMot1;
+	public JLabel lblMot2;
+	public JLabel lblMot3;
+	public JLabel lblMot4;
+	public JLabel lblPitch;
+	public JLabel lblRoll;
+	public JLabel lblYaw;
 	
 	private Timer trSerialCommChecker;
 	private Timer trStanbyQueueReading;
@@ -242,15 +258,15 @@ public class GUI extends Thread{
 	private boolean running = false;
 	
 	private Ghost ghost;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
-	private JTextField textField_5;
-	private JTextField textField_6;
-	private JTextField textField_7;
-	private JTextField textField_8;
+	private JTextField txtPD;
+	private JTextField txtPI;
+	private JTextField txtPP;
+	private JTextField txtRP;
+	private JTextField txtYP;
+	private JTextField txtRI;
+	private JTextField txtYI;
+	private JTextField txtRD;
+	private JTextField txtYD;
 	
 	public void changeRobotStatus(int stat){
 		if(stat == 0){
@@ -482,13 +498,17 @@ public class GUI extends Thread{
 		JPanel panPenguin = new JPanel();
 		tabbedPane.addTab("Penguin", null, panPenguin, null);
 		
-		JButton btnNewButton = new JButton("");
-		btnNewButton.setEnabled(false);
-		btnNewButton.setBackground(Color.RED);
 		
-		JToggleButton tglbtnConnectToRobot = new JToggleButton("Connect to Robot");
+		btnPenguinConnected = new JButton("");
+		btnPenguinConnected.setBounds(516, 14, 63, 23);
+		btnPenguinConnected.setEnabled(false);
+		btnPenguinConnected.setBackground(Color.RED);
 		
-		JSlider sldRoll = new JSlider();
+		tglbtnConnectToRobot = new JToggleButton("Connect to Robot");
+		tglbtnConnectToRobot.setBounds(374, 14, 132, 23);
+		
+		sldRoll = new JSlider();
+		sldRoll.setBounds(10, 14, 200, 45);
 		sldRoll.setEnabled(false);
 		sldRoll.setPaintLabels(true);
 		sldRoll.setPaintTicks(true);
@@ -497,7 +517,8 @@ public class GUI extends Thread{
 		sldRoll.setMinimum(-90);
 		sldRoll.setValue(0);
 		
-		JSlider sldPitch = new JSlider();
+		sldPitch = new JSlider();
+		sldPitch.setBounds(20, 65, 47, 200);
 		sldPitch.setEnabled(false);
 		sldPitch.setPaintLabels(true);
 		sldPitch.setPaintTicks(true);
@@ -508,117 +529,187 @@ public class GUI extends Thread{
 		sldPitch.setOrientation(SwingConstants.VERTICAL);
 		
 		JLabel lblP = new JLabel("P");
+		lblP.setBounds(432, 212, 45, 14);
 		lblP.setHorizontalAlignment(SwingConstants.CENTER);
 		
+		txtPD = new JTextField();
+		txtPD.setBounds(534, 232, 45, 20);
+		txtPD.setColumns(10);
+		
+		txtPI = new JTextField();
+		txtPI.setBounds(483, 232, 45, 20);
+		txtPI.setColumns(10);
+		
+		txtPP = new JTextField();
+		txtPP.setBounds(432, 232, 45, 20);
+		txtPP.setColumns(10);
+		
+		txtRP = new JTextField();
+		txtRP.setBounds(432, 258, 45, 20);
+		txtRP.setColumns(10);
+		
+		txtYP = new JTextField();
+		txtYP.setBounds(432, 284, 45, 20);
+		txtYP.setColumns(10);
+		
+		txtRI = new JTextField();
+		txtRI.setBounds(483, 258, 45, 20);
+		txtRI.setColumns(10);
+		
+		txtYI = new JTextField();
+		txtYI.setBounds(483, 284, 45, 20);
+		txtYI.setColumns(10);
+		
+		txtRD = new JTextField();
+		txtRD.setBounds(534, 258, 45, 20);
+		txtRD.setColumns(10);
+		
+		txtYD = new JTextField();
+		txtYD.setBounds(534, 284, 45, 20);
+		txtYD.setColumns(10);
+		panPenguin.setLayout(null);
+		panPenguin.add(sldRoll);
+		panPenguin.add(tglbtnConnectToRobot);
+		panPenguin.add(btnPenguinConnected);
+		panPenguin.add(sldPitch);
+		panPenguin.add(txtRP);
+		panPenguin.add(txtRI);
+		panPenguin.add(txtRD);
+		panPenguin.add(txtYP);
+		panPenguin.add(txtYI);
+		panPenguin.add(txtYD);
+		panPenguin.add(lblP);
+		panPenguin.add(txtPP);
+		panPenguin.add(txtPI);
+		panPenguin.add(txtPD);
+		
+		JLabel lblI = new JLabel("I");
+		lblI.setHorizontalAlignment(SwingConstants.CENTER);
+		lblI.setBounds(483, 212, 45, 14);
+		panPenguin.add(lblI);
+		
 		JLabel lblD = new JLabel("D");
+		lblD.setHorizontalAlignment(SwingConstants.CENTER);
+		lblD.setBounds(534, 212, 45, 14);
+		panPenguin.add(lblD);
 		
-		textField = new JTextField();
-		textField.setColumns(10);
+		JLabel lblPitchPID = new JLabel("Pitch");
+		lblPitchPID.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblPitchPID.setBounds(376, 235, 46, 14);
+		panPenguin.add(lblPitchPID);
 		
-		textField_1 = new JTextField();
-		textField_1.setColumns(10);
+		JLabel lblRollPID = new JLabel("Roll");
+		lblRollPID.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblRollPID.setBounds(376, 261, 46, 14);
+		panPenguin.add(lblRollPID);
 		
-		textField_2 = new JTextField();
-		textField_2.setColumns(10);
+		JLabel lblYawPID = new JLabel("Yaw");
+		lblYawPID.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblYawPID.setBounds(376, 287, 46, 14);
+		panPenguin.add(lblYawPID);
 		
-		textField_3 = new JTextField();
-		textField_3.setColumns(10);
+		btnUpdatePid = new JButton("Update PID");
+		btnUpdatePid.setBounds(461, 309, 89, 23);
+		panPenguin.add(btnUpdatePid);
 		
-		textField_4 = new JTextField();
-		textField_4.setColumns(10);
+		sldMot4 = new JSlider();
+		sldMot4.setValue(0);
+		sldMot4.setOrientation(SwingConstants.VERTICAL);
+		sldMot4.setMajorTickSpacing(50);
+		sldMot4.setPaintLabels(true);
+		sldMot4.setPaintTicks(true);
+		sldMot4.setEnabled(false);
+		sldMot4.setBounds(530, 87, 47, 100);
+		panPenguin.add(sldMot4);
 		
-		textField_5 = new JTextField();
-		textField_5.setColumns(10);
+		sldMot3 = new JSlider();
+		sldMot3.setValue(0);
+		sldMot3.setPaintTicks(true);
+		sldMot3.setPaintLabels(true);
+		sldMot3.setOrientation(SwingConstants.VERTICAL);
+		sldMot3.setMajorTickSpacing(50);
+		sldMot3.setEnabled(false);
+		sldMot3.setBounds(475, 87, 47, 100);
+		panPenguin.add(sldMot3);
 		
-		textField_6 = new JTextField();
-		textField_6.setColumns(10);
+		sldMot2 = new JSlider();
+		sldMot2.setValue(0);
+		sldMot2.setPaintTicks(true);
+		sldMot2.setPaintLabels(true);
+		sldMot2.setOrientation(SwingConstants.VERTICAL);
+		sldMot2.setMajorTickSpacing(50);
+		sldMot2.setEnabled(false);
+		sldMot2.setBounds(420, 87, 47, 100);
+		panPenguin.add(sldMot2);
 		
-		textField_7 = new JTextField();
-		textField_7.setColumns(10);
+		sldMot1 = new JSlider();
+		sldMot1.setValue(0);
+		sldMot1.setPaintTicks(true);
+		sldMot1.setPaintLabels(true);
+		sldMot1.setOrientation(SwingConstants.VERTICAL);
+		sldMot1.setMajorTickSpacing(50);
+		sldMot1.setEnabled(false);
+		sldMot1.setBounds(365, 87, 47, 100);
+		panPenguin.add(sldMot1);
 		
-		textField_8 = new JTextField();
-		textField_8.setColumns(10);
-		GroupLayout gl_panPenguin = new GroupLayout(panPenguin);
-		gl_panPenguin.setHorizontalGroup(
-			gl_panPenguin.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panPenguin.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panPenguin.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panPenguin.createSequentialGroup()
-							.addComponent(sldRoll, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 242, Short.MAX_VALUE)
-							.addComponent(tglbtnConnectToRobot, GroupLayout.PREFERRED_SIZE, 132, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_panPenguin.createSequentialGroup()
-							.addGap(10)
-							.addComponent(sldPitch, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addGap(347)
-							.addGroup(gl_panPenguin.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_panPenguin.createSequentialGroup()
-									.addComponent(textField_3, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(textField_5, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(textField_7, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_panPenguin.createSequentialGroup()
-									.addComponent(textField_4, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(textField_6, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(textField_8, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_panPenguin.createSequentialGroup()
-									.addGroup(gl_panPenguin.createParallelGroup(Alignment.TRAILING)
-										.addComponent(lblP, GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
-										.addGroup(Alignment.LEADING, gl_panPenguin.createSequentialGroup()
-											.addComponent(textField_2, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)))
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(gl_panPenguin.createParallelGroup(Alignment.LEADING)
-										.addComponent(textField, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
-										.addGroup(gl_panPenguin.createSequentialGroup()
-											.addGap(51)
-											.addComponent(lblD)))))
-							.addGap(143)))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 63, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap())
-		);
-		gl_panPenguin.setVerticalGroup(
-			gl_panPenguin.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panPenguin.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panPenguin.createParallelGroup(Alignment.LEADING)
-						.addComponent(tglbtnConnectToRobot)
-						.addGroup(gl_panPenguin.createParallelGroup(Alignment.TRAILING)
-							.addComponent(sldRoll, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)))
-					.addGroup(gl_panPenguin.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panPenguin.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(sldPitch, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_panPenguin.createSequentialGroup()
-							.addGap(33)
-							.addComponent(lblD)
-							.addGap(9)
-							.addComponent(lblP)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_panPenguin.createParallelGroup(Alignment.BASELINE)
-								.addComponent(textField_2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_panPenguin.createParallelGroup(Alignment.BASELINE)
-								.addComponent(textField_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(textField_5, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(textField_7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_panPenguin.createParallelGroup(Alignment.BASELINE)
-								.addComponent(textField_4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(textField_6, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(textField_8, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
-					.addGap(78))
-		);
-		panPenguin.setLayout(gl_panPenguin);
+		JLabel lblMot1_txt = new JLabel("Mot 1");
+		lblMot1_txt.setBounds(374, 63, 46, 14);
+		panPenguin.add(lblMot1_txt);
+		
+		JLabel lblMot2_txt = new JLabel("Mot 2");
+		lblMot2_txt.setBounds(431, 63, 46, 14);
+		panPenguin.add(lblMot2_txt);
+		
+		JLabel lblMot3_txt = new JLabel("Mot 3");
+		lblMot3_txt.setBounds(482, 62, 46, 14);
+		panPenguin.add(lblMot3_txt);
+		
+		JLabel lblMot4_txt = new JLabel("Mot 4");
+		lblMot4_txt.setBounds(533, 62, 46, 14);
+		panPenguin.add(lblMot4_txt);
+		
+		lblMot1 = new JLabel("0");
+		lblMot1.setBounds(374, 187, 36, 14);
+		panPenguin.add(lblMot1);
+		
+		lblMot2 = new JLabel("0");
+		lblMot2.setBounds(431, 187, 36, 14);
+		panPenguin.add(lblMot2);
+		
+		lblMot3 = new JLabel("0");
+		lblMot3.setBounds(482, 187, 36, 14);
+		panPenguin.add(lblMot3);
+		
+		lblMot4 = new JLabel("0");
+		lblMot4.setBounds(533, 187, 36, 14);
+		panPenguin.add(lblMot4);
+		
+		JLabel lblPitch_txt = new JLabel("Pitch:");
+		lblPitch_txt.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblPitch_txt.setBounds(92, 70, 32, 14);
+		panPenguin.add(lblPitch_txt);
+		
+		JLabel lblRoll_txt = new JLabel("Roll:");
+		lblRoll_txt.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblRoll_txt.setBounds(92, 89, 32, 14);
+		panPenguin.add(lblRoll_txt);
+		
+		JLabel lblYaw_txt = new JLabel("Yaw:");
+		lblYaw_txt.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblYaw_txt.setBounds(92, 107, 32, 14);
+		panPenguin.add(lblYaw_txt);
+		
+		lblPitch = new JLabel("0");
+		lblPitch.setBounds(134, 70, 46, 14);
+		panPenguin.add(lblPitch);
+		
+		lblRoll = new JLabel("0");
+		lblRoll.setBounds(134, 89, 46, 14);
+		panPenguin.add(lblRoll);
+		
+		lblYaw = new JLabel("0");
+		lblYaw.setBounds(134, 107, 46, 14);
+		panPenguin.add(lblYaw);
 		
 		JPanel panFenrir = new JPanel();
 		tabbedPane.addTab("Fenrir", null, panFenrir, null);
@@ -844,6 +935,7 @@ public class GUI extends Thread{
 		
 		JTextArea textArea = new JTextArea();
 		textArea.setEditable(false);
+		
 		scrollPane.setViewportView(textArea);
 		GroupLayout gl_panTerminal = new GroupLayout(panTerminal);
 		gl_panTerminal.setHorizontalGroup(

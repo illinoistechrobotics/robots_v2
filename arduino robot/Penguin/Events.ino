@@ -23,6 +23,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 void on_init(){
   initGEDC6();
+  initPID();
 }
 
 void on_command_code(robot_event *ev){
@@ -86,11 +87,44 @@ void on_10hz_timer(robot_event *ev){
 }
 
 void on_20hz_timer(robot_event *ev){
+  robot_event new_ev;
+  new_ev.command = ROBOT_EVENT_IMU;
+  new_ev.type = FLOAT;
+  
+  new_ev.index = PITCH;
+  new_ev.f = sensor.pitch;
+  robot.sendEvent(&new_ev);
+  
+  new_ev.index = ROLL;
+  new_ev.f = sensor.roll;
+  robot.sendEvent(&new_ev);
+  
+  new_ev.index = YAW;
+  new_ev.f = sensor.yaw;
+  robot.sendEvent(&new_ev);
+  
+  new_ev.type = INTEGER;
+  
+  new_ev.index = MOT0;
+  new_ev.i = motor_value[0];
+  robot.sendEvent(&new_ev);
+  
+  new_ev.index = MOT1;
+  new_ev.i = motor_value[1];
+  robot.sendEvent(&new_ev);
+  
+  new_ev.index = MOT2;
+  new_ev.i = motor_value[2];
+  robot.sendEvent(&new_ev);
+  
+  new_ev.index = MOT3;
+  new_ev.i = motor_value[3];
+  robot.sendEvent(&new_ev);
   
 }
 
 void on_25hz_timer(robot_event *ev){
-  robot.debug("Hello");
+
 }
 
 void on_50hz_timer(robot_event *ev){
@@ -122,11 +156,75 @@ void on_adc(robot_event *ev){
 }
 
 void on_variable(robot_event *ev){
-  
+  if(ev->index == INPUT_THRUST){
+    throttle_input = ev->i;
+  }
+  else if(ev->index == INPUT_PITCH){
+    angle_input.pitch = ev->f;
+  }
+  else if(ev->index == INPUT_ROLL){
+    angle_input.roll = ev->f;
+  }
+  else if(ev->index == INPUT_YAW){
+    angle_input.yaw = ev->f;
+  }
+  else if(ev->index == OFF_PITCH){
+    angle_off.pitch = ev->f;
+  }
+  else if(ev->index == OFF_ROLL){
+    angle_off.roll = ev->f;
+  }
+  else if(ev->index == OFF_ROLL){
+    angle_off.yaw = ev->f;
+  }
+  else if(ev->index == OUTPUT_MOTORS){
+    output_motors = ev->i;
+  }
 }
 
 void on_imu(robot_event *ev){
   
+}
+
+void on_pid(robot_event *ev){
+  static int count = 0;
+  count++;
+  if(ev->index == PITCH_P){
+    pid_pitch.P = ev->f;
+    count = 1;
+  }
+  else if(ev->index == PITCH_I){
+    pid_pitch.I = ev->f;
+  }
+  else if(ev->index == PITCH_D){
+    pid_pitch.D = ev->f;
+  }
+  else if(ev->index == ROLL_P){
+    pid_roll.P = ev->f;
+  }
+  else if(ev->index == ROLL_I){
+    pid_roll.I = ev->f;
+  }
+  else if(ev->index == ROLL_D){
+    pid_roll.D = ev->f;
+  }
+  else if(ev->index == YAW_P){
+    pid_yaw.P = ev->f;
+  }
+  else if(ev->index == YAW_I){
+    pid_yaw.I = ev->f;
+  }
+  else if(ev->index == YAW_D){
+    pid_yaw.D = ev->f;
+    if(count==9){
+      robot_event new_ev;
+      new_ev.command = ROBOT_EVENT_PID;
+      new_ev.index = PID_UPDATE_SUCCESS;
+      new_ev.i = 0;
+      new_ev.type = 0;
+      robot.sendEvent(&new_ev);
+    }
+  }
 }
 
 void on_encoder(robot_event *ev){

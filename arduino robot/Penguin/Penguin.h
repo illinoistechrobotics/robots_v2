@@ -30,8 +30,64 @@ typedef struct{
   float yaw;
 }anglePosition;
 
-anglePosition sensor = {0.0,0.0,0.0};
-float sensor_temp = 0.0;
-boolean sensor_valid = false;
+typedef struct{
+  float P;
+  float I;
+  float D;
+}pid_constants;
+
+anglePosition sensor;
+//anglePosition sensor; 
+
+float sensor_temp;
+boolean sensor_valid;
+
+pid_constants pid_pitch;                     
+pid_constants pid_roll;  
+pid_constants pid_yaw;
+
+anglePosition angle_input;
+anglePosition angle_off;
+anglePosition pid_output;
+
+
+int throttle_input;
+boolean output_motors;
+
+int motor_value[4];
+
+enum {
+  PITCH  = 0,
+  ROLL   = 1,
+  YAW    = 2,
+  MOT0   = 3,
+  MOT1   = 4,
+  MOT2   = 5,
+  MOT3   = 6
+};
+
+enum {
+  PITCH_P = 0,
+  PITCH_I = 1,
+  PITCH_D = 2,
+  ROLL_P = 3,
+  ROLL_I = 4,
+  ROLL_D = 5,
+  YAW_P = 6,
+  YAW_I = 7,
+  YAW_D = 8,
+  PID_UPDATE_SUCCESS = 0x10
+};
+
+enum {
+  INPUT_THRUST = 0,
+  INPUT_PITCH = 1,
+  INPUT_ROLL = 2,
+  INPUT_YAW = 3,
+  OFF_PITCH = 4,
+  OFF_ROLL = 5,
+  OFF_YAW = 6,
+  OUTPUT_MOTORS = 7
+};
 
 #endif
