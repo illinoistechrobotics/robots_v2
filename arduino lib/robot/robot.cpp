@@ -26,6 +26,10 @@ Robot::Robot(){}
 Robot::~Robot(){}
 
 void Robot::init(HardwareSerial  &serial, long baud, int timer, int robot, char usb){
+
+  led_pin = 13;
+  led_pos_logic = 1;
+  
   pinMode(led_pin, OUTPUT);
   digitalWrite(led_pin, led_pos_logic);
   
@@ -96,10 +100,15 @@ void Robot::readSerial(){
       }  
       break;
     case READING_DATA:
-      if(buf[length-1] == MESSAGE_HEADER || length >= BUFFER_SIZE){
+      if(buf[length-1] == MESSAGE_HEADER){
         //restart because we found header
         buf[0] = MESSAGE_HEADER;
         length = 1;
+      }
+      else if (length >= BUFFER_SIZE){
+        //restart since buffer full and no valid data yet
+        buf[0] = '\0';
+        length = 0;
       }
       if(buf[length-1] == MESSAGE_FOOTER){
         int pos = 1;
@@ -154,6 +163,17 @@ void Robot::readSerial(){
       break;
     }
   }
+}
+
+void Robot::debug(char *s){
+    if(use_usb_serial){
+        Serial.print("$");
+        Serial.println(s);
+    }
+    else{
+        Comm->print("$");
+        Comm->println(s);
+    }
 }
 
 void Robot::timerCheck(){

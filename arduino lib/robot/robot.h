@@ -127,9 +127,10 @@ public:
   void update();
   bool getEvent(robot_event *ev);
   void sendEvent(robot_event *ev);
+  void debug(char *s);
   
-  int led_pin = 13;
-  int led_pos_logic = 1;
+  int led_pin;
+  int led_pos_logic;
   
   private:
   char use_usb_serial;

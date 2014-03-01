@@ -1,5 +1,5 @@
 /*
-Copyright 2013 (c) Illinois Tech Robotics <robotics.iit@gmail.com>
+Copyright 2014 (c) Illinois Tech Robotics <robotics.iit@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -21,9 +21,8 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-
 void on_init(){
-  
+  initGEDC6();
 }
 
 void on_command_code(robot_event *ev){
@@ -91,7 +90,7 @@ void on_20hz_timer(robot_event *ev){
 }
 
 void on_25hz_timer(robot_event *ev){
-
+  robot.debug("Hello");
 }
 
 void on_50hz_timer(robot_event *ev){
@@ -148,6 +147,10 @@ void on_shutdown(robot_event *ev){
 
 void on_unknown_command(robot_event *ev){
   
+}
+
+void on_fast_loop(){
+  readGEDC6();
 }
 
 

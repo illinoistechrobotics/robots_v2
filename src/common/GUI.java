@@ -53,6 +53,7 @@ import common.Timer.TimerEnum;
 import gnu.io.*;
 import net.java.games.input.Controller;
 import robots.*;
+import java.awt.GridLayout;
 
 
 public class GUI extends Thread{
@@ -241,6 +242,15 @@ public class GUI extends Thread{
 	private boolean running = false;
 	
 	private Ghost ghost;
+	private JTextField textField;
+	private JTextField textField_1;
+	private JTextField textField_2;
+	private JTextField textField_3;
+	private JTextField textField_4;
+	private JTextField textField_5;
+	private JTextField textField_6;
+	private JTextField textField_7;
+	private JTextField textField_8;
 	
 	public void changeRobotStatus(int stat){
 		if(stat == 0){
@@ -469,14 +479,152 @@ public class GUI extends Thread{
 		);
 		panSettings.setLayout(gl_panSettings);
 		
+		JPanel panPenguin = new JPanel();
+		tabbedPane.addTab("Penguin", null, panPenguin, null);
+		
+		JButton btnNewButton = new JButton("");
+		btnNewButton.setEnabled(false);
+		btnNewButton.setBackground(Color.RED);
+		
+		JToggleButton tglbtnConnectToRobot = new JToggleButton("Connect to Robot");
+		
+		JSlider sldRoll = new JSlider();
+		sldRoll.setEnabled(false);
+		sldRoll.setPaintLabels(true);
+		sldRoll.setPaintTicks(true);
+		sldRoll.setMajorTickSpacing(90);
+		sldRoll.setMaximum(90);
+		sldRoll.setMinimum(-90);
+		sldRoll.setValue(0);
+		
+		JSlider sldPitch = new JSlider();
+		sldPitch.setEnabled(false);
+		sldPitch.setPaintLabels(true);
+		sldPitch.setPaintTicks(true);
+		sldPitch.setMajorTickSpacing(90);
+		sldPitch.setMaximum(90);
+		sldPitch.setMinimum(-90);
+		sldPitch.setValue(0);
+		sldPitch.setOrientation(SwingConstants.VERTICAL);
+		
+		JLabel lblP = new JLabel("P");
+		lblP.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		JLabel lblD = new JLabel("D");
+		
+		textField = new JTextField();
+		textField.setColumns(10);
+		
+		textField_1 = new JTextField();
+		textField_1.setColumns(10);
+		
+		textField_2 = new JTextField();
+		textField_2.setColumns(10);
+		
+		textField_3 = new JTextField();
+		textField_3.setColumns(10);
+		
+		textField_4 = new JTextField();
+		textField_4.setColumns(10);
+		
+		textField_5 = new JTextField();
+		textField_5.setColumns(10);
+		
+		textField_6 = new JTextField();
+		textField_6.setColumns(10);
+		
+		textField_7 = new JTextField();
+		textField_7.setColumns(10);
+		
+		textField_8 = new JTextField();
+		textField_8.setColumns(10);
+		GroupLayout gl_panPenguin = new GroupLayout(panPenguin);
+		gl_panPenguin.setHorizontalGroup(
+			gl_panPenguin.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panPenguin.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panPenguin.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panPenguin.createSequentialGroup()
+							.addComponent(sldRoll, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, 242, Short.MAX_VALUE)
+							.addComponent(tglbtnConnectToRobot, GroupLayout.PREFERRED_SIZE, 132, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panPenguin.createSequentialGroup()
+							.addGap(10)
+							.addComponent(sldPitch, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addGap(347)
+							.addGroup(gl_panPenguin.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_panPenguin.createSequentialGroup()
+									.addComponent(textField_3, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(textField_5, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(textField_7, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_panPenguin.createSequentialGroup()
+									.addComponent(textField_4, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(textField_6, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(textField_8, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_panPenguin.createSequentialGroup()
+									.addGroup(gl_panPenguin.createParallelGroup(Alignment.TRAILING)
+										.addComponent(lblP, GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
+										.addGroup(Alignment.LEADING, gl_panPenguin.createSequentialGroup()
+											.addComponent(textField_2, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_panPenguin.createParallelGroup(Alignment.LEADING)
+										.addComponent(textField, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
+										.addGroup(gl_panPenguin.createSequentialGroup()
+											.addGap(51)
+											.addComponent(lblD)))))
+							.addGap(143)))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 63, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap())
+		);
+		gl_panPenguin.setVerticalGroup(
+			gl_panPenguin.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panPenguin.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panPenguin.createParallelGroup(Alignment.LEADING)
+						.addComponent(tglbtnConnectToRobot)
+						.addGroup(gl_panPenguin.createParallelGroup(Alignment.TRAILING)
+							.addComponent(sldRoll, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)))
+					.addGroup(gl_panPenguin.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panPenguin.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(sldPitch, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panPenguin.createSequentialGroup()
+							.addGap(33)
+							.addComponent(lblD)
+							.addGap(9)
+							.addComponent(lblP)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panPenguin.createParallelGroup(Alignment.BASELINE)
+								.addComponent(textField_2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panPenguin.createParallelGroup(Alignment.BASELINE)
+								.addComponent(textField_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(textField_5, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(textField_7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panPenguin.createParallelGroup(Alignment.BASELINE)
+								.addComponent(textField_4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(textField_6, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(textField_8, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+					.addGap(78))
+		);
+		panPenguin.setLayout(gl_panPenguin);
+		
 		JPanel panFenrir = new JPanel();
 		tabbedPane.addTab("Fenrir", null, panFenrir, null);
 		
 		JPanel panGoliath = new JPanel();
 		tabbedPane.addTab("Goliath", null, panGoliath, null);
-		
-		JPanel panPenguin = new JPanel();
-		tabbedPane.addTab("Penguin", null, panPenguin, null);
 		
 		JPanel panRoslund = new JPanel();
 		tabbedPane.addTab("Roslund", null, panRoslund, null);

@@ -1,5 +1,5 @@
 /*
-Copyright 2013 (c) Illinois Tech Robotics <robotics.iit@gmail.com>
+Copyright 2014 (c) Illinois Tech Robotics <robotics.iit@gmail.com>
  
  Permission is hereby granted, free of charge, to any person obtaining
  a copy of this software and associated documentation files (the
@@ -21,6 +21,7 @@ Copyright 2013 (c) Illinois Tech Robotics <robotics.iit@gmail.com>
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include <robot.h>
+#include "Penguin.h"
 
 #define COMM Serial
 #define USB true
@@ -41,6 +42,7 @@ void setup() {
 void loop() {
   robot_event ev;
   robot.update();
+  on_fast_loop();
   if(robot.getEvent(&ev) == true){ 
   //if(true){
     switch(ev.command){
