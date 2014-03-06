@@ -157,7 +157,7 @@ void on_adc(robot_event *ev){
 
 void on_variable(robot_event *ev){
   if(ev->index == INPUT_THRUST){
-    throttle_input = ev->i;
+    throttle_input = constrain(throttle_input + ev->f, 0, 1000);
   }
   else if(ev->index == INPUT_PITCH){
     angle_input.pitch = ev->f;

@@ -53,10 +53,10 @@ void initMotors(){
 }
 
 void calc_motors_plus(){
-  motor_value[0] = constrain(throttle_input - pid_output.pitch - pid_output.yaw + angle_off.pitch + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
-  motor_value[1] = constrain(throttle_input - pid_output.roll + pid_output.yaw + angle_off.pitch + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
+  motor_value[0] = constrain(throttle_input - pid_output.pitch - pid_output.yaw - angle_off.pitch + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
+  motor_value[1] = constrain(throttle_input - pid_output.roll + pid_output.yaw - angle_off.roll + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
   motor_value[2] = constrain(throttle_input + pid_output.pitch - pid_output.yaw + angle_off.pitch + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
-  motor_value[3] = constrain(throttle_input + pid_output.roll + pid_output.yaw + angle_off.pitch + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
+  motor_value[3] = constrain(throttle_input + pid_output.roll + pid_output.yaw + angle_off.roll + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
 }
 
 void output(){

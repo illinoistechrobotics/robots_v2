@@ -65,15 +65,20 @@ public abstract class Robot extends Thread{
 	    }
 	}
 	
-	Queue recv_q;
-	Communication comm;
+	protected Queue recv_q;
+	protected Communication comm;
+	protected GUI dis;
+	protected Timer timer;
 	
-	public Robot(Queue q, Communication c){
+	public Robot(Queue q, Communication c, GUI d, Timer t){
 		recv_q = q;	
 		comm = c;
+		dis = d;
+		timer = t;
 	}
 	
 	private volatile Boolean run = true;
+	protected int heartbeat = 20;
 	
 	public void stopThread(){
 		if(run != false){
@@ -102,6 +107,7 @@ public abstract class Robot extends Thread{
 					break;
 				case ROBOT_EVENT_CMD_HEARTBEAT:
 					//need to update GUI
+					heartbeat = 0;
 					on_heartbeat(ev);
 					break;
 				case ROBOT_EVENT_STATUS:
@@ -128,19 +134,27 @@ public abstract class Robot extends Thread{
 				case ROBOT_EVENT_DISPLAY:
 					on_display(ev);
 					break;
+				case ROBOT_EVENT_GUI:
+					on_gui(ev);
+					break;
 				case ROBOT_EVENT_TIMER:
 					if(ev.getIndex() == TimerEnum.TIMER_1HZ.value)
 						on_1hz_timer(ev);
 					else if(ev.getIndex() == TimerEnum.TIMER_10HZ.value)
 						on_10hz_timer(ev);
-					else if (ev.getIndex() == TimerEnum.TIMER_25HZ.value)
+					else if(ev.getIndex() == TimerEnum.TIMER_20HZ.value)
+						on_20hz_timer(ev);
+					else if(ev.getIndex() == TimerEnum.TIMER_25HZ.value)
 						on_25hz_timer(ev);
-					else if (ev.getIndex() == TimerEnum.TIMER_50HZ.value)
+					else if(ev.getIndex() == TimerEnum.TIMER_50HZ.value)
 						on_50hz_timer(ev);
-					else if (ev.getIndex() == TimerEnum.TIMER_100HZ.value)
+					else if(ev.getIndex() == TimerEnum.TIMER_100HZ.value)
 						on_100hz_timer(ev);
-					else if (ev.getIndex() == TimerEnum.TIMER_HEARTBEAT.value)
-						comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_CMD_HEARTBEAT,(short)RobotEnum.COMPUTER.getValue(),(short)0));
+					else if(ev.getIndex() == TimerEnum.TIMER_HEARTBEAT.value){
+						on_heartbeat_timer(ev);
+						comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_CMD_HEARTBEAT,RobotEnum.COMPUTER.getValue(),0));
+						heartbeat++;
+					}
 					break;	
 				case ROBOT_EVENT_MOTOR:
 					on_motor(ev);
@@ -159,6 +173,9 @@ public abstract class Robot extends Thread{
 					break;
 				case ROBOT_EVENT_IMU:
 					on_imu(ev);
+					break;
+				case ROBOT_EVENT_PID:
+					on_pid(ev);
 					break;
 				case ROBOT_EVENT_ENCODER:
 					on_encoder(ev);
@@ -193,17 +210,21 @@ public abstract class Robot extends Thread{
 	public abstract void on_joy_status(Event ev);
 	public abstract void on_keyboard(Event ev);
 	public abstract void on_display(Event ev);
+	public abstract void on_gui(Event ev);
 	public abstract void on_1hz_timer(Event ev);
 	public abstract void on_10hz_timer(Event ev);
+	public abstract void on_20hz_timer(Event ev);
 	public abstract void on_25hz_timer(Event ev);
 	public abstract void on_50hz_timer(Event ev);
 	public abstract void on_100hz_timer(Event ev);
+	public abstract void on_heartbeat_timer(Event ev);
 	public abstract void on_motor(Event ev);
 	public abstract void on_solenoid(Event ev);
 	public abstract void on_pose(Event ev);
 	public abstract void on_adc(Event ev);
 	public abstract void on_variable(Event ev);
 	public abstract void on_imu(Event ev);
+	public abstract void on_pid(Event ev);
 	public abstract void on_encoder(Event ev);
 	public abstract void on_eeprom(Event ev);
 	public abstract void on_io(Event ev);

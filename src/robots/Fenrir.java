@@ -24,13 +24,14 @@ package robots;
 
 import common.Communication;
 import common.Event;
+import common.GUI;
 import common.Queue;
 import common.Robot;
 
 public class Fenrir extends Robot{
 
-	public Fenrir(Queue q, Communication c){
-		super(q,c);
+	public Fenrir(Queue q, Communication c, GUI d){
+		super(q,c,d);
 	}
 	
 	public void on_command_code(Event ev){
@@ -90,6 +91,10 @@ public class Fenrir extends Robot{
 	}
 	
 	public void on_100hz_timer(Event ev){
+		
+	}
+	
+	public void on_heartbeat_timer(Event ev){
 		
 	}
 	

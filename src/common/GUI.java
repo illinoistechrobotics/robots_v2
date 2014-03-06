@@ -23,7 +23,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package common;
 
 import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.awt.EventQueue;
@@ -53,6 +56,7 @@ import common.Timer.TimerEnum;
 import gnu.io.*;
 import net.java.games.input.Controller;
 import robots.*;
+import robots.Penguin.PenguinStateEnum;
 
 
 public class GUI extends Thread{
@@ -99,6 +103,28 @@ public class GUI extends Thread{
 	private Ethernet ethernet = new Ethernet(queue, this);
 	private Joystick joy;
 	private GUI dis = this;
+	
+	public enum GUIEnum
+	{
+		
+		PENGUIN_UPDATE_PID (1);
+		
+		public int value;
+		private static final Map<Integer,GUIEnum> lookup = new HashMap<Integer,GUIEnum>();
+	    static {
+	    	for(GUIEnum s : EnumSet.allOf(GUIEnum.class))
+	         lookup.put(s.getValue(), s);
+	    }
+	    public static GUIEnum getGUIEnum(int value){
+	    	return lookup.get(value);
+	    }
+		private GUIEnum(int v){
+	    	this.value = v;
+	    }
+		public int getValue(){
+	    	return this.value;
+	    }
+	}
 	
 	/**
 	 * Launch the application.
@@ -257,16 +283,55 @@ public class GUI extends Thread{
 	
 	private boolean running = false;
 	
-	private Ghost ghost;
-	private JTextField txtPD;
-	private JTextField txtPI;
-	private JTextField txtPP;
-	private JTextField txtRP;
-	private JTextField txtYP;
-	private JTextField txtRI;
-	private JTextField txtYI;
-	private JTextField txtRD;
-	private JTextField txtYD;
+	private Penguin penguin;
+	public JTextField txtPD;
+	public JTextField txtPI;
+	public JTextField txtPP;
+	public JTextField txtRP;
+	public JTextField txtYP;
+	public JTextField txtRI;
+	public JTextField txtYI;
+	public JTextField txtRD;
+	public JTextField txtYD;
+	
+	private class btnStartListener implements ActionListener{
+	  	public void actionPerformed(ActionEvent event){
+	  		JToggleButton btnTemp = (JToggleButton)event.getSource();
+	  		
+	  		if(running == true && btnTemp.getText().equals("Connect")){
+	  			btnTemp.setSelected(false);
+	  			return;
+  			}
+	  		
+	  		Communication comm = null;
+	  		
+	  		if(rdbtnXbee.isSelected()){
+	  			comm = (Communication)serial;
+	  		}
+	  		else if(rdbtnWifi.isSelected()){
+	  			comm = (Communication)ethernet;
+	  		}
+	  		
+	  		if(btnTemp == tglbtnConnectToRobot){
+	  			if(btnTemp.getText().equals("Connect")){
+	  				trStanbyQueueReading.cancel();
+	  				btnTemp.setText("Disconnect");
+	  				running = true;
+	  				penguin = new Penguin(queue,comm,dis,timer);
+	  				
+	  				penguin.start();
+	  			}
+	  			else
+	  			{
+	  				trStanbyQueueReading = new Timer();
+	  				trStanbyQueueReading.schedule(new StanbyQueueReading(), 0, 25);
+	  				btnTemp.setText("Connect");
+	  				penguin.stopThread();
+	  				running = false;
+	  			}
+	  		}
+	   	}
+	}
 	
 	public void changeRobotStatus(int stat){
 		if(stat == 0){
@@ -504,8 +569,9 @@ public class GUI extends Thread{
 		btnPenguinConnected.setEnabled(false);
 		btnPenguinConnected.setBackground(Color.RED);
 		
-		tglbtnConnectToRobot = new JToggleButton("Connect to Robot");
+		tglbtnConnectToRobot = new JToggleButton("Connect");
 		tglbtnConnectToRobot.setBounds(374, 14, 132, 23);
+		tglbtnConnectToRobot.addActionListener(new btnStartListener());
 		
 		sldRoll = new JSlider();
 		sldRoll.setBounds(10, 14, 200, 45);
@@ -609,6 +675,11 @@ public class GUI extends Thread{
 		panPenguin.add(lblYawPID);
 		
 		btnUpdatePid = new JButton("Update PID");
+		btnUpdatePid.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				queue.add(new Event(EventEnum.ROBOT_EVENT_GUI,GUIEnum.PENGUIN_UPDATE_PID.value,0));
+			}
+		});
 		btnUpdatePid.setBounds(461, 309, 89, 23);
 		panPenguin.add(btnUpdatePid);
 		

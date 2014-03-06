@@ -43,6 +43,7 @@ public enum EventEnum {
     ROBOT_EVENT_KEYBOARD			(0x30), // Keyboard Events
     
     ROBOT_EVENT_DISPLAY				(0x40), // Display info events
+    ROBOT_EVENT_GUI					(0x41), // GUI event i.e. Button pushes
     ROBOT_EVENT_TIMER               (0x50), // Timer events
     ROBOT_EVENT_MOTOR               (0x60), // Motor events
     ROBOT_EVENT_SOLENOID			(0x70), // Solenoid events for pneumatics and relays
@@ -50,6 +51,7 @@ public enum EventEnum {
     ROBOT_EVENT_ADC                 (0x90), // ADC events
     ROBOT_EVENT_VARIABLE            (0xA0), // Variable events
     ROBOT_EVENT_IMU		            (0xB0), // IMU events
+    ROBOT_EVENT_PID					(0xB1), // PID events
 	ROBOT_EVENT_ENCODER				(0xC0), // Encoder events
     ROBOT_EVENT_EEPROM				(0xD0), // Send data to be stored in eeprom
     ROBOT_EVENT_IO					(0xE0), // Send generic IO events

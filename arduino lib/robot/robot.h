@@ -52,7 +52,7 @@ enum {
     ROBOT_EVENT_ADC             = 0x90, // ADC events
     ROBOT_EVENT_VARIABLE        = 0xA0, // Variable events
     ROBOT_EVENT_IMU             = 0xB0, // IMU events
-    ROBOT_EVENT_PID             = 0xB1,
+    ROBOT_EVENT_PID             = 0xB1, // PID events
     ROBOT_EVENT_ENCODER         = 0xC0, // Encoder events
     ROBOT_EVENT_EEPROM          = 0xD0, // Send data to be stored in eeprom
     ROBOT_EVENT_IO              = 0xE0, // Send generic IO events

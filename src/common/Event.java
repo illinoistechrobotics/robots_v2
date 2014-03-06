@@ -86,11 +86,17 @@ public class Event {
 		this.bValue = v;
 		this.type = ValueType.BYTE;
 	}
+	public Event(EventEnum c, int i, short v){
+		this(c,(short)i,i);
+	}
 	public Event(EventEnum c, short i, int v){
 		this.command = c;
 		this.index = i;
 		this.value = v;
 		this.type = ValueType.INTEGER;
+	}
+	public Event(EventEnum c, int i, int v){
+		this(c,(short)i,v);
 	}
 	public Event(EventEnum c, short i, long v){
 		this.command = c;
@@ -98,17 +104,32 @@ public class Event {
 		this.lValue = v;
 		this.type = ValueType.LONG;
 	}
+	public Event(EventEnum c, int i, long v){
+		this(c,(short)i,v);
+	}
 	public Event(EventEnum c, short i, float v){
 		this.command = c;
 		this.index = i;
 		this.fValue = v;
 		this.type = ValueType.FLOAT;
 	}
+	public Event(EventEnum c, int i, float v){
+		this(c,(short)i,v);
+	}
+	public Event(EventEnum c, short i, double v){
+		this(c,i,(float)v);
+	}
+	public Event(EventEnum c, int i, double v){
+		this(c,(short)i,(float)v);
+	}
 	public Event(EventEnum c, short i, String v){
 		this.command = c;
 		this.index = i;
 		this.sValue = v;
 		this.type = ValueType.STRING;
+	}
+	public Event(EventEnum c, int i, String v){
+		this(c,(short)i,v);
 	}
 	public EventEnum getCommand(){
 		return command;
@@ -118,6 +139,9 @@ public class Event {
 	}
 	public short getBValue(){
 		return bValue;
+	}
+	public int getIValue(){
+		return value;
 	}
 	public int getValue(){
 		return value;
@@ -159,8 +183,8 @@ public class Event {
 	}
 	
 	/**
-	 * Is the packet compiled that is sent over the serial port
-	 * U,(command),(index),(value),(checksum)\n
+	 * This is the packet compiled that is sent over the serial port
+	 * U(command),(index),(value),(type)*(checksum)\n
 	 * checksum is the XOR of all of the bytes between the header and footer
 	 * All values are sent as Hex values comma delimited with a newline terminated
 	 * Start byte is U binary(01010101)
