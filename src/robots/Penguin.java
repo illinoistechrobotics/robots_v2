@@ -145,15 +145,15 @@ public class Penguin extends Robot{
 	
 	public void on_axis_change(Event ev){
 		if(ev.getIndex() == 3){
-			float scale = (ev.getValue()-127)/16*(-1);
+			float scale = (ev.getValue()-127)/8*(-1);
 			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE, PenguinControlEnum.INPUT_PITCH.value, scale));
 		}
 		else if(ev.getIndex() == 2){
-			float scale = (ev.getValue()-127)/16*(-1);
+			float scale = (ev.getValue()-127)/8*(1);
 			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE, PenguinControlEnum.INPUT_ROLL.value, scale));
 		}
 		else if(ev.getIndex() == 0){
-			float scale = (ev.getValue()-127)/16*(-1);
+			float scale = (ev.getValue()-127)/8*(1);
 			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE, PenguinControlEnum.INPUT_YAW.value, scale));
 		}
 	}
@@ -168,6 +168,7 @@ public class Penguin extends Robot{
 	boolean pitch_off_neg = false;
 	boolean roll_off_plus = false;
 	boolean roll_off_neg = false;
+	int output_motors = 0;
 	public void on_button_down(Event ev){
 		if(ev.getIndex() == 5){
 			throttle_down = false;
@@ -185,6 +186,10 @@ public class Penguin extends Robot{
 			yaw_off_neg = true;
 			yaw_off_plus = false;
 		}
+		else if(ev.getIndex() == 1){
+			output_motors ^= 0x01;
+			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OUTPUT_MOTORS.value,output_motors));
+		}
 	}
 	
 	public void on_button_up(Event ev){
@@ -200,28 +205,28 @@ public class Penguin extends Robot{
 	
 	public void on_joy_hat(Event ev){
 		if(ev.getValue() == 3){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_PITCH.value,10.0));
-			pitch_off_plus = true;
-			pitch_off_neg = false;
-			roll_off_plus = false;
-			roll_off_neg = false;
-		}
-		else if(ev.getValue() == 7){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_PITCH.value,-10.0));	
+			//comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_PITCH.value,10.0));
 			pitch_off_plus = false;
 			pitch_off_neg = true;
 			roll_off_plus = false;
 			roll_off_neg = false;
 		}
+		else if(ev.getValue() == 7){
+			//comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_PITCH.value,-10.0));	
+			pitch_off_plus = true;
+			pitch_off_neg = false;
+			roll_off_plus = false;
+			roll_off_neg = false;
+		}
 		else if(ev.getValue() == 5){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_ROLL.value,10.0));	
+			//comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_ROLL.value,10.0));	
 			pitch_off_plus = false;
 			pitch_off_neg = false;
 			roll_off_plus = true;
 			roll_off_neg = false;
 		}
 		else if(ev.getValue() == 1){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_ROLL.value,-10.0));	
+			//comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_ROLL.value,-10.0));	
 			pitch_off_plus = false;
 			pitch_off_neg = false;
 			roll_off_plus = false;
@@ -275,29 +280,29 @@ public class Penguin extends Robot{
 	
 	public void on_20hz_timer(Event ev){
 		if(throttle_up){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.INPUT_THRUST.value,30.0));
+			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.INPUT_THRUST.value,10.0));
 		}
 		if(throttle_down){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.INPUT_THRUST.value,-30.0));
+			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.INPUT_THRUST.value,-10.0));
 		}
 		
 		if(pitch_off_plus){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_PITCH.value,10.0));
+			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_PITCH.value,1.0));
 		}
 		if(pitch_off_neg){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_PITCH.value,-10.0));
+			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_PITCH.value,-1.0));
 		}
 		if(roll_off_plus){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_ROLL.value,10.0));
+			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_ROLL.value,1.0));
 		}
 		if(roll_off_neg){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_ROLL.value,-10.0));
+			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_ROLL.value,-1.0));
 		}
 		if(yaw_off_plus){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_YAW.value,10.0));
+			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_YAW.value,1.0));
 		}
-		if(roll_off_neg){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_YAW.value,-10.0));
+		if(yaw_off_neg){
+			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_YAW.value,-1.0));
 		}
 	}
 	

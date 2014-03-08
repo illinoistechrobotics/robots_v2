@@ -67,6 +67,10 @@ void initPID(){
   err_prev.pitch = 0.0;
   err_prev.roll = 0.0;
   err_prev.yaw = 0.0;
+  
+  err_I.pitch = 0.0;
+  err_I.roll = 0.0;
+  err_I.yaw = 0.0;
 }
 
 void PID(){
@@ -74,7 +78,7 @@ void PID(){
   intergrationTimePID = micros();
   
   //PITCH
-  err_P.pitch = angle_input.pitch - sensor.pitch;
+  err_P.pitch = angle_input.pitch - sensor.pitch + angle_off.pitch;
   err_I.pitch = err_I.pitch + err_P.pitch;
   err_I.pitch = constrain(err_I.pitch,MIN_I_PITCH,MAX_I_PITCH);
   err_D.pitch = err_P.pitch - err_prev.pitch;
@@ -83,7 +87,7 @@ void PID(){
   err_prev.pitch = err_P.pitch;
   
   //ROLL
-  err_P.roll = angle_input.roll - sensor.roll;
+  err_P.roll = angle_input.roll - sensor.roll + angle_off.roll;
   err_I.roll = err_I.roll + err_P.roll;
   err_I.roll = constrain(err_I.roll,MIN_I_ROLL,MAX_I_ROLL);
   err_D.roll = err_P.roll - err_prev.roll;

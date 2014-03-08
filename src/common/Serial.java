@@ -240,7 +240,7 @@ public class Serial extends Communication implements SerialPortEventListener {
 	
 	public synchronized void sendEvent(Event ev){
 		try{
-			String t = ev.toStringSend();
+			//String t = ev.toStringSend();
 			output.write(ev.toStringSend().getBytes());   //write needs a byte array instead of a string
 		}
 		catch(Exception e){

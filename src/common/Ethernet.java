@@ -25,15 +25,21 @@ package common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+
+import common.Communication.ReadState;
 
 public class Ethernet extends Communication{
 	
 	private Queue recv = null;
 	private GUI dis = null;
-	private Socket sock = null;
+	//private Socket sock = null;
+	private DatagramSocket sock = null;
 	private InputStream is = null;
     private OutputStream os = null;
     private volatile boolean run = false;
@@ -53,9 +59,9 @@ public class Ethernet extends Communication{
             this.interrupt();
         }
         try {
-            is.close();
-            os.close();
-            sock.close();
+            //is.close();
+            //os.close();
+            //sock.close();
             isConnected = false;
         } 
         catch (Exception e) {
@@ -65,7 +71,7 @@ public class Ethernet extends Communication{
 	private final int BUF_SIZE = 1024;
 	private final String HEADER = "U";
 	private final String FOOTER = "\n";
-	private String sBuf = new String();
+	private StringBuilder sBuf = new StringBuilder();
 	private byte[] buf = new byte[1];
 	private int length = 0;
 	private ReadState state = ReadState.LOOKING_FOR_HEADER;
@@ -78,48 +84,76 @@ public class Ethernet extends Communication{
 	
 	public void run() {
         run = true;
+        DatagramSocket s;
+		try {
+			s = new DatagramSocket(2001);
+		} catch (SocketException e1) {
+			return;
+		}
+		byte[] b = new byte[1600]; 
+		DatagramPacket packet = new DatagramPacket(b, b.length);
         while (run){
         	try {
-            	if (!sock.isConnected() || sock.isClosed()) {
-            		System.out.println("Connection Error");
-            		run = false;
-            		return;
-                }
-            	while((length = is.read(buf,0,1))>0){
-            		sBuf.concat(new String(buf, 0, length));
-            		switch(state){
-            		case LOOKING_FOR_HEADER:
-            			if(sBuf.contains(HEADER)){
-            				sBuf = sBuf.substring(sBuf.indexOf(HEADER)); //remove data in front of header
-            				state = ReadState.READING_DATA;
-            			}
-            			else{
-            				sBuf = ""; //remove everything since no valid data
-            			}
-            			break;
-            		case READING_DATA:
-            			if(sBuf.contains(FOOTER)){
-            				state = ReadState.CALCULATE_CHECKSUM;
-            			}
-            			else if(sBuf.indexOf(HEADER,1)>-1)
-            			{
-            				//new header "start over"
-            				sBuf = sBuf.substring(sBuf.indexOf(HEADER,1));
-            			}
-            			break;
-            		case CALCULATE_CHECKSUM:
+            	//if (!sock.isConnected() || sock.isClosed()) {
+            	//	System.out.println("Connection Error");
+            	//	run = false;
+            	//	return;
+                //}
+        		
+        		s.receive(packet);
+        		
+        		String r = new String(packet.getData(), 0, packet.getLength());
+        		StringBuffer received = new StringBuffer(r);
 
-            			Event ev = new Event();
+        		//while((length = is.read(buf,0,1))>0){
+        		while(received.length()>0){
+        			
+        			int len = received.length();
+        			String st = received.substring(0, received.indexOf(FOOTER)+1);
+					sBuf.append(st);
+					received.delete(0, received.indexOf(FOOTER)+1);
+					
+					switch(state){
+					case LOOKING_FOR_HEADER:
+						if(sBuf.indexOf(HEADER) != -1){
+							sBuf.delete(0, sBuf.indexOf(HEADER)); //remove data in front of header
+							state = ReadState.READING_DATA;
+						}
+						else{
+							sBuf.delete(0, sBuf.length()); //remove everything since no valid data
+						}
+						break;
+					case READING_DATA:
+						if(sBuf.indexOf(FOOTER) != -1){
+							state = ReadState.CALCULATE_CHECKSUM;
+							//continue to CALCULATE_CHECKSUM;
+						}
+						else if(sBuf.indexOf(HEADER,1)>-1)
+						{
+							//new header "start over"
+							sBuf.delete(0,sBuf.indexOf(HEADER,1));
+							break;
+						}
+						else
+						{
+							break;
+						}
+						//break left out
+					case CALCULATE_CHECKSUM:
+
+						Event ev = new Event();
 						String fullMessage = sBuf.substring(0, sBuf.indexOf(FOOTER));
 						String checksumMessage = fullMessage.substring(1, fullMessage.indexOf("*"));
-						sBuf = sBuf.substring(sBuf.indexOf(FOOTER));
+						sBuf.delete(0,sBuf.indexOf(FOOTER));
 						int checksum = 0;
-						for(int i = 2; i < checksumMessage.length(); i++) //checksum not include the start byte
+						for(int i = 0; i < checksumMessage.length(); i++) //checksum not include the start byte
 						{
 							checksum = checksum^(((int)checksumMessage.charAt(i))&0xFF);
 						}
 
-						String[] token = fullMessage.split(",*");
+
+						String[] token = fullMessage.split("[U,\\*]");
+						
 
 						if(Integer.parseInt(token[5],16) == checksum )
 						{
@@ -153,20 +187,20 @@ public class Ethernet extends Communication{
 							}
 							catch(Exception e){
 							}
-            			}
+						}
 
 
-            			state = ReadState.LOOKING_FOR_HEADER;
-            			break;
-            		}
-
-            	}
+						state = ReadState.LOOKING_FOR_HEADER;
+						break;
+					}
+				}
             	try {
             		Thread.sleep(0,100);
             	} 
             	catch (InterruptedException ie) {
             	}
-        	} catch (IOException ioe) {
+        	} catch(Exception e){
+				System.out.println(e.toString());
         	}
         }
     }
@@ -182,7 +216,8 @@ public class Ethernet extends Communication{
 	public boolean isConnected(){
 		return isConnected;
 	}
-        
+    
+	/*
 	public boolean connect(String ip, int port) {
 		boolean connect = true;
 		ipAddress = ip;
@@ -196,10 +231,32 @@ public class Ethernet extends Communication{
 			os = sock.getOutputStream();
 			isConnected = true;
 		} catch (UnknownHostException uhe) {
-			//System.out.println("Unknown Host");
+			System.out.println("Unknown Host");
 			connect = false;
 		} catch (IOException ioe) {
-			//System.out.println("Can not connect");
+			System.out.println("Can not connect");
+			connect = false;
+		}
+		return connect;
+	}
+	*/
+	public boolean connect(String ip, int port) {
+		boolean connect = true;
+		ipAddress = ip;
+		portNumber = port;
+		//InetAddress inet;
+
+		try {
+			//inet = InetAddress.getByName(ip);
+			sock = new DatagramSocket();
+			//is = sock.getInputStream();
+			//os = sock.getOutputStream();
+			isConnected = true;
+		//} catch (UnknownHostException uhe) {
+		//	System.out.println("Unknown Host");
+		//	connect = false;
+		} catch (IOException ioe) {
+			System.out.println("Can not connect");
 			connect = false;
 		}
 		return connect;
@@ -207,7 +264,12 @@ public class Ethernet extends Communication{
 	
 	public synchronized void sendEvent(Event ev) {
         try {
-            os.write(ev.toStringSend().getBytes());   //write needs a byte array instead of a string
+        	//System.out.println("Send Event");
+        	//sock = new DatagramSocket();
+        	String s = ev.toStringSend();
+            DatagramPacket packet = new DatagramPacket(s.getBytes(), s.length(), InetAddress.getByName(ipAddress), portNumber);
+        	sock.send(packet);
+            //os.write(ev.toStringSend().getBytes());   //write needs a byte array instead of a string
         } 
         catch (Exception e) {
         }

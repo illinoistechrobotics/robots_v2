@@ -20,10 +20,17 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+#define LED1 16
+#define LED2 15
 
 void on_init(){
+  initMotors();
   initGEDC6();
   initPID();
+  pinMode(LED1, OUTPUT);
+  pinMode(LED2, OUTPUT);
+  digitalWrite(LED1, HIGH); //active low
+  digitalWrite(LED2, HIGH);
 }
 
 void on_command_code(robot_event *ev){
@@ -79,19 +86,6 @@ void on_2hz_timer(robot_event *ev){
 }
 
 void on_5hz_timer(robot_event *ev){
-  
-}
-
-void on_10hz_timer(robot_event *ev){
-  Serial.print(sensor.pitch);
-  Serial.print(",");
-  Serial.print(sensor.roll);
-  Serial.print(",");
-  Serial.print(sensor.yaw);
-  Serial.println();
-}
-
-void on_20hz_timer(robot_event *ev){
   robot_event new_ev;
   new_ev.command = ROBOT_EVENT_IMU;
   new_ev.type = FLOAT;
@@ -125,6 +119,19 @@ void on_20hz_timer(robot_event *ev){
   new_ev.index = MOT3;
   new_ev.i = motor_value[3];
   robot.sendEvent(&new_ev);
+}
+
+void on_10hz_timer(robot_event *ev){
+  Serial.print(sensor.pitch);
+  Serial.print(",");
+  Serial.print(sensor.roll);
+  Serial.print(",");
+  Serial.print(sensor.yaw);
+  Serial.println();
+}
+
+void on_20hz_timer(robot_event *ev){
+  
   
 }
 
@@ -171,19 +178,25 @@ void on_variable(robot_event *ev){
     angle_input.roll = ev->f;
   }
   else if(ev->index == INPUT_YAW){
-    angle_input.yaw = ev->f;
+    angle_input.yaw += ev->f;
   }
   else if(ev->index == OFF_PITCH){
-    angle_off.pitch = ev->f;
+    angle_off.pitch += ev->f;
   }
   else if(ev->index == OFF_ROLL){
-    angle_off.roll = ev->f;
+    angle_off.roll += ev->f;
   }
   else if(ev->index == OFF_ROLL){
-    angle_off.yaw = ev->f;
+    angle_off.yaw += ev->f;
   }
   else if(ev->index == OUTPUT_MOTORS){
     output_motors = ev->i;
+    if(output_motors == 1){
+      digitalWrite(LED1, LOW); //active low
+    }
+    else{
+      digitalWrite(LED1, HIGH);
+    }
   }
 }
 

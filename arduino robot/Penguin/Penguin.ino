@@ -23,15 +23,17 @@ Copyright 2014 (c) Illinois Tech Robotics <robotics.iit@gmail.com>
 #include <robot.h>
 #include "Penguin.h"
 
-#define COMM Serial
-#define USB true
-#define BAUDRATE 57600
+#define COMM Serial2
+#define USB false
+#define BAUDRATE 115200
 
 Robot robot = Robot();
 
 void setup() {
   
-  robot.init((HardwareSerial&)COMM, BAUDRATE, TIMER_20HZ_MASK, Robot::PENGUIN, USB);
+  //robot.init((HardwareSerial&)COMM, BAUDRATE, 0, Robot::PENGUIN, USB);
+  robot.init((HardwareSerial&)COMM, BAUDRATE, TIMER_1HZ_MASK | TIMER_5HZ_MASK, Robot::PENGUIN, USB);
+
   //robot.init((HardwareSerial&)COMM, BAUDRATE, TIMER_1HZ_MASK | TIMER_10HZ_MASK, Robot::PENGUIN, true);
   //The third argument sets the timers as a mask. These timers can not be changed at run time!!! 
   //The last argument is for boards like the teensy or leonardo that have real usb ports and 

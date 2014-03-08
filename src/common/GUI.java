@@ -255,7 +255,7 @@ public class GUI extends Thread{
     				btnGeneralStatus.setText(Robot.RobotEnum.getRobot(ev.getIndex()).toString());
     				break;
     			case ROBOT_EVENT_TIMER:
-    				//serial.sendEvent(new Event(EventEnum.ROBOT_EVENT_CMD_HEARTBEAT,(short)RobotEnum.COMPUTER.getValue(),(short)0));
+    				//ethernet.sendEvent(new Event(EventEnum.ROBOT_EVENT_CMD_HEARTBEAT,(short)RobotEnum.COMPUTER.getValue(),(short)0));
     				if (ev.getIndex() == TimerEnum.TIMER_HEARTBEAT.value){
     					heartbeatcount++;
     					if(heartbeatcount > 4){
@@ -463,13 +463,13 @@ public class GUI extends Thread{
 		JLabel lblIpAdress = new JLabel("IP Address");
 		
 		txtIPAddress = new JTextField();
-		txtIPAddress.setText("192.168.1.1");
+		txtIPAddress.setText("192.168.20.92");
 		txtIPAddress.setColumns(10);
 		
 		JLabel lblPortNumber = new JLabel("Port Number");
 		
 		txtPortNumber = new JTextField();
-		txtPortNumber.setText("31337");
+		txtPortNumber.setText("2000");
 		txtPortNumber.setColumns(10);
 		
 		JLabel lblInputDevice = new JLabel("Input Device");
@@ -682,9 +682,11 @@ public class GUI extends Thread{
 		panPenguin.add(btnUpdatePid);
 		
 		sldMot4 = new JSlider();
-		sldMot4.setValue(0);
+		sldMot4.setMaximum(2000);
+		sldMot4.setMinimum(1000);
+		sldMot4.setValue(1000);
 		sldMot4.setOrientation(SwingConstants.VERTICAL);
-		sldMot4.setMajorTickSpacing(50);
+		sldMot4.setMajorTickSpacing(500);
 		sldMot4.setPaintLabels(true);
 		sldMot4.setPaintTicks(true);
 		sldMot4.setEnabled(false);
@@ -692,31 +694,37 @@ public class GUI extends Thread{
 		panPenguin.add(sldMot4);
 		
 		sldMot3 = new JSlider();
-		sldMot3.setValue(0);
+		sldMot3.setMaximum(2000);
+		sldMot3.setMinimum(1000);
+		sldMot3.setValue(1000);
 		sldMot3.setPaintTicks(true);
 		sldMot3.setPaintLabels(true);
 		sldMot3.setOrientation(SwingConstants.VERTICAL);
-		sldMot3.setMajorTickSpacing(50);
+		sldMot3.setMajorTickSpacing(500);
 		sldMot3.setEnabled(false);
 		sldMot3.setBounds(475, 87, 47, 100);
 		panPenguin.add(sldMot3);
 		
 		sldMot2 = new JSlider();
-		sldMot2.setValue(0);
+		sldMot2.setMaximum(2000);
+		sldMot2.setMinimum(1000);
+		sldMot2.setValue(1000);
 		sldMot2.setPaintTicks(true);
 		sldMot2.setPaintLabels(true);
 		sldMot2.setOrientation(SwingConstants.VERTICAL);
-		sldMot2.setMajorTickSpacing(50);
+		sldMot2.setMajorTickSpacing(500);
 		sldMot2.setEnabled(false);
 		sldMot2.setBounds(420, 87, 47, 100);
 		panPenguin.add(sldMot2);
 		
 		sldMot1 = new JSlider();
-		sldMot1.setValue(0);
+		sldMot1.setMaximum(2000);
+		sldMot1.setMinimum(1000);
+		sldMot1.setValue(1000);
 		sldMot1.setPaintTicks(true);
 		sldMot1.setPaintLabels(true);
 		sldMot1.setOrientation(SwingConstants.VERTICAL);
-		sldMot1.setMajorTickSpacing(50);
+		sldMot1.setMajorTickSpacing(500);
 		sldMot1.setEnabled(false);
 		sldMot1.setBounds(365, 87, 47, 100);
 		panPenguin.add(sldMot1);

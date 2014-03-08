@@ -23,10 +23,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <Servo.h>
 
-#define MOTOR0 20
-#define MOTOR1 21
-#define MOTOR2 22
-#define MOTOR3 23
+#define MOTOR0 23
+#define MOTOR1 22
+#define MOTOR2 21
+#define MOTOR3 20
 
 #define MIN_PULSEWIDTH 1000
 #define MAX_PULSEWIDTH 2000
@@ -53,13 +53,14 @@ void initMotors(){
 }
 
 void calc_motors_plus(){
-  motor_value[0] = constrain(throttle_input - pid_output.pitch - pid_output.yaw - angle_off.pitch + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
-  motor_value[1] = constrain(throttle_input - pid_output.roll + pid_output.yaw - angle_off.roll + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
-  motor_value[2] = constrain(throttle_input + pid_output.pitch - pid_output.yaw + angle_off.pitch + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
-  motor_value[3] = constrain(throttle_input + pid_output.roll + pid_output.yaw + angle_off.roll + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
+  motor_value[0] = constrain(throttle_input - pid_output.pitch - pid_output.yaw + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
+  motor_value[1] = constrain(throttle_input - pid_output.roll + pid_output.yaw + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
+  motor_value[2] = constrain(throttle_input + pid_output.pitch - pid_output.yaw + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
+  motor_value[3] = constrain(throttle_input + pid_output.roll + pid_output.yaw + MIN_PULSEWIDTH, MIN_PULSEWIDTH, MAX_PULSEWIDTH);
 }
 
 void output(){
+  //
   if(output_motors == true && robot.failsafe == false){
     motor0.writeMicroseconds(motor_value[0]);
     motor1.writeMicroseconds(motor_value[1]);
