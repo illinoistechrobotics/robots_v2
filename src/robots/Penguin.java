@@ -23,6 +23,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package robots;
 
 import java.awt.Color;
+import java.text.DecimalFormat;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -339,16 +340,21 @@ public class Penguin extends Robot{
 	}
 
 	public void on_variable(Event ev){
+		
+	}
+	
+	public void on_imu(Event ev){
+		DecimalFormat df = new DecimalFormat("#.##");
 		if(ev.getIndex()==PenguinStateEnum.PITCH.value){
-			dis.lblPitch.setText(Double.toString(ev.getFValue()));
+			dis.lblPitch.setText(df.format(ev.getFValue()));
 			dis.sldPitch.setValue((int)ev.getFValue());
 		}
 		else if(ev.getIndex()==PenguinStateEnum.ROLL.value){
-			dis.lblRoll.setText(Double.toString(ev.getFValue()));
+			dis.lblRoll.setText(df.format(ev.getFValue()));
 			dis.sldRoll.setValue((int)ev.getFValue());
 		}
 		else if(ev.getIndex()==PenguinStateEnum.YAW.value){
-			dis.lblYaw.setText(Double.toString(ev.getFValue()));
+			dis.lblYaw.setText(df.format(ev.getFValue()));
 		}
 		else if(ev.getIndex()==PenguinStateEnum.MOT_0.value){
 			dis.lblMot1.setText(Integer.toString(ev.getValue()));
@@ -366,10 +372,6 @@ public class Penguin extends Robot{
 			dis.lblMot4.setText(Integer.toString(ev.getValue()));
 			dis.sldMot4.setValue(ev.getValue());
 		}
-	}
-	
-	public void on_imu(Event ev){
-		
 	}
 	
 	public void on_pid(Event ev){

@@ -71,7 +71,7 @@ void on_p1hz_timer(robot_event *ev){
 }
 
 void on_1hz_timer(robot_event *ev){
-  
+  reInitGEDC6();
 }
 
 void on_2hz_timer(robot_event *ev){
@@ -83,7 +83,12 @@ void on_5hz_timer(robot_event *ev){
 }
 
 void on_10hz_timer(robot_event *ev){
-  
+  Serial.print(sensor.pitch);
+  Serial.print(",");
+  Serial.print(sensor.roll);
+  Serial.print(",");
+  Serial.print(sensor.yaw);
+  Serial.println();
 }
 
 void on_20hz_timer(robot_event *ev){

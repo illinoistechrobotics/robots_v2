@@ -21,14 +21,6 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#define GEDC6 Serial1
-#define GEDC6_BAUD 115600
-enum{
-    LOOKING_FOR_HEADER,
-    READING_DATA,
-    CALCULATE_CHECKSUM
-  };
-
 const static int BUFFER_SIZE = 128;  
 const static char MESSAGE_HEADER = '$';
 const static char MESSAGE_FOOTER = '\n';
@@ -58,7 +50,8 @@ void reInitGEDC6(){
 void readGEDC6(){
   
   while(GEDC6.available()>0){
-    gedc6_buf[gedc6_length++] = GEDC6.read();
+    char data = GEDC6.read();
+    gedc6_buf[gedc6_length++] = data;
     
     switch(gedc6_state){
     case LOOKING_FOR_HEADER:
@@ -81,12 +74,12 @@ void readGEDC6(){
         gedc6_length = 0;
       }
       if(gedc6_buf[gedc6_length-1] == MESSAGE_FOOTER){
+        gedc6_buf[gedc6_length] = '/0';
         int pos = 1;
         int checksum = 0;
         while(gedc6_buf[pos] != MESSAGE_CHECKSUM && pos < gedc6_length){
           checksum = checksum ^ gedc6_buf[pos++];
         }
-        
         char* cToken;
         //$HCXDR,A,195.5,D,A,195.5,D,A,-19.1,D,A,+123.3,D,C,+34.1,C,G,017*17
         strtok(gedc6_buf, "$,*"); //HCXDR
@@ -112,7 +105,7 @@ void readGEDC6(){
         strtok(NULL, "$,*"); //G
         strtok(NULL, "$,*"); //megnatic error
         
-        cToken = strtok(NULL, "$,*\n"); //checksum
+        cToken = strtok(NULL, "$,*\n\r"); //checksum
         int checksum2 = xtoi(cToken);
         if(checksum2 == checksum){
           sensor_valid = true;
@@ -120,6 +113,8 @@ void readGEDC6(){
           calc_motors_plus();
           output();
         }
+        gedc6_length = 0;
+        gedc6_buf[0] = '\0';
         gedc6_state = LOOKING_FOR_HEADER;
       }
       break;

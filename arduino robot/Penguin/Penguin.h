@@ -90,4 +90,12 @@ enum {
   OUTPUT_MOTORS = 7
 };
 
+#define GEDC6 Serial1
+#define GEDC6_BAUD 115600
+enum{
+    LOOKING_FOR_HEADER,
+    READING_DATA,
+    CALCULATE_CHECKSUM
+  };
+
 #endif

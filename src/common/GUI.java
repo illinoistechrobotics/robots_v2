@@ -255,10 +255,8 @@ public class GUI extends Thread{
     				btnGeneralStatus.setText(Robot.RobotEnum.getRobot(ev.getIndex()).toString());
     				break;
     			case ROBOT_EVENT_TIMER:
-    				serial.sendEvent(new Event(EventEnum.ROBOT_EVENT_CMD_HEARTBEAT,(short)RobotEnum.COMPUTER.getValue(),(short)0));
+    				//serial.sendEvent(new Event(EventEnum.ROBOT_EVENT_CMD_HEARTBEAT,(short)RobotEnum.COMPUTER.getValue(),(short)0));
     				if (ev.getIndex() == TimerEnum.TIMER_HEARTBEAT.value){
-    					Date d = new Date();
-    					//System.out.println(d.getTime());
     					heartbeatcount++;
     					if(heartbeatcount > 4){
     						btnGeneralStatus.setBackground(Color.RED);
@@ -680,7 +678,7 @@ public class GUI extends Thread{
 				queue.add(new Event(EventEnum.ROBOT_EVENT_GUI,GUIEnum.PENGUIN_UPDATE_PID.value,0));
 			}
 		});
-		btnUpdatePid.setBounds(461, 309, 89, 23);
+		btnUpdatePid.setBounds(432, 309, 147, 23);
 		panPenguin.add(btnUpdatePid);
 		
 		sldMot4 = new JSlider();
@@ -771,15 +769,15 @@ public class GUI extends Thread{
 		panPenguin.add(lblYaw_txt);
 		
 		lblPitch = new JLabel("0");
-		lblPitch.setBounds(134, 70, 46, 14);
+		lblPitch.setBounds(134, 70, 120, 14);
 		panPenguin.add(lblPitch);
 		
 		lblRoll = new JLabel("0");
-		lblRoll.setBounds(134, 89, 46, 14);
+		lblRoll.setBounds(134, 89, 120, 14);
 		panPenguin.add(lblRoll);
 		
 		lblYaw = new JLabel("0");
-		lblYaw.setBounds(134, 107, 46, 14);
+		lblYaw.setBounds(134, 107, 120, 14);
 		panPenguin.add(lblYaw);
 		
 		JPanel panFenrir = new JPanel();

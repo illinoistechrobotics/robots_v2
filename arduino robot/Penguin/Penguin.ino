@@ -32,10 +32,11 @@ Robot robot = Robot();
 void setup() {
   
   robot.init((HardwareSerial&)COMM, BAUDRATE, TIMER_20HZ_MASK, Robot::PENGUIN, USB);
+  //robot.init((HardwareSerial&)COMM, BAUDRATE, TIMER_1HZ_MASK | TIMER_10HZ_MASK, Robot::PENGUIN, true);
   //The third argument sets the timers as a mask. These timers can not be changed at run time!!! 
   //The last argument is for boards like the teensy or leonardo that have real usb ports and 
   //require special care if communication is on the usb port
-  
+  //Serial.begin(9600);
   on_init();
 }
 

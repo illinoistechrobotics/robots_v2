@@ -23,10 +23,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <Servo.h>
 
-#define MOTOR0 9
-#define MOTOR1 10
-#define MOTOR2 11
-#define MOTOR3 12
+#define MOTOR0 20
+#define MOTOR1 21
+#define MOTOR2 22
+#define MOTOR3 23
 
 #define MIN_PULSEWIDTH 1000
 #define MAX_PULSEWIDTH 2000

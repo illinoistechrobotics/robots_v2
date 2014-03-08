@@ -160,6 +160,7 @@ void Robot::readSerial(){
           }
         }
         length = 0;
+        buf[0] = '\0';
         state = LOOKING_FOR_HEADER;
       }
       break;
