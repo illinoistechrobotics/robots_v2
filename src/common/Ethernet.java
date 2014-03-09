@@ -109,9 +109,9 @@ public class Ethernet extends Communication{
         		while(received.length()>0){
         			
         			int len = received.length();
-        			String st = received.substring(0, received.indexOf(FOOTER)+1);
+        			String st = received.substring(0, 1);
 					sBuf.append(st);
-					received.delete(0, received.indexOf(FOOTER)+1);
+					received.delete(0, 1);
 					
 					switch(state){
 					case LOOKING_FOR_HEADER:

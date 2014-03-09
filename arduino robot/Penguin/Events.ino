@@ -86,6 +86,19 @@ void on_2hz_timer(robot_event *ev){
 }
 
 void on_5hz_timer(robot_event *ev){
+  
+}
+
+void on_10hz_timer(robot_event *ev){
+  Serial.print(sensor.pitch);
+  Serial.print(",");
+  Serial.print(sensor.roll);
+  Serial.print(",");
+  Serial.print(sensor.yaw);
+  Serial.println();
+}
+
+void on_20hz_timer(robot_event *ev){
   robot_event new_ev;
   new_ev.command = ROBOT_EVENT_IMU;
   new_ev.type = FLOAT;
@@ -119,19 +132,6 @@ void on_5hz_timer(robot_event *ev){
   new_ev.index = MOT3;
   new_ev.i = motor_value[3];
   robot.sendEvent(&new_ev);
-}
-
-void on_10hz_timer(robot_event *ev){
-  Serial.print(sensor.pitch);
-  Serial.print(",");
-  Serial.print(sensor.roll);
-  Serial.print(",");
-  Serial.print(sensor.yaw);
-  Serial.println();
-}
-
-void on_20hz_timer(robot_event *ev){
-  
   
 }
 

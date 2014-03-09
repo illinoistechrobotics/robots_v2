@@ -32,7 +32,7 @@ Robot robot = Robot();
 void setup() {
   
   //robot.init((HardwareSerial&)COMM, BAUDRATE, 0, Robot::PENGUIN, USB);
-  robot.init((HardwareSerial&)COMM, BAUDRATE, TIMER_1HZ_MASK | TIMER_5HZ_MASK, Robot::PENGUIN, USB);
+  robot.init((HardwareSerial&)COMM, BAUDRATE, TIMER_1HZ_MASK | TIMER_20HZ_MASK, Robot::PENGUIN, USB);
 
   //robot.init((HardwareSerial&)COMM, BAUDRATE, TIMER_1HZ_MASK | TIMER_10HZ_MASK, Robot::PENGUIN, true);
   //The third argument sets the timers as a mask. These timers can not be changed at run time!!! 
