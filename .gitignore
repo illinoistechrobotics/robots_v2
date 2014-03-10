@@ -53,7 +53,6 @@
 Icon?
 ehthumbs.db
 Thumbs.db
-.*
 !.gitignore
 *~
 
