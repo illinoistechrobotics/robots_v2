@@ -178,7 +178,7 @@ void on_variable(robot_event *ev){
     angle_input.roll = ev->f;
   }
   else if(ev->index == INPUT_YAW){
-    angle_input.yaw += ev->f;
+    angle_input.yaw = sensor.yaw + ev->f;
   }
   else if(ev->index == OFF_PITCH){
     angle_off.pitch += ev->f;

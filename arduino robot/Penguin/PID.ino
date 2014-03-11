@@ -32,8 +32,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define MAX_PITCH 250
 #define MIN_ROLL -250
 #define MAX_ROLL 250
-#define MIN_YAW -80
-#define MAX_YAW 80
+#define MIN_YAW -250
+#define MAX_YAW 250
 
 anglePosition err_prev;
 anglePosition err_P;
@@ -96,7 +96,7 @@ void PID(){
   err_prev.roll = err_P.roll;
   
   //YAW
-  err_P.yaw = angle_input.yaw;
+  err_P.yaw = angle_input.yaw - sensor.yaw + angle_off.yaw;
   if (err_P.yaw > 180.0)    // Normalize to -180,180
     err_P.yaw -= 360.0;
   else if(err_P.yaw < -180.0)
