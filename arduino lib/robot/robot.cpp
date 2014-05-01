@@ -153,6 +153,7 @@ void Robot::readSerial(){
         if(checksum2 == checksum){
           if(event.command == ROBOT_EVENT_CMD_HEARTBEAT){
             heartbeat = 0;
+            failsafe = false;
             digitalWrite(led_pin, !digitalRead(led_pin));
           }
           else{
