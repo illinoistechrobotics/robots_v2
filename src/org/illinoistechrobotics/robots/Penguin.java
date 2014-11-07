@@ -20,7 +20,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package robots;
+package org.illinoistechrobotics.robots;
 
 import java.awt.Color;
 import java.text.DecimalFormat;
@@ -28,14 +28,13 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import common.Communication;
-import common.Event;
-import common.EventEnum;
-import common.GUI;
-import common.Queue;
-import common.Robot;
-import common.Robot.RobotEnum;
-import common.Timer;
+import org.illinoistechrobotics.common.Communication;
+import org.illinoistechrobotics.common.Event;
+import org.illinoistechrobotics.common.EventEnum;
+import org.illinoistechrobotics.common.GUI;
+import org.illinoistechrobotics.common.Queue;
+import org.illinoistechrobotics.common.Robot;
+import org.illinoistechrobotics.common.Timer;
 
 public class Penguin extends Robot{
 
@@ -127,8 +126,11 @@ public class Penguin extends Robot{
 	}
 	
 	public Penguin(Queue q, Communication c, GUI d, Timer t){
-		super(q,c,d, t);
-		t.timer20hz = true;
+		super(q,c,d,t);
+	}
+	
+	public void on_init(){
+		timer.timer20hz = true;
 	}
 	
 	public void on_command_code(Event ev){

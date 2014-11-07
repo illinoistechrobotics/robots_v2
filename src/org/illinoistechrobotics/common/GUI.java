@@ -20,57 +20,63 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package common;
+package org.illinoistechrobotics.common;
 
-import java.util.Date;
+import gnu.io.CommPortIdentifier;
+
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.awt.EventQueue;
-import java.awt.event.*;
 
 import javax.swing.JFrame;
-
-import java.awt.Toolkit;
-
 import javax.swing.JTabbedPane;
-
-import java.awt.BorderLayout;
-
+import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
-
-import java.awt.Color;
-
+import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.*;
 
-import common.Robot.RobotEnum;
-import common.Timer.TimerEnum;
-import gnu.io.*;
-import net.java.games.input.Controller;
-import robots.*;
-import robots.Penguin.PenguinStateEnum;
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Toolkit;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import org.illinoistechrobotics.common.Timer.TimerEnum;
+import org.illinoistechrobotics.robots.*;
 
 public class GUI extends Thread{
 
-	private JFrame frmIllinoisTechRobotics;
+	public JFrame frmIllinoisTechRobotics;
 	private JTextField txtMessage;
-	private JButton btnGeneralStatus;
+	public JButton btnGeneralStatus;
 	private JRadioButton rdbtnXbee;
 	private JRadioButton rdbtnWifi;
+	private JCheckBox chckbxJoystick;
+	private JCheckBox chckbxKeyboard;
 	private JTextField txtIPAddress;
 	private JTextField txtPortNumber;
-	private JComboBox comboBox_SerialPort;
-	private JComboBox comboBox_BaudRate;
+	private JTextField txtListeningPort;
+	private JComboBox<String> comboBox_SerialPort;
+	private JComboBox<Integer> comboBox_BaudRate;
+	private JComboBox<String> comboBox_JoyStick;
 	private JTabbedPane tabbedPane;
+	
 	private JButton[] btnBut = new JButton[12];
 	private JButton[] btnD_Pad = new JButton[9];
 	private JSlider sldX1;
@@ -79,7 +85,7 @@ public class GUI extends Thread{
 	private JSlider sldY2;
 	
 	public JButton btnPenguinConnected;
-	public JToggleButton tglbtnConnectToRobot;
+	public JToggleButton tglbtnConnectToPenguin;
 	public JSlider sldRoll;
 	public JSlider sldPitch;
 	public JButton btnUpdatePid;
@@ -95,13 +101,17 @@ public class GUI extends Thread{
 	public JLabel lblRoll;
 	public JLabel lblYaw;
 	
+	public JButton btnModulosConnected;
+	public JToggleButton tglbtnConnectToModulos;
+	
 	private Timer trSerialCommChecker;
 	private Timer trStanbyQueueReading;
 	private Queue queue = new Queue(1000);
-	private common.Timer timer = new common.Timer(queue);
-	private Serial serial = new Serial(queue, this);
-	private Ethernet ethernet = new Ethernet(queue, this);
-	private Joystick joy;
+	private org.illinoistechrobotics.common.Timer timer = new org.illinoistechrobotics.common.Timer(queue);
+	private Serial serial = new Serial(queue);
+	private Ethernet ethernet = new Ethernet(queue);
+	private Joystick joy = new Joystick(queue,this);
+	private Keyboard key = new Keyboard(queue);
 	private GUI dis = this;
 	
 	public enum GUIEnum
@@ -154,88 +164,104 @@ public class GUI extends Thread{
 	       
         public void run(){
         	try{
+        		
+        		List<CommPortIdentifier> com = Serial.getSerialPorts();
+    			//only change the layout if the number of ports changed
+    			if( com.size() != comboBox_SerialPort.getItemCount()){
+    				comboBox_SerialPort.removeAllItems();
+    				for(int i=com.size()-1; i>=0; i--){ //put them on in reverse order since high comm port is the more likely to be chosen
+    					comboBox_SerialPort.addItem(com.get(i).getName());
+    					if(serial.isOpen() && serial.getName().equals(com.get(i).getName())){
+    						comboBox_SerialPort.setSelectedIndex(i);
+    					}
+    				}
+    			}
+        		
         		if(rdbtnXbee.isSelected()){
-        			if(ethernet.isConnected() == true){
-        				ethernet.stopThread();
-        			}
         			
-        			if(serial.isOpen() && !serial.getName().equals(comboBox_SerialPort.getSelectedIndex())){
+        			if(serial.isOpen() && 
+        				!(serial.getName().equals(comboBox_SerialPort.getSelectedIndex())
+        				&&
+        				serial.getBaudRate() == Integer.parseInt(comboBox_BaudRate.getSelectedItem().toString()))		
+        			){
         				serial.closeSerial();
         			}
-        			
-        			List<CommPortIdentifier> com = Serial.getSerialPorts();
-        			//only change the layout if the number of ports changed and setting tab is in view
-        			if( com.size() != comboBox_SerialPort.getItemCount()){
-        				comboBox_SerialPort.removeAllItems();
-        				for(int i=com.size()-1; i>=0; i--){ //put them on in reverse order since high comm port is the more likely to be chosen
-        					comboBox_SerialPort.addItem(com.get(i).getName());
-        					if(serial.isOpen() && serial.getName().equals(com.get(i).getName())){
-        						comboBox_SerialPort.setSelectedIndex(i);
-        					}
-        				}
-        				
-        			}
-        			
+
         			if(serial.isOpen() == false)
         			{
-        				serial.OpenSerial(Integer.parseInt(comboBox_BaudRate.getSelectedItem().toString()),comboBox_SerialPort.getSelectedItem().toString());	
+        				if(comboBox_BaudRate.getSelectedItem()!=null && comboBox_SerialPort.getSelectedItem()!=null){
+        					serial.OpenSerial(Integer.parseInt(comboBox_BaudRate.getSelectedItem().toString()),comboBox_SerialPort.getSelectedItem().toString());	
+        				}
         			}
         		}
-        		else if(rdbtnWifi.isSelected()){
+        		else{
         			if(serial.isOpen()){
         				serial.closeSerial();
         			}
+        		}
+        		
+        		if(rdbtnWifi.isSelected()){
+        			
+        			
+        			if(ethernet.isConnected() &&
+        					!(ethernet.getIPAddress().equals(txtIPAddress.getText()) 
+        					&&
+        					ethernet.getPortNumber() != Integer.parseInt(txtPortNumber.getText())
+        					&&
+        					ethernet.getListeningPort() != Integer.parseInt(txtListeningPort.getText()))
+        			){
+        				ethernet.stopThread(); 
+        				ethernet = new Ethernet(queue);
+        			}
+
         			if(ethernet.isConnected()==false){
-        				if(ethernet.connect(txtIPAddress.getText(), Integer.parseInt(txtPortNumber.getText()))){
-        					ethernet.start();
-        				}
-        				else{
-        					ethernet.stopThread();
-        				}
-        			}
-        			else if(ethernet.getIPAddress().equals(txtIPAddress.getText()) == false){
-        				ethernet.stopThread();
-        				if(ethernet.connect(txtIPAddress.getText(), Integer.parseInt(txtPortNumber.getText()))){
-        					ethernet.start();
-        				}
-        				else{
-        					ethernet.stopThread();
-        				}
-        			}
-        			else if(ethernet.getPortNumber() != Integer.parseInt(txtPortNumber.getText())){
-        				ethernet.stopThread();
-        				if(ethernet.connect(txtIPAddress.getText(), Integer.parseInt(txtPortNumber.getText()))){
-        					ethernet.start();
-        				}
-        				else{
-        					ethernet.stopThread();
-        				}
+        				ethernet.connect(txtIPAddress.getText(), Integer.parseInt(txtPortNumber.getText()), Integer.parseInt(txtListeningPort.getText()));
         			}
         		}
-		
-        		//if joy null check for joystick
-        		if(joy == null)
+        		else
         		{
-        			Controller con = Joystick.getJoystick();
-        			//if joystick found use it
-        			if( con != null )
-        			{
-        				joy = new Joystick(queue, con, dis);	
-        				joy.start();
-        				
+        			if(ethernet.isConnected() == true){
+        				ethernet.stopThread();
+        				ethernet = new Ethernet(queue);
         			}
         		}
-        		else //joystick exits check to see if connected
-        		{
-        			if( joy.checkJoystick() == false )
-        			{
-        				//joystick disconnected stop joy and start searching again 
+        		
+        		List<String> con = Joystick.getJoystickNames();
+        		//only change the layout if the number of ports changed
+        		if(con.size() != comboBox_JoyStick.getItemCount()){
+        			comboBox_JoyStick.removeAllItems();
+    				for(int i=0; i<con.size(); i++){
+    					comboBox_JoyStick.addItem(con.get(i));
+    				}
+    			}
+        		
+        		if(chckbxJoystick.isSelected()){ 
+        			
+        			if(joy.checkJoystick() == false || (joy.getJoyName() != null && !joy.getJoyName().equals((String)comboBox_JoyStick.getSelectedItem()))){
+        					//joystick disconnected stop joy and start searching again 
+        					joy.stopThread();
+        					joy = new Joystick(queue, dis);
+        			}
+        			if(joy.getJoy() == null){
+        				joy.listen((String)comboBox_JoyStick.getSelectedItem());
+        			}
+        		}
+        		else{
+        			if(joy.getJoy() != null){
         				joy.stopThread();
-        				joy = null;
+        				joy = new Joystick(queue, dis);
         			}
-        		}          			
+        		}
+        		
+        		if(chckbxKeyboard.isSelected() && !key.isListening()){
+        			key.listen();
+        		}
+        		else if(!chckbxKeyboard.isSelected() && key.isListening()){
+        			key.stop();
+        		}
         	}
         	catch(Exception e){
+        		e.printStackTrace();
        		}
         }
     }
@@ -274,14 +300,14 @@ public class GUI extends Thread{
 	{
 		timer.start();
         trSerialCommChecker = new Timer();
-        trSerialCommChecker.schedule(new deviceChecker(), 0, 5000);
+        trSerialCommChecker.schedule(new deviceChecker(), 0, 1000);
         trStanbyQueueReading = new Timer();
         trStanbyQueueReading.schedule(new StanbyQueueReading(), 0, 25);
 	}
 	
 	private boolean running = false;
 	
-	private Penguin penguin;
+	private Robot robot;
 	public JTextField txtPD;
 	public JTextField txtPI;
 	public JTextField txtPP;
@@ -304,40 +330,41 @@ public class GUI extends Thread{
 	  		Communication comm = null;
 	  		
 	  		if(rdbtnXbee.isSelected()){
+	  			//serial.closeSerial();
+	  			//serial.OpenSerial(Integer.parseInt(comboBox_BaudRate.getSelectedItem().toString()),comboBox_SerialPort.getSelectedItem().toString());
 	  			comm = (Communication)serial;
 	  		}
 	  		else if(rdbtnWifi.isSelected()){
+	  			//ethernet.stopThread();
+	  			//ethernet.connect(txtIPAddress.getText(), Integer.parseInt(txtPortNumber.getText()));
 	  			comm = (Communication)ethernet;
 	  		}
 	  		
-	  		if(btnTemp == tglbtnConnectToRobot){
-	  			if(btnTemp.getText().equals("Connect")){
-	  				trStanbyQueueReading.cancel();
-	  				btnTemp.setText("Disconnect");
-	  				running = true;
-	  				penguin = new Penguin(queue,comm,dis,timer);
-	  				
-	  				penguin.start();
+	  		if(btnTemp.getText().equals("Connect")){
+	  			trStanbyQueueReading.cancel();
+  				running = true;
+  				btnTemp.setText("Disconnect");
+	  			if(btnTemp == tglbtnConnectToPenguin){
+	  				robot = new Penguin(queue,comm,dis,timer);	
 	  			}
-	  			else
-	  			{
-	  				trStanbyQueueReading = new Timer();
-	  				trStanbyQueueReading.schedule(new StanbyQueueReading(), 0, 25);
-	  				btnTemp.setText("Connect");
-	  				penguin.stopThread();
-	  				running = false;
+	  			else if(btnTemp == tglbtnConnectToModulos){
+	  				robot = new Modulos(queue,comm,dis,timer);
 	  			}
+	  			else{
+	  				return;
+	  			}
+	  			robot.start();
+	  			
+	  		}
+	  		else
+	  		{
+	  			trStanbyQueueReading = new Timer();
+	  			trStanbyQueueReading.schedule(new StanbyQueueReading(), 0, 25);
+	  			btnTemp.setText("Connect");
+	  			robot.stopThread();
+	  			running = false;
 	  		}
 	   	}
-	}
-	
-	public void changeRobotStatus(int stat){
-		if(stat == 0){
-			//btnStatus.setBackground(Color.GREEN);
-		}
-		if(stat == 1){
-			//btnStatus.setBackground(Color.RED);
-		}
 	}
 	
 	//joystick page updates
@@ -388,8 +415,9 @@ public class GUI extends Thread{
 		frmIllinoisTechRobotics.setIconImage(Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("/resources/logo.png")));
 		frmIllinoisTechRobotics.setBounds(100, 100, 600, 400);
 		frmIllinoisTechRobotics.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmIllinoisTechRobotics.setFocusable(true);
 		
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);		
 		frmIllinoisTechRobotics.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		
 		JPanel panSettings = new JPanel();
@@ -399,20 +427,6 @@ public class GUI extends Thread{
 		
 		rdbtnXbee = new JRadioButton("Xbee");
 		rdbtnXbee.setSelected(true);
-		rdbtnXbee.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(rdbtnXbee.isSelected()){
-					if(serial.isOpen() == false){
-						serial.OpenSerial(Integer.parseInt(comboBox_BaudRate.getSelectedItem().toString()),comboBox_SerialPort.getSelectedItem().toString());
-					}
-				}
-				else{
-					if(serial.isOpen()){
-						serial.closeSerial();
-					}
-				}
-			}
-		});
 		
 		rdbtnWifi = new JRadioButton("WiFi");
 		
@@ -422,43 +436,17 @@ public class GUI extends Thread{
 		
 		JLabel lblSerialPort = new JLabel("Serial Port");
 		
-		comboBox_SerialPort = new JComboBox();
-		comboBox_SerialPort.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(comboBox_SerialPort.getSelectedItem() != null){
-					if(serial.isOpen() == false){
-						serial.OpenSerial(Integer.parseInt(comboBox_BaudRate.getSelectedItem().toString()),comboBox_SerialPort.getSelectedItem().toString());
-					}
-					else if(serial.getPortName().equals(((JComboBox)e.getSource()).getSelectedItem().toString()) == false){
-						serial.closeSerial();
-						serial.OpenSerial(Integer.parseInt(comboBox_BaudRate.getSelectedItem().toString()),comboBox_SerialPort.getSelectedItem().toString());
-					}
-				}
-			}
-		});
+		comboBox_SerialPort = new JComboBox<String>();
 		
 		JLabel lblBaudRate = new JLabel("Baud Rate");
 		
-		comboBox_BaudRate = new JComboBox();
+		comboBox_BaudRate = new JComboBox<Integer>();
 		comboBox_BaudRate.addItem(new Integer(9600));
 		comboBox_BaudRate.addItem(new Integer(19200));
 		comboBox_BaudRate.addItem(new Integer(38400));
 		comboBox_BaudRate.addItem(new Integer(57600));
 		comboBox_BaudRate.addItem(new Integer(115200));
 		comboBox_BaudRate.setSelectedIndex(3);
-		comboBox_BaudRate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(comboBox_SerialPort.getSelectedItem() != null){
-					if(serial.isOpen() == false){
-						serial.OpenSerial(Integer.parseInt(comboBox_BaudRate.getSelectedItem().toString()),comboBox_SerialPort.getSelectedItem().toString());
-					}
-					else if(serial.getBaudRate() != Integer.parseInt(((JComboBox)e.getSource()).getSelectedItem().toString())){
-						serial.closeSerial();
-						serial.OpenSerial(Integer.parseInt(comboBox_BaudRate.getSelectedItem().toString()),comboBox_SerialPort.getSelectedItem().toString());
-					}
-				}
-			}
-		});
 		
 		JLabel lblIpAdress = new JLabel("IP Address");
 		
@@ -474,14 +462,24 @@ public class GUI extends Thread{
 		
 		JLabel lblInputDevice = new JLabel("Input Device");
 		
-		JCheckBox chckbxJoystick = new JCheckBox("JoyStick");
+		chckbxJoystick = new JCheckBox("JoyStick");
 		chckbxJoystick.setSelected(true);
 		
-		JCheckBox chckbxKeyboard = new JCheckBox("Keyboard");
+		chckbxKeyboard = new JCheckBox("Keyboard");
 		
 		btnGeneralStatus = new JButton("");
 		btnGeneralStatus.setBackground(Color.RED);
 		btnGeneralStatus.setEnabled(false);
+		
+		JLabel lblListeningPort = new JLabel("Listening Port");
+		
+		txtListeningPort = new JTextField();
+		txtListeningPort.setText("2001");
+		txtListeningPort.setColumns(10);
+		
+		JLabel lblJoyStick = new JLabel("Joy Stick");
+		
+		comboBox_JoyStick = new JComboBox<String>();
 		
 		GroupLayout gl_panSettings = new GroupLayout(panSettings);
 		gl_panSettings.setHorizontalGroup(
@@ -497,29 +495,34 @@ public class GUI extends Thread{
 							.addGroup(gl_panSettings.createParallelGroup(Alignment.LEADING)
 								.addComponent(comboBox_SerialPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addComponent(comboBox_BaudRate, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-						.addGroup(gl_panSettings.createParallelGroup(Alignment.LEADING)
-							.addGroup(gl_panSettings.createSequentialGroup()
-								.addComponent(lblTypeOffCommunication)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(rdbtnXbee)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(rdbtnWifi)
-								.addPreferredGap(ComponentPlacement.RELATED, 292, Short.MAX_VALUE)
-								.addComponent(btnGeneralStatus, GroupLayout.PREFERRED_SIZE, 111, GroupLayout.PREFERRED_SIZE))
-							.addGroup(gl_panSettings.createSequentialGroup()
-								.addComponent(lblInputDevice)
-								.addGap(18)
-								.addComponent(chckbxJoystick)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(chckbxKeyboard))
-							.addGroup(gl_panSettings.createSequentialGroup()
-								.addGroup(gl_panSettings.createParallelGroup(Alignment.LEADING)
-									.addComponent(lblPortNumber)
-									.addComponent(lblIpAdress))
-								.addGap(18)
-								.addGroup(gl_panSettings.createParallelGroup(Alignment.LEADING)
-									.addComponent(txtIPAddress, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE)
-									.addComponent(txtPortNumber, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)))))
+						.addGroup(gl_panSettings.createSequentialGroup()
+							.addComponent(lblTypeOffCommunication)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(rdbtnXbee)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(rdbtnWifi)
+							.addPreferredGap(ComponentPlacement.RELATED, 292, Short.MAX_VALUE)
+							.addComponent(btnGeneralStatus, GroupLayout.PREFERRED_SIZE, 111, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panSettings.createSequentialGroup()
+							.addComponent(lblInputDevice)
+							.addGap(18)
+							.addComponent(chckbxJoystick)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(chckbxKeyboard))
+						.addGroup(gl_panSettings.createSequentialGroup()
+							.addGroup(gl_panSettings.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblListeningPort, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblPortNumber)
+								.addComponent(lblIpAdress))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panSettings.createParallelGroup(Alignment.LEADING)
+								.addComponent(txtIPAddress, GroupLayout.PREFERRED_SIZE, 98, GroupLayout.PREFERRED_SIZE)
+								.addComponent(txtPortNumber, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
+								.addComponent(txtListeningPort, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)))
+						.addGroup(gl_panSettings.createSequentialGroup()
+							.addComponent(lblJoyStick, GroupLayout.PREFERRED_SIZE, 61, GroupLayout.PREFERRED_SIZE)
+							.addGap(18)
+							.addComponent(comboBox_JoyStick, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
 		gl_panSettings.setVerticalGroup(
@@ -545,31 +548,41 @@ public class GUI extends Thread{
 							.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
 								.addComponent(lblIpAdress)
 								.addComponent(txtIPAddress, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.RELATED)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
 								.addComponent(lblPortNumber)
 								.addComponent(txtPortNumber, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addGap(18)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblListeningPort)
+								.addComponent(txtListeningPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addGap(19)
 							.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
 								.addComponent(lblInputDevice)
 								.addComponent(chckbxJoystick)
 								.addComponent(chckbxKeyboard))))
-					.addContainerGap(121, Short.MAX_VALUE))
+					.addGap(18)
+					.addGroup(gl_panSettings.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblJoyStick)
+						.addComponent(comboBox_JoyStick, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap(58, Short.MAX_VALUE))
 		);
 		panSettings.setLayout(gl_panSettings);
 		
+		//#####################################
+		//Penguin
+		//#####################################
 		JPanel panPenguin = new JPanel();
 		tabbedPane.addTab("Penguin", null, panPenguin, null);
-		
 		
 		btnPenguinConnected = new JButton("");
 		btnPenguinConnected.setBounds(516, 14, 63, 23);
 		btnPenguinConnected.setEnabled(false);
 		btnPenguinConnected.setBackground(Color.RED);
 		
-		tglbtnConnectToRobot = new JToggleButton("Connect");
-		tglbtnConnectToRobot.setBounds(374, 14, 132, 23);
-		tglbtnConnectToRobot.addActionListener(new btnStartListener());
+		tglbtnConnectToPenguin = new JToggleButton("Connect");
+		tglbtnConnectToPenguin.setBounds(374, 14, 132, 23);
+		tglbtnConnectToPenguin.addActionListener(new btnStartListener());
 		
 		sldRoll = new JSlider();
 		sldRoll.setBounds(10, 14, 200, 45);
@@ -633,7 +646,7 @@ public class GUI extends Thread{
 		txtYD.setColumns(10);
 		panPenguin.setLayout(null);
 		panPenguin.add(sldRoll);
-		panPenguin.add(tglbtnConnectToRobot);
+		panPenguin.add(tglbtnConnectToPenguin);
 		panPenguin.add(btnPenguinConnected);
 		panPenguin.add(sldPitch);
 		panPenguin.add(txtRP);
@@ -788,15 +801,38 @@ public class GUI extends Thread{
 		lblYaw.setBounds(134, 107, 120, 14);
 		panPenguin.add(lblYaw);
 		
-		JPanel panFenrir = new JPanel();
-		tabbedPane.addTab("Fenrir", null, panFenrir, null);
 		
+		//#####################################
+		//Modulos
+		//#####################################
+		JPanel panModulos = new JPanel();
+		tabbedPane.addTab("Modulos", null, panModulos, null);
+		panModulos.setLayout(null);
+		
+		btnModulosConnected = new JButton("");
+		btnModulosConnected.setBounds(516, 14, 63, 23);
+		btnModulosConnected.setEnabled(false);
+		btnModulosConnected.setBackground(Color.RED);
+		
+		tglbtnConnectToModulos = new JToggleButton("Connect");
+		tglbtnConnectToModulos.setBounds(374, 14, 132, 23);
+		tglbtnConnectToModulos.addActionListener(new btnStartListener());
+		
+		panModulos.add(btnModulosConnected);
+		panModulos.add(tglbtnConnectToModulos);
+		
+		//#####################################
+		//Goliath
+		//#####################################
 		JPanel panGoliath = new JPanel();
 		tabbedPane.addTab("Goliath", null, panGoliath, null);
 		
 		JPanel panRoslund = new JPanel();
 		tabbedPane.addTab("Roslund", null, panRoslund, null);
 		
+		//#####################################
+		//Joy Stick
+		//#####################################
 		JPanel panJoystick = new JPanel();
 		tabbedPane.addTab("Joystick", null, panJoystick, null);
 		panJoystick.setLayout(null);

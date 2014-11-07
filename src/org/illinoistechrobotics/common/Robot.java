@@ -20,14 +20,14 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package common;
+package org.illinoistechrobotics.common;
 
+import java.awt.Color;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import common.Event.ValueType;
-import common.Timer.TimerEnum;
+import org.illinoistechrobotics.common.Timer.TimerEnum;
 
 public abstract class Robot extends Thread{
 
@@ -41,6 +41,7 @@ public abstract class Robot extends Thread{
 		PENGUIN		(4),
 		MONGOL		(5),
 		GHOST		(6),
+		MODULOS     (7),
 		COMPUTER	(0xF0),
 		UNKNOWN_ROBOT	(0xFF);
 		
@@ -75,6 +76,7 @@ public abstract class Robot extends Thread{
 		comm = c;
 		dis = d;
 		timer = t;
+		on_init();
 	}
 	
 	private volatile Boolean run = true;
@@ -108,6 +110,8 @@ public abstract class Robot extends Thread{
 				case ROBOT_EVENT_CMD_HEARTBEAT:
 					//need to update GUI
 					heartbeat = 0;
+					dis.btnGeneralStatus.setBackground(Color.GREEN);
+    				dis.btnGeneralStatus.setText(Robot.RobotEnum.getRobot(ev.getIndex()).toString());
 					on_heartbeat(ev);
 					break;
 				case ROBOT_EVENT_STATUS:
@@ -151,6 +155,10 @@ public abstract class Robot extends Thread{
 					else if(ev.getIndex() == TimerEnum.TIMER_100HZ.value)
 						on_100hz_timer(ev);
 					else if(ev.getIndex() == TimerEnum.TIMER_HEARTBEAT.value){
+						if(heartbeat > 4){
+    						dis.btnGeneralStatus.setBackground(Color.RED);
+    	    				dis.btnGeneralStatus.setText("");
+    					}
 						on_heartbeat_timer(ev);
 						comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_CMD_HEARTBEAT,RobotEnum.COMPUTER.getValue(),0));
 						heartbeat++;
@@ -199,7 +207,8 @@ public abstract class Robot extends Thread{
 		}
 		
 	}
-		
+	
+	public abstract void on_init();
 	public abstract void on_command_code(Event ev);
 	public abstract void on_heartbeat(Event ev);
 	public abstract void on_status(Event ev);

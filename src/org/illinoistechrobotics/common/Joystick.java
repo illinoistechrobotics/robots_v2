@@ -20,21 +20,73 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package common;
+package org.illinoistechrobotics.common;
 
-import net.java.games.input.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.java.games.input.Component;
 import net.java.games.input.Component.Identifier;
+import net.java.games.input.Controller;
+import net.java.games.input.ControllerEnvironment;
+import net.java.games.input.DirectInputEnvironmentPlugin;
+import net.java.games.input.EventQueue;
 
 public class Joystick extends Thread{
 	private Queue queue = null;
 	private Controller joy = null;
 	private GUI dis = null;
 	private volatile Boolean run = true;
+	private String name = null;
 	
-	public Joystick(Queue q, Controller cs, GUI d){
+	public Joystick(Queue q, GUI d){
 		this.queue = q;
-		this.joy = cs;
 		this.dis = d;
+	}
+	
+	/**
+	 * returns the first Joystick or Gamepad 
+	 */
+	public static List<String> getJoystickNames(){ 
+		List<Controller> cs = Joystick.getJoysticks();
+		List<String> csName = new ArrayList<String>();
+
+		for(int i=0; i<cs.size(); i++){
+			csName.add(i + " " + cs.get(i).getName()); 
+		}
+		
+		return csName; 
+	}
+	
+	public static List<Controller> getJoysticks(){
+		List<Controller> csList = new ArrayList<Controller>();
+		Controller[] cs;
+		if(System.getProperty("os.name").toLowerCase().contains("win")){
+			DirectInputEnvironmentPlugin diep = new DirectInputEnvironmentPlugin();
+			cs = diep.getControllers();
+		}
+		else {
+			ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment(); 
+			cs = ce.getControllers(); 
+		}
+		for(int i=0; i<cs.length; i++){
+			//this will only output the controllers
+			if(cs[i].getType() == Controller.Type.STICK || cs[i].getType() == Controller.Type.GAMEPAD){
+				csList.add( cs[i]);
+			}
+		}
+		return csList; 
+	}
+	
+	public void listen(String s) {
+		List<Controller> cs = Joystick.getJoysticks();
+		for(int i=0; i<cs.size(); i++){
+			if(s!=null && s.equals(i + " " + cs.get(i))){
+				joy=cs.get(i);
+				name = s;
+				break;
+			}
+		}
 		if(joy != null){
 			//clear any joystick events in the queue
 			EventQueue event_q = joy.getEventQueue();
@@ -43,37 +95,16 @@ public class Joystick extends Thread{
 				;
 			}
 			updateJoystickAll();
+			this.start();
 		}
-	}
-	
-	/**
-	 * returns the first Joystick or Gamepad 
-	 */
-	public static Controller getJoystick(){ 
-		Controller[] cs;
-		if((System.getProperty("os.name").contains("nux"))||(System.getProperty("os.name").contains("Mac OS X"))){
-			ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment(); 
-			cs = ce.getControllers(); 
-		}
-		else{
-			DirectInputEnvironmentPlugin diep = new DirectInputEnvironmentPlugin();
-			cs = diep.getControllers();
-		}
-		Controller[] st = new Controller[cs.length];
-		int j=0;
-		for(int i=0; i<cs.length; i++){
-			//this will only output the controllers
-			if(cs[i].getType() == Controller.Type.STICK || cs[i].getType() == Controller.Type.GAMEPAD){
-				return cs[i]; //return first joysticks
-			}
-		}
-		return null; //no joysticks
 	}
 	
 	public void stopThread(){
 		if(run != false){
 			run = false;
 			this.interrupt();
+			joy = null;
+			name = null;
 		}
 	}
 	
@@ -107,8 +138,6 @@ public class Joystick extends Thread{
 				System.err.println("Can not open joystick");
 				return;
 			}
-			//EventQueue event_q = joy.getEventQueue();
-			//net.java.games.input.Event joy_event = new net.java.games.input.Event();
 			while(event_q.getNextEvent(joy_event)){
 				Component comp = joy_event.getComponent();						
 				String command = comp.getName();
@@ -139,7 +168,7 @@ public class Joystick extends Thread{
 				else if(command.contains("Button")){
 					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
 					ev.setIndex((short)Integer.parseInt(command.substring(command.indexOf(' ')+1)));
-					ev.setValue((int)joy_event.getValue());  //convert 1 to -1 to 255 to 0
+					ev.setValue((int)joy_event.getValue());  
 					dis.updateButtonGUI(ev);
 				}
 				else if(command.equals("Trigger")){
@@ -403,8 +432,15 @@ public class Joystick extends Thread{
 		dis.updateHatGUI(ev);			
 	}
 	
-
-	boolean checkJoystick(){	
+	public Controller getJoy(){
+		return joy;
+	}
+	
+	public String getJoyName(){
+		return name;
+	}
+	
+	public boolean checkJoystick(){	
 		if(System.getProperty("os.name").toLowerCase().contains("win")){
 			DirectInputEnvironmentPlugin diep = new DirectInputEnvironmentPlugin();
 			Controller[] cs = diep.getControllers();

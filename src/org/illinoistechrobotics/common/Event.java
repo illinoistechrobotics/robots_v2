@@ -20,7 +20,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package common;
+package org.illinoistechrobotics.common;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -58,7 +58,7 @@ public class Event {
 	    }
 	}
 	
-	public EventEnum command = null;
+	public EventEnum command = EventEnum.UNKNOWN_EVENT;
 	public short index = 0;
 	public short bValue = 0; //one byte
 	public int value = 0;	 //two bytes

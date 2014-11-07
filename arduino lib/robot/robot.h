@@ -118,6 +118,7 @@ public:
     PENGUIN = 0x04,
     MONGOL  = 0x05,
     GHOST   = 0x06,
+    MODULOS = 0x07,
     UNKNOWN_ROBOT = 0xFF
   };
   

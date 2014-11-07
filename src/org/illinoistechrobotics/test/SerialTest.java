@@ -1,13 +1,13 @@
-package test;
+package org.illinoistechrobotics.test;
 
 import gnu.io.CommPortIdentifier;
 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -15,22 +15,17 @@ import javax.swing.JFrame;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
-import net.java.games.input.Controller;
+import org.illinoistechrobotics.common.Event;
+import org.illinoistechrobotics.common.Queue;
+import org.illinoistechrobotics.common.Serial;
 
-import common.Event;
-import common.GUI;
-import common.Joystick;
-import common.Queue;
-import common.Serial;
-import common.GUI.StanbyQueueReading;
-import common.GUI.deviceChecker;
 
 public class SerialTest {
 
 	private JFrame frame;
-	JComboBox comboBox_SerialPort;
+	JComboBox<String> comboBox_SerialPort;
 	private Queue queue = new Queue(1000);
-	private Serial serial = new Serial(queue, new GUI());
+	private Serial serial = new Serial(queue);
 	private Timer trSerialCommChecker;
 	private Timer trStanbyQueueReading;
 	
@@ -74,7 +69,7 @@ public class SerialTest {
         				comboBox_SerialPort.addItem(com[i].getName());
         			}
         			*/
-        			ArrayList<CommPortIdentifier> com = Serial.getSerialPorts();
+        			List<CommPortIdentifier> com = Serial.getSerialPorts();
         			if(serial.isOpen() && System.getProperty("os.name").contains("nux")){
         				com.add(serial.getCommPortIdentifier());
         				Collections.sort(com, new Comparator<CommPortIdentifier>() {
@@ -87,11 +82,9 @@ public class SerialTest {
         			if( com.size() != comboBox_SerialPort.getItemCount()){
         				String stemp = (String)comboBox_SerialPort.getSelectedItem();
         				comboBox_SerialPort.removeAllItems();
-        				int ntemp = 0;
         				for(int i=com.size()-1; i>=0; i--){ //put them on in reverse order since high comm port is the more likely to be chosen
         					comboBox_SerialPort.addItem(com.get(i).getName());
         					if(stemp != null && stemp.equals(com.get(i).getName())){
-        						ntemp = com.size() - 1 - i;
         					}
         				}
         				//comboBox_SerialPort.setSelectedIndex(ntemp); //select the previous selected comm port if exists
@@ -120,6 +113,8 @@ public class SerialTest {
     			case ROBOT_EVENT_CMD_HEARTBEAT:
     				//check the heartbeat and update connection status
     				break;
+				default:
+					break;
     			}
     		}
         }
@@ -134,15 +129,16 @@ public class SerialTest {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		comboBox_SerialPort = new JComboBox();
+		comboBox_SerialPort = new JComboBox<String>();
 		comboBox_SerialPort.setBounds(107, 31, 172, 20);
 		comboBox_SerialPort.addActionListener(new ActionListener() {
+			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent e) {
 				if(comboBox_SerialPort.getSelectedItem() != null){
 					if(serial.isOpen() == false){
 						serial.OpenSerial(9600,comboBox_SerialPort.getSelectedItem().toString());
 					}
-					else if(serial.getPortName().equals(((JComboBox)e.getSource()).getSelectedItem().toString()) == false){
+					else if(serial.getPortName().equals(((JComboBox<String>)e.getSource()).getSelectedItem().toString()) == false){
 						serial.closeSerial();
 						serial.OpenSerial(9600,comboBox_SerialPort.getSelectedItem().toString());
 					}
