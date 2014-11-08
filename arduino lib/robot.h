@@ -24,6 +24,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define ROBOT_H
 
 #include "Arduino.h"
+#include <stdarg.h>
+
 #undef BYTE //to fix compiler errors 
 
 enum {
@@ -125,12 +127,14 @@ public:
   Robot();
   ~Robot();
   
-  void init(HardwareSerial &serial, long baud, int timer, int robot, char usb);
+  void init(HardwareSerial &serial, long baud, int timer, int robot);
+  void init(HardwareSerial &serial, long baud, int timer, int robot, int usb);
+  void init(HardwareSerial &serial, long baud, int timer, int robot, int usb, int led, int led_pos_logic);
   void update();
   bool getEvent(robot_event *ev);
   void sendEvent(robot_event *ev);
-  void debug(char *s);
-  
+  void debug(char * format, ... );
+
   int led_pin;
   int led_pos_logic;
   
@@ -140,6 +144,7 @@ public:
   char use_usb_serial;
   const static int QUEUE_SIZE = 10;
   const static int BUFFER_SIZE = 64;
+  const static int DEBUG_BUFFER_SIZE = 33;
   typedef struct {
     robot_event array[QUEUE_SIZE];
     int head_index;
@@ -153,11 +158,11 @@ public:
     CALCULATE_CHECKSUM
   };
   
-  const static char MESSAGE_HEADER = 'U';
+  const static char MESSAGE_HEADER = '$';
   const static char MESSAGE_FOOTER = '\n';
   const static char MESSAGE_CHECKSUM = '*';
   
-  HardwareSerial* Comm;
+  HardwareSerial * Comm;
   robot_queue queue;
   int robot_name;
   

@@ -150,7 +150,7 @@ void on_unknown_command(robot_event *ev){
   
 }
 
+void on_fast_loop(){
 
-
-
+}
 

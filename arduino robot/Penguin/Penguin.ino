@@ -23,8 +23,8 @@ Copyright 2014 (c) Illinois Tech Robotics <robotics.iit@gmail.com>
 #include <robot.h>
 #include "Penguin.h"
 
-#define COMM Serial2
-#define USB false
+#define COMM Serial
+#define USB true
 #define BAUDRATE 115200
 
 Robot robot = Robot();
@@ -38,7 +38,7 @@ void setup() {
   //The third argument sets the timers as a mask. These timers can not be changed at run time!!! 
   //The last argument is for boards like the teensy or leonardo that have real usb ports and 
   //require special care if communication is on the usb port
-  //Serial.begin(9600);
+
   on_init();
 }
 

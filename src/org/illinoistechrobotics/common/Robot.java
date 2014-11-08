@@ -86,6 +86,7 @@ public abstract class Robot extends Thread{
 		if(run != false){
 			run = false;
 			this.interrupt();
+			on_shutdown(new Event(EventEnum.ROBOT_EVENT_CMD_SHUTDOWN,0,0));
 		}
 	}
 	
@@ -205,7 +206,6 @@ public abstract class Robot extends Thread{
 			}
 			catch(Exception e){}
 		}
-		
 	}
 	
 	public abstract void on_init();

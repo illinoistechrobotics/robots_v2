@@ -56,6 +56,8 @@ import java.awt.Toolkit;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import org.illinoistechrobotics.common.Timer.TimerEnum;
 import org.illinoistechrobotics.robots.*;
@@ -164,7 +166,6 @@ public class GUI extends Thread{
 	       
         public void run(){
         	try{
-        		
         		List<CommPortIdentifier> com = Serial.getSerialPorts();
     			//only change the layout if the number of ports changed
     			if( com.size() != comboBox_SerialPort.getItemCount()){
@@ -177,8 +178,7 @@ public class GUI extends Thread{
     				}
     			}
         		
-        		if(rdbtnXbee.isSelected()){
-        			
+        		if(rdbtnXbee.isSelected()){		
         			if(serial.isOpen() && 
         				!(serial.getName().equals(comboBox_SerialPort.getSelectedIndex())
         				&&
@@ -201,8 +201,6 @@ public class GUI extends Thread{
         		}
         		
         		if(rdbtnWifi.isSelected()){
-        			
-        			
         			if(ethernet.isConnected() &&
         					!(ethernet.getIPAddress().equals(txtIPAddress.getText()) 
         					&&
@@ -235,8 +233,7 @@ public class GUI extends Thread{
     				}
     			}
         		
-        		if(chckbxJoystick.isSelected()){ 
-        			
+        		if(chckbxJoystick.isSelected()){ 	
         			if(joy.checkJoystick() == false || (joy.getJoyName() != null && !joy.getJoyName().equals((String)comboBox_JoyStick.getSelectedItem()))){
         					//joystick disconnected stop joy and start searching again 
         					joy.stopThread();
@@ -416,6 +413,32 @@ public class GUI extends Thread{
 		frmIllinoisTechRobotics.setBounds(100, 100, 600, 400);
 		frmIllinoisTechRobotics.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmIllinoisTechRobotics.setFocusable(true);
+		
+		frmIllinoisTechRobotics.addWindowListener(new WindowAdapter() {
+		    @Override
+		    public void windowClosing(WindowEvent windowEvent) {
+		    	if(serial.isOpen()){
+    				serial.closeSerial();
+    			}
+		    	
+		    	if(ethernet.isConnected() == true){
+    				ethernet.stopThread();
+    			}
+		    	
+		    	if(joy.getJoy() != null){
+    				joy.stopThread();
+    			}
+		    	
+		    	if(key.isListening()){
+        			key.stop();
+        		}
+		    	
+		    	 trSerialCommChecker.cancel();
+		         trStanbyQueueReading.cancel();
+		    	
+		    	System.exit(0);
+		    }
+		});
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);		
 		frmIllinoisTechRobotics.getContentPane().add(tabbedPane, BorderLayout.CENTER);

@@ -1,4 +1,8 @@
-robots
+Illinois Tech Robotics robots_v2
 ======
 
-This will be one application that will run all of our JSDC robot and maybe more.
+This is one application that runs all of our JSDC robot.
+
+Installation
+
+

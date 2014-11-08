@@ -1,0 +1,1 @@
+start javaw -Djava.ext.dirs=.\lib -jar "robots.jar"

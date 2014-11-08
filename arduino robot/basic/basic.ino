@@ -41,6 +41,7 @@ void setup() {
 void loop() {
   robot_event ev;
   robot.update();
+  on_fast_loop();
   if(robot.getEvent(&ev) == true){ 
   //if(true){
     switch(ev.command){

@@ -64,13 +64,11 @@ public class Keyboard {
 				if(!set.contains(keyText)){
 					set.add(keyText);
 					queue.add(new Event(EventEnum.ROBOT_EVENT_KEYBOARD, 1, keyText));
-					System.out.println("KEY_PRESSED "+KeyEvent.getKeyText(e.getKeyCode()));
 				}
 			}
 			else if(e.getID() == KeyEvent.KEY_RELEASED){
 				set.remove(keyText);
 				queue.add(new Event(EventEnum.ROBOT_EVENT_KEYBOARD, 0, keyText));
-				System.out.println("KEY_RELEASED "+KeyEvent.getKeyText(e.getKeyCode()));
 			}
 			return false;
 		}

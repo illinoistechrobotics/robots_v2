@@ -190,7 +190,7 @@ public class Event {
 	 * Start byte is U binary(01010101)
 	 */
 	public String toStringSend(){
-		StringBuffer st = new StringBuffer("U");
+		StringBuffer st = new StringBuffer("$");
 		int checksum = 0;
 		st.append(Integer.toString(command.getValue()&0xFF,16));
 		st.append(",");

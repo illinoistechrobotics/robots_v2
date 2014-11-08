@@ -302,7 +302,6 @@ public class Joystick extends Thread{
 	
 	//this is used only at start up to get all initial values otherwise it shouldn't be called
 	private void updateJoystickAll(){
-		
 		joy.poll();	
 		Event ev = new Event();
 		ev.setCommand(EventEnum.ROBOT_EVENT_JOY_AXIS);

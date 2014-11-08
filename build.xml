@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="robots_v2">
+    
+	<property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+	
+	<property name="bin" location="bin"/>
+	<property name="lib" location="lib"/>
+	<property name="src" location="src"/>
+	<property name="conf" location="conf"/>
+	<property name="build" location="build"/>
+	<property name="build_robots" location="${build}/robots"/>
+		
+	<path id="robots_v2.classpath">
+        <pathelement location="${bin}"/>
+        <pathelement location="${lib}/JInput/jinput.jar"/>
+        <pathelement location="${lib}/RXTX/RXTXcomm.jar"/>
+    </path>
+    	
+    <target name="init">
+        <mkdir dir="${bin}"/>
+        <copy includeemptydirs="false" todir="${bin}">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+	
+    <target name="clean">
+        <delete dir="${bin}"/>
+    	<delete dir="${build}"/>
+    </target>
+	    
+	<target depends="init" name="build">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="${bin}" includeantruntime="false" source="${source}" target="${target}">
+            <src path="${src}"/>
+            <classpath refid="robots_v2.classpath"/>
+        </javac>
+    </target>
+	
+	<target depends="clean,build" name="jar">
+		<jar destfile="${build_robots}/robots.jar">
+			<manifest>
+				<attribute name="Main-Class" value="org.illinoistechrobotics.common.GUI"/>
+				<attribute name="Class-Path" value=". lib/jinput.jar lib/RXTXcomm.jar"/>
+			</manifest>
+			<fileset dir="${bin}"/>
+		</jar>
+		<copy todir="${build_robots}/lib">
+		    <fileset dir="${lib}/JInput"/>
+		</copy>
+		<copy todir="${build_robots}/lib">
+			<fileset dir="${lib}/RXTX"/>
+		</copy>
+		<copy todir="${build_robots}">
+			<fileset dir="${conf}"/>
+		</copy>	
+	</target>
+	<target depends="jar" name="zipFile">
+		<zip destfile="robots.zip" basedir="${build}"/>
+	</target>
+	
+</project>

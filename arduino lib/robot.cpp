@@ -25,19 +25,27 @@ Robot::Robot(){}
 
 Robot::~Robot(){}
 
-void Robot::init(HardwareSerial  &serial, long baud, int timer, int robot, char usb){
+void Robot::init(HardwareSerial &serial, long baud, int timer, int robot){
+  init(serial, baud, timer, robot, 0, 13, 1);
+}
+
+void Robot::init(HardwareSerial &serial, long baud, int timer, int robot, int usb){
+  init(serial, baud, timer, robot, usb, 13, 1);
+}
+
+void Robot::init(HardwareSerial &serial, long baud, int timer, int robot, int usb, int led, int pos_logic){
   
   failsafe = true;
   
-  led_pin = 13;
-  led_pos_logic = 1;
+  led_pin = led;
+  led_pos_logic = pos_logic;
   
   pinMode(led_pin, OUTPUT);
   digitalWrite(led_pin, led_pos_logic);
   
-  if(usb == 1){
+  if(usb){
     use_usb_serial = 1;
-    Serial.begin(9600);
+    Serial.begin(baud); //any baud works, always working at USB speed
   }
   else{
     use_usb_serial = 0;
@@ -83,10 +91,9 @@ void Robot::readSerial(){
   robot_event event;
   unsigned long lTemp;
   
-  
-  while((use_usb_serial == 1) ? Serial.available()>0 : Comm->available()>0){
+  while(use_usb_serial ? Serial.available()>0 : Comm->available()>0){
     
-    if(use_usb_serial == 1)
+    if(use_usb_serial)
         buf[length++] = Serial.read();
     else     
         buf[length++] = Comm->read();
@@ -97,7 +104,6 @@ void Robot::readSerial(){
         state = READING_DATA;
       }
       else{
-//        Serial.println(buf[length-1]);
         length = 0; //reset buffer
       }  
       break;
@@ -107,25 +113,20 @@ void Robot::readSerial(){
         buf[0] = MESSAGE_HEADER;
         length = 1;
       }
-      else if (length >= BUFFER_SIZE){
-        //restart since buffer full and no valid data yet
-        buf[0] = '\0';
-        length = 0;
-      }
-      if(buf[length-1] == MESSAGE_FOOTER){
+      else if(buf[length-1] == MESSAGE_FOOTER){
         int pos = 1;
         int checksum = 0;
         while(buf[pos] != MESSAGE_CHECKSUM){
           checksum = checksum ^ buf[pos++];
         }
         char* cToken;
-        cToken = strtok(buf, "U,*"); 
+        cToken = strtok(buf, "$,*"); 
         
         event.command = (unsigned int)xtoi(cToken);
-        cToken = strtok(NULL, "U,*");
+        cToken = strtok(NULL, "$,*");
         event.index = (unsigned char)xtoi(cToken);
-        char* value = strtok(NULL, "U,*");
-        cToken = strtok(NULL, "U,*");
+        char* value = strtok(NULL, "$,*");
+        cToken = strtok(NULL, "$,*");
         event.type = xtoi(cToken);
         switch(event.type){
         case BYTE:
@@ -148,7 +149,7 @@ void Robot::readSerial(){
           break;
         }
         
-        cToken = strtok(NULL, "U,*\n"  );
+        cToken = strtok(NULL, "$,*\n"  );
         int checksum2 = xtoi(cToken);
         if(checksum2 == checksum){
           if(event.command == ROBOT_EVENT_CMD_HEARTBEAT){
@@ -160,8 +161,15 @@ void Robot::readSerial(){
             enqueue(&event);
           }
         }
+        
         length = 0;
         buf[0] = '\0';
+        state = LOOKING_FOR_HEADER;
+      }
+      else if (length >= BUFFER_SIZE){
+        //restart since buffer full and no valid data yet
+        buf[0] = '\0';
+        length = 0;
         state = LOOKING_FOR_HEADER;
       }
       break;
@@ -169,15 +177,75 @@ void Robot::readSerial(){
   }
 }
 
-void Robot::debug(char *s){
-    if(use_usb_serial){
-        Serial.print("$");
-        Serial.println(s);
+//very simple string format printing
+//supported formats: %d, %i, %l, %f, %c, %s
+void Robot::debug(char * str, ... ){
+  char buffer[DEBUG_BUFFER_SIZE];
+  
+  va_list args;
+  va_start(args, str);
+  
+  use_usb_serial ? Serial.write('#') : Comm->write('#');
+  for(int i=0; str[i]!='\0';i++)
+  {
+    if(str[i]=='%')
+    {
+      if(use_usb_serial){
+        switch(str[++i])
+        {
+          case 'd': 
+            //break left out
+          case 'i':
+            Serial.print(va_arg(args, int));
+            break;
+          case 'l': 
+            Serial.print(va_arg(args, long));
+            break;
+          case 'f': 
+            Serial.print(va_arg(args, double));
+            break;
+          case 'c': 
+            Serial.print((char)va_arg(args, int));
+            break;
+          case 's': 
+            Serial.print(va_arg(args, char *));
+            break;
+          default:  
+            ;
+        }
+      }
+      else{
+        switch(str[++i])
+        {
+          case 'd':
+            //break left out
+          case 'i':
+            Comm->print(va_arg(args, int));
+            break;
+          case 'l': 
+            Comm->print(va_arg(args, long));
+            break;
+          case 'f': 
+            Comm->print(va_arg(args, double));
+            break;
+          case 'c': 
+            Comm->print((char)va_arg(args, int));
+            break;
+          case 's': 
+            Comm->print(va_arg(args, char *));
+            break;
+          default:  
+            ;
+        }
+      }
     }
-    else{
-        Comm->print("$");
-        Comm->println(s);
+    else 
+    {
+      use_usb_serial ? Serial.write(str[i]) : Comm->write(str[i]);
     }
+  }
+  use_usb_serial ? Serial.write('\n') : Comm->write('\n');
+  va_end(args);
 }
 
 void Robot::timerCheck(){
@@ -272,7 +340,7 @@ void Robot::sendEvent(robot_event *ev){
   char buf[BUFFER_SIZE];
   int i = 0;
   int checksum = 0;
-  buf[i++] = 'U';
+  buf[i++] = '$';
   i += itox(ev->command, &buf[i]);
   buf[i++] = ',';
   i += itox(ev->index, &buf[i]);

@@ -4,7 +4,9 @@ public abstract class Communication extends Thread{
 
 	private Queue recv = null;
 	
-	private final String HEADER = "U";
+	private final String DEBUG_HEADER = "#";
+	private final String HEADER = "$";
+	private final String CHECK_SUM = "*";
 	private final String FOOTER = "\n";
 	private StringBuilder sBuf = new StringBuilder();
 	private ReadState state = ReadState.LOOKING_FOR_HEADER;
@@ -16,7 +18,8 @@ public abstract class Communication extends Thread{
 	private enum ReadState{
 		LOOKING_FOR_HEADER,
 		READING_DATA,
-		CALCULATE_CHECKSUM;
+		CALCULATE_CHECKSUM,
+		DEBUG;
 	}
 	
 	protected void parseMessage(StringBuffer sb){
@@ -30,6 +33,10 @@ public abstract class Communication extends Thread{
 				if(sBuf.indexOf(HEADER) != -1){
 					sBuf.delete(0, sBuf.indexOf(HEADER)); //remove data in front of header
 					state = ReadState.READING_DATA;
+				}
+				else if(sBuf.indexOf(DEBUG_HEADER) != -1){
+					sBuf.delete(0, sBuf.indexOf(DEBUG_HEADER)); //remove data in front of header
+					state = ReadState.DEBUG;
 				}
 				else{
 					sBuf.delete(0, sBuf.length()); //remove everything since no valid data
@@ -58,7 +65,7 @@ public abstract class Communication extends Thread{
 				String fullMessage = sBuf.substring(0, sBuf.indexOf(FOOTER));
 				sBuf.delete(0,sBuf.indexOf(FOOTER));
 				
-				String checksumMessage = fullMessage.substring(1, fullMessage.indexOf("*"));
+				String checksumMessage = fullMessage.substring(1, fullMessage.indexOf(CHECK_SUM));
 				
 				int checksum = 0;
 				for(int i = 0; i < checksumMessage.length(); i++) //checksum not include the start byte
@@ -67,7 +74,7 @@ public abstract class Communication extends Thread{
 				}
 
 
-				String[] token = fullMessage.split("[U,\\*\r]");
+				String[] token = fullMessage.split("["+HEADER+",\\*"+FOOTER+"\r]");
 				
 
 				if(Integer.parseInt(token[5],16) == checksum )
@@ -102,6 +109,16 @@ public abstract class Communication extends Thread{
 					catch(Exception e){
 					}
 				}
+				break;
+			case DEBUG:
+				if(sBuf.indexOf(FOOTER) != -1){
+					state = ReadState.LOOKING_FOR_HEADER;
+					String debugMessage = sBuf.substring(1, sBuf.indexOf(FOOTER));
+					sBuf.delete(0,sBuf.indexOf(FOOTER));
+					System.out.println(debugMessage);
+				}
+				break;
+			default:
 				break;
 			}
 		}
