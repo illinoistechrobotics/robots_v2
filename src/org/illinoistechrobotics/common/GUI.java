@@ -103,8 +103,13 @@ public class GUI extends Thread{
 	public JLabel lblRoll;
 	public JLabel lblYaw;
 	
-	public JButton btnModulosConnected;
-	public JToggleButton tglbtnConnectToModulos;
+	public JButton btnModulusConnected;
+	public JToggleButton tglbtnConnectToModulus;
+	
+	//TODO:
+	//Public Declerations
+	public JButton btnSampleConnected;
+	public JToggleButton tglbtnConnectToSample;
 	
 	private Timer trSerialCommChecker;
 	private Timer trStanbyQueueReading;
@@ -327,16 +332,15 @@ public class GUI extends Thread{
 	  		Communication comm = null;
 	  		
 	  		if(rdbtnXbee.isSelected()){
-	  			//serial.closeSerial();
-	  			//serial.OpenSerial(Integer.parseInt(comboBox_BaudRate.getSelectedItem().toString()),comboBox_SerialPort.getSelectedItem().toString());
 	  			comm = (Communication)serial;
 	  		}
 	  		else if(rdbtnWifi.isSelected()){
-	  			//ethernet.stopThread();
-	  			//ethernet.connect(txtIPAddress.getText(), Integer.parseInt(txtPortNumber.getText()));
 	  			comm = (Communication)ethernet;
 	  		}
 	  		
+	  		//TODO:
+	  		//Add the new button check and create the right robot
+	  		//Example: Add what is for Simple Robot
 	  		if(btnTemp.getText().equals("Connect")){
 	  			trStanbyQueueReading.cancel();
   				running = true;
@@ -344,8 +348,11 @@ public class GUI extends Thread{
 	  			if(btnTemp == tglbtnConnectToPenguin){
 	  				robot = new Penguin(queue,comm,dis,timer);	
 	  			}
-	  			else if(btnTemp == tglbtnConnectToModulos){
-	  				robot = new Modulos(queue,comm,dis,timer);
+	  			else if(btnTemp == tglbtnConnectToModulus){
+	  				robot = new Modulus(queue,comm,dis,timer);
+	  			}
+	  			else if(btnTemp == tglbtnConnectToSample){
+	  				robot = new SampleRobot(queue,comm,dis,timer);
 	  			}
 	  			else{
 	  				return;
@@ -828,30 +835,41 @@ public class GUI extends Thread{
 		//#####################################
 		//Modulos
 		//#####################################
-		JPanel panModulos = new JPanel();
-		tabbedPane.addTab("Modulos", null, panModulos, null);
-		panModulos.setLayout(null);
+		JPanel panModulus = new JPanel();
+		tabbedPane.addTab("Modulus", null, panModulus, null);
+		panModulus.setLayout(null);
 		
-		btnModulosConnected = new JButton("");
-		btnModulosConnected.setBounds(516, 14, 63, 23);
-		btnModulosConnected.setEnabled(false);
-		btnModulosConnected.setBackground(Color.RED);
+		btnModulusConnected = new JButton("");
+		btnModulusConnected.setBounds(516, 14, 63, 23);
+		btnModulusConnected.setEnabled(false);
+		btnModulusConnected.setBackground(Color.RED);
+		panModulus.add(btnModulusConnected);
 		
-		tglbtnConnectToModulos = new JToggleButton("Connect");
-		tglbtnConnectToModulos.setBounds(374, 14, 132, 23);
-		tglbtnConnectToModulos.addActionListener(new btnStartListener());
+		tglbtnConnectToModulus = new JToggleButton("Connect");
+		tglbtnConnectToModulus.setBounds(374, 14, 132, 23);
+		tglbtnConnectToModulus.addActionListener(new btnStartListener());
+		panModulus.add(tglbtnConnectToModulus);
 		
-		panModulos.add(btnModulosConnected);
-		panModulos.add(tglbtnConnectToModulos);
+		//TODO:
+		//Add GUI stuff for robots
+		//Example: Minimum for a robots
+		//Can add manually or use GUI tools
+		//If using GUI tools make sure to make JButton and JToggleButton public
+		//Also make sure to add btnStartListener to JToggleButton if using GUI tools
+		JPanel panSample = new JPanel();
+		tabbedPane.addTab("Sample", null, panSample, null);
+		panSample.setLayout(null);
 		
-		//#####################################
-		//Goliath
-		//#####################################
-		JPanel panGoliath = new JPanel();
-		tabbedPane.addTab("Goliath", null, panGoliath, null);
+		btnSampleConnected = new JButton("");
+		btnSampleConnected.setEnabled(false);
+		btnSampleConnected.setBackground(Color.RED);
+		btnSampleConnected.setBounds(516, 14, 63, 23);
+		panSample.add(btnSampleConnected);
 		
-		JPanel panRoslund = new JPanel();
-		tabbedPane.addTab("Roslund", null, panRoslund, null);
+		tglbtnConnectToSample = new JToggleButton("Connect");
+		tglbtnConnectToSample.setBounds(374, 14, 132, 23);
+		tglbtnConnectToSample.addActionListener(new btnStartListener());
+		panSample.add(tglbtnConnectToSample);
 		
 		//#####################################
 		//Joy Stick

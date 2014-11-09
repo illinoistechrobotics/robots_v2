@@ -3,8 +3,11 @@
     
 	<property environment="env"/>
     <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.8"/>
-    <property name="source" value="1.8"/>
+	<!--Set to 1.6 to be able to run on all systems.
+		Recommend to switch to 1.8 java once more people have it.
+		Java 1.8 has really cool features, (cough lambdas cough)-->
+	<property name="source" value="1.6"/>
+	<property name="target" value="1.6"/>  
 	
 	<property name="bin" location="bin"/>
 	<property name="lib" location="lib"/>
