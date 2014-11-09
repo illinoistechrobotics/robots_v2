@@ -31,9 +31,9 @@ import org.illinoistechrobotics.common.Queue;
 import org.illinoistechrobotics.common.Robot;
 import org.illinoistechrobotics.common.Timer;
 
-public class Modulos extends Robot{
+public class Modulus extends Robot{
 	
-	public Modulos(Queue q, Communication c, GUI d, Timer t){
+	public Modulus(Queue q, Communication c, GUI d, Timer t){
 		super(q,c,d,t);
 	}
 	
@@ -111,10 +111,10 @@ public class Modulos extends Robot{
 	
 	public void on_heartbeat_timer(Event ev){
 		if(heartbeat <= 5){
-			dis.btnModulosConnected.setBackground(Color.GREEN);
+			dis.btnModulusConnected.setBackground(Color.GREEN);
 		}
 		else{
-			dis.btnModulosConnected.setBackground(Color.RED);
+			dis.btnModulusConnected.setBackground(Color.RED);
 		}
 	}
 	
@@ -159,7 +159,7 @@ public class Modulos extends Robot{
 	}
 	
 	public void on_shutdown(Event ev){
-		dis.btnModulosConnected.setBackground(Color.RED);
+		dis.btnModulusConnected.setBackground(Color.RED);
 	}
 	
 	public void on_unknown_command(Event ev){

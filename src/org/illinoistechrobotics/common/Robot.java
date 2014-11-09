@@ -41,7 +41,7 @@ public abstract class Robot extends Thread{
 		PENGUIN		(4),
 		MONGOL		(5),
 		GHOST		(6),
-		MODULOS     (7),
+		MODULUS     (7),
 		COMPUTER	(0xF0),
 		UNKNOWN_ROBOT	(0xFF);
 		
