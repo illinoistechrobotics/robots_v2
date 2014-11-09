@@ -400,7 +400,7 @@ public class Penguin extends Robot{
 	}
 	
 	public void on_shutdown(Event ev){
-		
+		dis.btnPenguinConnected.setBackground(Color.RED);
 	}
 	
 	public void on_unknown_command(Event ev){

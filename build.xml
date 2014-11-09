@@ -32,6 +32,7 @@
     <target name="clean">
         <delete dir="${bin}"/>
     	<delete dir="${build}"/>
+    	<delete file="robots.zip"/>
     </target>
 	    
 	<target depends="init" name="build">
@@ -42,7 +43,7 @@
         </javac>
     </target>
 	
-	<target depends="clean,build" name="jar">
+	<target depends="build" name="package">
 		<jar destfile="${build_robots}/robots.jar">
 			<manifest>
 				<attribute name="Main-Class" value="org.illinoistechrobotics.common.GUI"/>
@@ -60,7 +61,7 @@
 			<fileset dir="${conf}"/>
 		</copy>	
 	</target>
-	<target depends="jar" name="zipFile">
+	<target depends="clean,package" name="deploy">
 		<zip destfile="robots.zip" basedir="${build}"/>
 	</target>
 	
