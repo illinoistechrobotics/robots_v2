@@ -20,20 +20,18 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package org.illinoistechrobotics.robots;
+package org.illinoistechrobotics.controller;
 
 import java.awt.Color;
 
 import org.illinoistechrobotics.common.Communication;
 import org.illinoistechrobotics.common.Event;
-import org.illinoistechrobotics.common.GUI;
 import org.illinoistechrobotics.common.Queue;
-import org.illinoistechrobotics.common.Robot;
 import org.illinoistechrobotics.common.Timer;
 
-public class SampleRobot extends Robot{
-
-	public SampleRobot(Queue q, Communication c, GUI d, Timer t){
+public class Modulus extends Robot{
+	
+	public Modulus(Queue q, Communication c, GUI d, Timer t){
 		super(q,c,d,t);
 	}
 	
@@ -110,14 +108,11 @@ public class SampleRobot extends Robot{
 	}
 	
 	public void on_heartbeat_timer(Event ev){
-		//TODO:
-		//Add code here for changing the connection status of robot
-		//Example code
 		if(heartbeat <= 5){
-			dis.btnSampleConnected.setBackground(Color.GREEN);
+			dis.btnModulusConnected.setBackground(Color.GREEN);
 		}
 		else{
-			dis.btnSampleConnected.setBackground(Color.RED);
+			dis.btnModulusConnected.setBackground(Color.RED);
 		}
 	}
 	
@@ -162,13 +157,11 @@ public class SampleRobot extends Robot{
 	}
 	
 	public void on_shutdown(Event ev){
-		//TODO:
-		//Set status to disconnected
-		//Example code
-		dis.btnSampleConnected.setBackground(Color.RED);
+		dis.btnModulusConnected.setBackground(Color.RED);
 	}
 	
 	public void on_unknown_command(Event ev){
 		
 	}
+
 }

@@ -20,7 +20,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package org.illinoistechrobotics.common;
+package org.illinoistechrobotics.controller;
 
 import gnu.io.CommPortIdentifier;
 
@@ -59,8 +59,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import org.illinoistechrobotics.common.Communication;
+import org.illinoistechrobotics.common.Ethernet;
+import org.illinoistechrobotics.common.Event;
+import org.illinoistechrobotics.common.EventEnum;
+import org.illinoistechrobotics.common.Joystick;
+import org.illinoistechrobotics.common.Keyboard;
+import org.illinoistechrobotics.common.Queue;
+import org.illinoistechrobotics.common.Serial;
 import org.illinoistechrobotics.common.Timer.TimerEnum;
-import org.illinoistechrobotics.robots.*;
 
 public class GUI extends Thread{
 
@@ -117,7 +124,7 @@ public class GUI extends Thread{
 	private org.illinoistechrobotics.common.Timer timer = new org.illinoistechrobotics.common.Timer(queue);
 	private Serial serial = new Serial(queue);
 	private Ethernet ethernet = new Ethernet(queue);
-	private Joystick joy = new Joystick(queue,this);
+	private Joystick joy = new Joystick(queue);
 	private Keyboard key = new Keyboard(queue);
 	private GUI dis = this;
 	
@@ -242,7 +249,7 @@ public class GUI extends Thread{
         			if(joy.checkJoystick() == false || (joy.getJoyName() != null && !joy.getJoyName().equals((String)comboBox_JoyStick.getSelectedItem()))){
         					//joystick disconnected stop joy and start searching again 
         					joy.stopThread();
-        					joy = new Joystick(queue, dis);
+        					joy = new Joystick(queue);
         			}
         			if(joy.getJoy() == null){
         				joy.listen((String)comboBox_JoyStick.getSelectedItem());
@@ -251,7 +258,7 @@ public class GUI extends Thread{
         		else{
         			if(joy.getJoy() != null){
         				joy.stopThread();
-        				joy = new Joystick(queue, dis);
+        				joy = new Joystick(queue);
         			}
         		}
         		
@@ -291,6 +298,15 @@ public class GUI extends Thread{
     	    				btnGeneralStatus.setText("");
     					}
     				}
+    			case ROBOT_EVENT_JOY_AXIS:
+    				updateAxisGUI(ev);
+    				break;
+    			case ROBOT_EVENT_JOY_BUTTON:
+    				updateButtonGUI(ev);
+    				break;
+    			case ROBOT_EVENT_JOY_HAT:
+    				updateHatGUI(ev);
+    				break;
 				default:
 					break;
     			}
@@ -440,9 +456,14 @@ public class GUI extends Thread{
         			key.stop();
         		}
 		    	
-		    	 trSerialCommChecker.cancel();
-		         trStanbyQueueReading.cancel();
+		    	trSerialCommChecker.cancel();
+		        trStanbyQueueReading.cancel();
 		    	
+		        try{
+		        	Thread.sleep(1000);
+		        } catch(InterruptedException e) {	
+		        }
+		        
 		    	System.exit(0);
 		    }
 		});

@@ -20,7 +20,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package org.illinoistechrobotics.robots;
+package org.illinoistechrobotics.controller;
 
 import java.awt.Color;
 import java.text.DecimalFormat;
@@ -31,9 +31,7 @@ import java.util.Map;
 import org.illinoistechrobotics.common.Communication;
 import org.illinoistechrobotics.common.Event;
 import org.illinoistechrobotics.common.EventEnum;
-import org.illinoistechrobotics.common.GUI;
 import org.illinoistechrobotics.common.Queue;
-import org.illinoistechrobotics.common.Robot;
 import org.illinoistechrobotics.common.Timer;
 
 public class Penguin extends Robot{

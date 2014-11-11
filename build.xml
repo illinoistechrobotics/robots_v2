@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." default="build" name="robots_v2">
+<project basedir="." default="buildAll" name="robots">
     
 	<property environment="env"/>
     <property name="debuglevel" value="source,lines,vars"/>
@@ -14,14 +14,28 @@
 	<property name="src" location="src"/>
 	<property name="conf" location="conf"/>
 	<property name="build" location="build"/>
+	<property name="build_controllers" location="${build}/controllers"/>
+	<property name="build_controllers_lib" location="${build_controllers}/lib"/>
 	<property name="build_robots" location="${build}/robots"/>
-		
-	<path id="robots_v2.classpath">
+	<property name="build_robots_lib" location="${build_robots}/lib"/>
+	
+	<path id="common.classpath">
         <pathelement location="${bin}"/>
         <pathelement location="${lib}/JInput/jinput.jar"/>
         <pathelement location="${lib}/RXTX/RXTXcomm.jar"/>
     </path>
-    	
+	
+	<path id="controllers.classpath">
+		<path refid="common.classpath"/>
+	</path>
+	
+	<path id="robots.classpath">
+		<path refid="common.classpath"/>
+	</path>
+	
+	<target depends="buildControllers,buildRobots" name="buildAll"/>
+	<target depends="packageControllers,packageRobots" name="packageAll"/>
+	
     <target name="init">
         <mkdir dir="${bin}"/>
         <copy includeemptydirs="false" todir="${bin}">
@@ -32,40 +46,66 @@
         </copy>
     </target>
 	
-    <target name="clean">
+    <target name="cleanAll">
         <delete dir="${bin}"/>
     	<delete dir="${build}"/>
-    	<delete file="robots.zip"/>
+    	<delete file="robots_v2.zip"/>
     </target>
 	    
-	<target depends="init" name="build">
-        <echo message="${ant.project.name}: ${ant.file}"/>
+	<target depends="init" name="buildControllers">
         <javac debug="true" debuglevel="${debuglevel}" destdir="${bin}" includeantruntime="false" source="${source}" target="${target}">
             <src path="${src}"/>
-            <classpath refid="robots_v2.classpath"/>
+            <classpath refid="controllers.classpath"/>
         </javac>
     </target>
 	
-	<target depends="build" name="package">
-		<jar destfile="${build_robots}/robots.jar">
+	<target depends="init" name="buildRobots">
+	        <javac debug="true" debuglevel="${debuglevel}" destdir="${bin}" includeantruntime="false" source="${source}" target="${target}">
+	            <src path="${src}"/>
+	            <classpath refid="robots.classpath"/>
+	        </javac>
+	    </target>
+	
+	<target depends="buildControllers" name="packageControllers">
+		<jar destfile="${build_controllers}/controllers.jar">
 			<manifest>
-				<attribute name="Main-Class" value="org.illinoistechrobotics.common.GUI"/>
-				<attribute name="Class-Path" value=". lib/jinput.jar lib/RXTXcomm.jar"/>
+				<attribute name="Main-Class" value="org.illinoistechrobotics.controller.GUI"/>
+				<attribute name="Class-Path" value=". lib/JInput/jinput.jar lib/RXTX/RXTXcomm.jar"/>
 			</manifest>
 			<fileset dir="${bin}"/>
 		</jar>
-		<copy todir="${build_robots}/lib">
+		<copy todir="${build_controllers_lib}/JInput">
 		    <fileset dir="${lib}/JInput"/>
 		</copy>
-		<copy todir="${build_robots}/lib">
+		<copy todir="${build_controllers_lib}/RXTX">
 			<fileset dir="${lib}/RXTX"/>
 		</copy>
-		<copy todir="${build_robots}">
-			<fileset dir="${conf}"/>
+		<copy todir="${build_controllers}">
+			<fileset dir="${conf}/controllers"/>
 		</copy>	
 	</target>
-	<target depends="clean,package" name="deploy">
-		<zip destfile="robots.zip" basedir="${build}"/>
+	
+	<target depends="buildRobots" name="packageRobots">
+			<jar destfile="${build_robots}/robots.jar">
+				<manifest>
+					<attribute name="Main-Class" value="org.illinoistechrobotics.robot.RobotMain"/>
+					<attribute name="Class-Path" value=". lib/JInput/jinput.jar lib/RXTX/RXTXcomm.jar"/>
+				</manifest>
+				<fileset dir="${bin}"/>
+			</jar>
+			<copy todir="${build_robots_lib}/JInput">
+			    <fileset dir="${lib}/JInput"/>
+			</copy>
+			<copy todir="${build_robots_lib}/RXTX">
+				<fileset dir="${lib}/RXTX"/>
+			</copy>
+			<copy todir="${build_robots}">
+				<fileset dir="${conf}/robots"/>
+			</copy>	
+		</target>
+	
+	<target depends="packageAll" name="deployAll">
+		<zip destfile="robots_v2.zip" basedir="${build}"/>
 	</target>
 	
 </project>

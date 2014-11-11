@@ -20,13 +20,18 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package org.illinoistechrobotics.common;
+package org.illinoistechrobotics.controller;
 
 import java.awt.Color;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.illinoistechrobotics.common.Communication;
+import org.illinoistechrobotics.common.Event;
+import org.illinoistechrobotics.common.EventEnum;
+import org.illinoistechrobotics.common.Queue;
+import org.illinoistechrobotics.common.Timer;
 import org.illinoistechrobotics.common.Timer.TimerEnum;
 
 public abstract class Robot extends Thread{
@@ -119,15 +124,18 @@ public abstract class Robot extends Thread{
 					on_status(ev);
 					break;
 				case ROBOT_EVENT_JOY_AXIS:
+					dis.updateAxisGUI(ev);
 					on_axis_change(ev);
 					break;
 				case ROBOT_EVENT_JOY_BUTTON:
+					dis.updateButtonGUI(ev);
 					if(ev.getValue() == 1)
 						on_button_down(ev);
 					else if (ev.getValue() == 0)
 						on_button_up(ev);
 					break;
 				case ROBOT_EVENT_JOY_HAT:
+					dis.updateHatGUI(ev);
 					on_joy_hat(ev);
 					break;
 				case ROBOT_EVENT_JOY_STATUS:

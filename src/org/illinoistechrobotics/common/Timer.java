@@ -24,8 +24,6 @@ package org.illinoistechrobotics.common;
 
 import java.util.Date;
 
-
-
 public class Timer extends Thread{
 	private Queue queue = null;
 	private volatile Boolean run = true;
