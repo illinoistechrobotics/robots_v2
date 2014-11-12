@@ -854,7 +854,7 @@ public class GUI extends Thread{
 		
 		
 		//#####################################
-		//Modulos
+		//Modulus
 		//#####################################
 		JPanel panModulus = new JPanel();
 		tabbedPane.addTab("Modulus", null, panModulus, null);
