@@ -88,60 +88,60 @@ public class Timer extends Thread{
 				if(timerP1hz == true){
 					if((time.getTime()-last_sent_P1hz) > 10000){
 						last_sent_P1hz = time.getTime();
-						queue.put(new Event(EventEnum.ROBOT_EVENT_TIMER,TimerEnum.TIMER_P1HZ.value,0));
+						queue.put(new Event(EventEnum.TIMER,TimerEnum.TIMER_P1HZ.value,0));
 					}
 				}
 				if(timer1hz == true){
 					if((time.getTime()-last_sent_1hz) > 1000){
 						last_sent_1hz = time.getTime();
-						queue.put(new Event(EventEnum.ROBOT_EVENT_TIMER,TimerEnum.TIMER_1HZ.value,0));
+						queue.put(new Event(EventEnum.TIMER,TimerEnum.TIMER_1HZ.value,0));
 					}
 				}
 				if(timer2hz == true){
 					if((time.getTime()-last_sent_2hz) > 500){
 						last_sent_2hz = time.getTime();
-						queue.put(new Event(EventEnum.ROBOT_EVENT_TIMER,TimerEnum.TIMER_2HZ.value,0));
+						queue.put(new Event(EventEnum.TIMER,TimerEnum.TIMER_2HZ.value,0));
 					}
 				}
 				if(timer5hz == true){
 					if((time.getTime()-last_sent_5hz) > 200){
 						last_sent_5hz = time.getTime();
-						queue.put(new Event(EventEnum.ROBOT_EVENT_TIMER,TimerEnum.TIMER_5HZ.value,0));
+						queue.put(new Event(EventEnum.TIMER,TimerEnum.TIMER_5HZ.value,0));
 					}
 				}
 				if(timer10hz == true){
 					if((time.getTime()-last_sent_10hz) > 100){
 						last_sent_10hz = time.getTime();
-						queue.put(new Event(EventEnum.ROBOT_EVENT_TIMER,TimerEnum.TIMER_10HZ.value,0));
+						queue.put(new Event(EventEnum.TIMER,TimerEnum.TIMER_10HZ.value,0));
 					}
 				}
 				if(timer20hz == true){
 					if((time.getTime()-last_sent_20hz) > 50){
 						last_sent_20hz = time.getTime();
-						queue.put(new Event(EventEnum.ROBOT_EVENT_TIMER,TimerEnum.TIMER_20HZ.value,0));
+						queue.put(new Event(EventEnum.TIMER,TimerEnum.TIMER_20HZ.value,0));
 					}
 				}
 				if(timer25hz == true){
 					if((time.getTime()-last_sent_25hz) > 40){
 						last_sent_25hz = time.getTime();
-						queue.put(new Event(EventEnum.ROBOT_EVENT_TIMER,TimerEnum.TIMER_25HZ.value,0));
+						queue.put(new Event(EventEnum.TIMER,TimerEnum.TIMER_25HZ.value,0));
 					}
 				}
 				if(timer50hz == true){
 					if((time.getTime()-last_sent_50hz) > 20){
 						last_sent_50hz = time.getTime();
-						queue.put(new Event(EventEnum.ROBOT_EVENT_TIMER,TimerEnum.TIMER_50HZ.value,0));
+						queue.put(new Event(EventEnum.TIMER,TimerEnum.TIMER_50HZ.value,0));
 					}
 				}
 				if(timer100hz == true){
 					if((time.getTime()-last_sent_100hz) > 10){
 						last_sent_100hz = time.getTime();
-						queue.put(new Event(EventEnum.ROBOT_EVENT_TIMER,TimerEnum.TIMER_100HZ.value,0));
+						queue.put(new Event(EventEnum.TIMER,TimerEnum.TIMER_100HZ.value,0));
 					}
 				}
 				if((time.getTime() - last_sent_heartbeat) > 100){
 					last_sent_heartbeat = time.getTime();
-					queue.put(new Event(EventEnum.ROBOT_EVENT_TIMER,TimerEnum.TIMER_HEARTBEAT.value,0));
+					queue.put(new Event(EventEnum.TIMER,TimerEnum.TIMER_HEARTBEAT.value,0));
 				}
 				Thread.sleep(1);
 			}

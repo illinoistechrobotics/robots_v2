@@ -63,12 +63,12 @@ public class Keyboard {
 			if(e.getID() == KeyEvent.KEY_PRESSED){
 				if(!set.contains(keyText)){
 					set.add(keyText);
-					queue.add(new Event(EventEnum.ROBOT_EVENT_KEYBOARD, 1, keyText));
+					queue.add(new Event(EventEnum.KEYBOARD, 1, keyText));
 				}
 			}
 			else if(e.getID() == KeyEvent.KEY_RELEASED){
 				set.remove(keyText);
-				queue.add(new Event(EventEnum.ROBOT_EVENT_KEYBOARD, 0, keyText));
+				queue.add(new Event(EventEnum.KEYBOARD, 0, keyText));
 			}
 			return false;
 		}

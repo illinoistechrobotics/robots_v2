@@ -20,9 +20,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package org.illinoistechrobotics.controller;
-
-import java.awt.Color;
+package org.illinoistechrobotics.robot;
 
 import org.illinoistechrobotics.common.Communication;
 import org.illinoistechrobotics.common.Event;
@@ -33,17 +31,17 @@ import org.illinoistechrobotics.common.Timer;
 import org.illinoistechrobotics.common.Timer.TimerEnum;
 
 public abstract class Robot extends Thread{
-	
+
 	protected Queue recv_q;
 	protected Communication comm;
-	protected GUI dis;
 	protected Timer timer;
+	protected RobotEnum robot = RobotEnum.UNKNOWN_ROBOT;
 	
-	public Robot(Queue q, Communication c, GUI d, Timer t){
+	public Robot(Queue q, Communication c, Timer t, RobotEnum r){
 		recv_q = q;	
 		comm = c;
-		dis = d;
 		timer = t;
+		robot = r;
 		on_init();
 	}
 	
@@ -77,32 +75,25 @@ public abstract class Robot extends Thread{
 					on_command_code(ev);
 					break;
 				case CMD_HEARTBEAT:
-					//need to update GUI
 					heartbeat = 0;
-					dis.btnGeneralStatus.setBackground(Color.GREEN);
-    				dis.btnGeneralStatus.setText(RobotEnum.getRobot(ev.getIndex()).toString());
 					on_heartbeat(ev);
 					break;
 				case STATUS:
 					on_status(ev);
 					break;
 				case JOY_AXIS:
-					dis.updateAxisGUI(ev);
 					on_axis_change(ev);
 					break;
 				case JOY_BUTTON:
-					dis.updateButtonGUI(ev);
 					if(ev.getValue() == 1)
 						on_button_down(ev);
 					else if (ev.getValue() == 0)
 						on_button_up(ev);
 					break;
 				case JOY_HAT:
-					dis.updateHatGUI(ev);
 					on_joy_hat(ev);
 					break;
 				case JOY_STATUS:
-					dis.updateJoyStatus(ev);
 					on_joy_status(ev);
 					break;
 				case KEYBOARD:
@@ -129,12 +120,11 @@ public abstract class Robot extends Thread{
 						on_100hz_timer(ev);
 					else if(ev.getIndex() == TimerEnum.TIMER_HEARTBEAT.value){
 						if(heartbeat > 4){
-    						dis.btnGeneralStatus.setBackground(Color.RED);
-    	    				dis.btnGeneralStatus.setText("");
+    						on_failsafe();
     					}
 						on_heartbeat_timer(ev);
-						comm.sendEvent(new Event(EventEnum.CMD_HEARTBEAT,RobotEnum.COMPUTER.getValue(),0));
 						heartbeat++;
+						comm.sendEvent(new Event(EventEnum.CMD_HEARTBEAT,robot.getValue(),0));
 					}
 					break;	
 				case MOTOR:
@@ -181,6 +171,7 @@ public abstract class Robot extends Thread{
 	}
 	
 	public abstract void on_init();
+	public abstract void on_failsafe();
 	public abstract void on_command_code(Event ev);
 	public abstract void on_heartbeat(Event ev);
 	public abstract void on_status(Event ev);

@@ -42,9 +42,6 @@ public class Joystick extends Thread{
 		this.queue = q;
 	}
 	
-	/**
-	 * returns the first Joystick or Gamepad 
-	 */
 	public static List<String> getJoystickNames(){ 
 		List<Controller> cs = Joystick.getJoysticks();
 		List<String> csName = new ArrayList<String>();
@@ -127,7 +124,7 @@ public class Joystick extends Thread{
 		while(run){
 			try{
 				if(joy.poll()==false){
-					Event joy_ev = new Event(EventEnum.ROBOT_EVENT_JOY_STATUS,(short)0,0);
+					Event joy_ev = new Event(EventEnum.JOY_STATUS,(short)0,0);
 					queue.put(joy_ev);
 					return;
 				}
@@ -140,92 +137,92 @@ public class Joystick extends Thread{
 				Component comp = joy_event.getComponent();						
 				String command = comp.getName();
 				if(command.equals("X Axis") || command.equals("x")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_AXIS);
+					ev.setCommand(EventEnum.JOY_AXIS);
 					ev.setIndex((short)0);
 					ev.setValue((int)((joy_event.getValue() + 1.0) * (255.0) / (2.0))); //convert from 1.0 to -1.0 to 255 to 0
 				}
 				else if(command.equals("Y Axis") || command.equals("y")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_AXIS);
+					ev.setCommand(EventEnum.JOY_AXIS);
 					ev.setIndex((short)1);
 					ev.setValue((int)((joy_event.getValue() - 1.0) * (-255.0) / (2.0))); //inverts the value up 255 down 0
 				}
 				else if(command.equals("Z Axis") || command.equals("z")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_AXIS);
+					ev.setCommand(EventEnum.JOY_AXIS);
 					ev.setIndex((short)2);
 					ev.setValue((int)((joy_event.getValue() + 1.0) * (255.0) / (2.0)));
 				}
 				else if(command.equals("Z Rotation")|| command.equals("rz")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_AXIS);
+					ev.setCommand(EventEnum.JOY_AXIS);
 					ev.setIndex((short)3);
 					ev.setValue((int)((joy_event.getValue() - 1.0) * (-255.0) / (2.0)));
 				}
 				else if(command.contains("Button")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
+					ev.setCommand(EventEnum.JOY_BUTTON);
 					ev.setIndex((short)Integer.parseInt(command.substring(command.indexOf(' ')+1)));
 					ev.setValue((int)joy_event.getValue());  
 				}
 				else if(command.equals("Trigger")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
+					ev.setCommand(EventEnum.JOY_BUTTON);
 					ev.setIndex((short)0);
 					ev.setValue((int)joy_event.getValue());
 				}
 				else if(command.equals("Thumb")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
+					ev.setCommand(EventEnum.JOY_BUTTON);
 					ev.setIndex((short)1);
 					ev.setValue((int)joy_event.getValue());
 				}
 				else if(command.equals("Thumb 2")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
+					ev.setCommand(EventEnum.JOY_BUTTON);
 					ev.setIndex((short)2);
 					ev.setValue((int)joy_event.getValue());
 				}
 				else if(command.equals("Top")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
+					ev.setCommand(EventEnum.JOY_BUTTON);
 					ev.setIndex((short)3);
 					ev.setValue((int)joy_event.getValue());
 				}
 				else if(command.equals("Top 2")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
+					ev.setCommand(EventEnum.JOY_BUTTON);
 					ev.setIndex((short)4);
 					ev.setValue((int)joy_event.getValue());
 				}
 				else if(command.equals("Pinkie")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
+					ev.setCommand(EventEnum.JOY_BUTTON);
 					ev.setIndex((short)5);
 					ev.setValue((int)joy_event.getValue());
 				}
 				else if(command.equals("Base")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
+					ev.setCommand(EventEnum.JOY_BUTTON);
 					ev.setIndex((short)6);
 					ev.setValue((int)joy_event.getValue());
 				}
 				else if(command.equals("Base 2")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
+					ev.setCommand(EventEnum.JOY_BUTTON);
 					ev.setIndex((short)7);
 					ev.setValue((int)joy_event.getValue());
 				}
 				else if(command.equals("Base 3")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
+					ev.setCommand(EventEnum.JOY_BUTTON);
 					ev.setIndex((short)8);
 					ev.setValue((int)joy_event.getValue());
 				}
 				else if(command.equals("Base 4")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
+					ev.setCommand(EventEnum.JOY_BUTTON);
 					ev.setIndex((short)9);
 					ev.setValue((int)joy_event.getValue());
 				}
 				else if(command.equals("Base 5")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
+					ev.setCommand(EventEnum.JOY_BUTTON);
 					ev.setIndex((short)10);
 					ev.setValue((int)joy_event.getValue());
 				}
 				else if(command.equals("Base 6")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
+					ev.setCommand(EventEnum.JOY_BUTTON);
 					ev.setIndex((short)11);
 					ev.setValue((int)joy_event.getValue());
 				}
 				else if(command.equals("Hat Switch") || command.equals("pov")){
-					ev.setCommand(EventEnum.ROBOT_EVENT_JOY_HAT);
+					ev.setCommand(EventEnum.JOY_HAT);
 					ev.setIndex((short)0);
 					float val = joy_event.getValue();
 					if(val == 0.0){
@@ -259,7 +256,7 @@ public class Joystick extends Thread{
 				try{
 					//check to see if there is no duplicate joy event if so override 
 					//if we don't override we get overridden with joystick events and there is a backlog of events
-					if(ev.getCommand()==EventEnum.ROBOT_EVENT_JOY_AXIS){
+					if(ev.getCommand()==EventEnum.JOY_AXIS){
 						queue.putOverride(ev);
 					}
 					else{
@@ -284,101 +281,99 @@ public class Joystick extends Thread{
 	private void updateJoystickAll(){
 		joy.poll();	
 		Event ev = new Event();
-		ev.setCommand(EventEnum.ROBOT_EVENT_JOY_AXIS);
-		ev.setIndex((short)0);
+		ev.setCommand(EventEnum.JOY_STATUS);
+		ev.setIndex((short)50);
 		ev.setValue((int)((joy.getComponent(Identifier.Axis.X).getPollData() - 1.0) * (-255.0) / (2.0)));
 		queue.put(ev);
-		ev.setIndex((short)1);
+		ev.setIndex((short)51);
 		ev.setValue((int)((joy.getComponent(Identifier.Axis.Y).getPollData() - 1.0) * (-255.0) / (2.0)));
 		queue.put(ev);
-		ev.setIndex((short)2);
+		ev.setIndex((short)52);
 		ev.setValue((int)((joy.getComponent(Identifier.Axis.Z).getPollData() - 1.0) * (-255.0) / (2.0)));
 		queue.put(ev);
-		ev.setIndex((short)3);
+		ev.setIndex((short)53);
 		ev.setValue((int)((joy.getComponent(Identifier.Axis.RZ).getPollData() - 1.0) * (-255.0) / (2.0)));
 		queue.put(ev);
 		
 		if(System.getProperty("os.name").toLowerCase().contains("win")){
-			ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
-			ev.setIndex((short)0);
+			ev.setIndex((short)100);
 			ev.setValue((int)(joy.getComponent(Identifier.Button._0).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)1);
+			ev.setIndex((short)101);
 			ev.setValue((int)(joy.getComponent(Identifier.Button._1).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)2);
+			ev.setIndex((short)102);
 			ev.setValue((int)(joy.getComponent(Identifier.Button._2).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)3);
+			ev.setIndex((short)103);
 			ev.setValue((int)(joy.getComponent(Identifier.Button._3).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)4);
+			ev.setIndex((short)104);
 			ev.setValue((int)(joy.getComponent(Identifier.Button._4).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)5);
+			ev.setIndex((short)105);
 			ev.setValue((int)(joy.getComponent(Identifier.Button._5).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)6);
+			ev.setIndex((short)106);
 			ev.setValue((int)(joy.getComponent(Identifier.Button._6).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)7);
+			ev.setIndex((short)107);
 			ev.setValue((int)(joy.getComponent(Identifier.Button._7).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)8);
+			ev.setIndex((short)108);
 			ev.setValue((int)(joy.getComponent(Identifier.Button._8).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)9);
+			ev.setIndex((short)109);
 			ev.setValue((int)(joy.getComponent(Identifier.Button._9).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)10);
+			ev.setIndex((short)110);
 			ev.setValue((int)(joy.getComponent(Identifier.Button._10).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)11);
+			ev.setIndex((short)111);
 			ev.setValue((int)(joy.getComponent(Identifier.Button._11).getPollData()));
 			queue.put(ev);
 		}
 		else if(System.getProperty("os.name").contains("nux")){
-			ev.setCommand(EventEnum.ROBOT_EVENT_JOY_BUTTON);
-			ev.setIndex((short)0);
+			ev.setCommand(EventEnum.JOY_BUTTON);
+			ev.setIndex((short)100);
 			ev.setValue((int)(joy.getComponent(Identifier.Button.TRIGGER).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)1);
+			ev.setIndex((short)101);
 			ev.setValue((int)(joy.getComponent(Identifier.Button.THUMB).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)2);
+			ev.setIndex((short)102);
 			ev.setValue((int)(joy.getComponent(Identifier.Button.THUMB2).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)3);
+			ev.setIndex((short)103);
 			ev.setValue((int)(joy.getComponent(Identifier.Button.TOP).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)4);
+			ev.setIndex((short)104);
 			ev.setValue((int)(joy.getComponent(Identifier.Button.TOP2).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)5);
+			ev.setIndex((short)105);
 			ev.setValue((int)(joy.getComponent(Identifier.Button.PINKIE).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)6);
+			ev.setIndex((short)106);
 			ev.setValue((int)(joy.getComponent(Identifier.Button.BASE).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)7);
+			ev.setIndex((short)107);
 			ev.setValue((int)(joy.getComponent(Identifier.Button.BASE2).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)8);
+			ev.setIndex((short)108);
 			ev.setValue((int)(joy.getComponent(Identifier.Button.BASE3).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)9);
+			ev.setIndex((short)109);
 			ev.setValue((int)(joy.getComponent(Identifier.Button.BASE4).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)10);
+			ev.setIndex((short)110);
 			ev.setValue((int)(joy.getComponent(Identifier.Button.BASE5).getPollData()));
 			queue.put(ev);
-			ev.setIndex((short)11);
+			ev.setIndex((short)111);
 			ev.setValue((int)(joy.getComponent(Identifier.Button.BASE6).getPollData()));
 			queue.put(ev);
 		}
 		
-		ev.setCommand(EventEnum.ROBOT_EVENT_JOY_HAT);
-		ev.setIndex((short)0);
+		ev.setIndex((short)200);
 		
 		float val = joy.getComponent(Identifier.Axis.POV).getPollData();
 		if(val == 0.0){
@@ -432,7 +427,7 @@ public class Joystick extends Thread{
 			}
 		
 			if(j==0){
-				Event ev = new Event(EventEnum.ROBOT_EVENT_JOY_STATUS,(short)0,0);
+				Event ev = new Event(EventEnum.JOY_STATUS,(short)0,0);
 				queue.put(ev);
 				this.stopThread();
 				return false;

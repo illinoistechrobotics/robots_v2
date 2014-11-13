@@ -27,40 +27,42 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum EventEnum {
-    ROBOT_EVENT_CMD                 (0x00), // Commands  
-    ROBOT_EVENT_CMD_START			(0x01),
-    ROBOT_EVENT_CMD_STOP			(0x02),
-    ROBOT_EVENT_CMD_REBOOT			(0x03),
-    ROBOT_EVENT_CMD_SHUTDOWN		(0x04),
-    ROBOT_EVENT_CMD_FAILSAFE		(0x05),
-    ROBOT_EVENT_CMD_HEARTBEAT		(0x06),
+    CMD                 (0x00), // Commands  
+    CMD_START			(0x01),
+    CMD_STOP			(0x02),
+    CMD_REBOOT			(0x03),
+    CMD_SHUTDOWN		(0x04),
+    CMD_FAILSAFE		(0x05),
+    CMD_HEARTBEAT		(0x06),
     
-    ROBOT_EVENT_STATUS              (0x10), // Status information
+    STATUS              (0x10), // Status information
     
-    ROBOT_EVENT_JOY_AXIS            (0x20), // Joystick movements
-    ROBOT_EVENT_JOY_BUTTON          (0x21), // Button presses
-    ROBOT_EVENT_JOY_HAT				(0x22), // D-pad pressed
-    ROBOT_EVENT_JOY_STATUS			(0x23), // Joystick status
+    JOY_AXIS            (0x20), // Joystick movements
+    JOY_BUTTON          (0x21), // Button presses
+    JOY_HAT				(0x22), // D-pad pressed
+    JOY_STATUS			(0x23), // Joystick status
     
-    ROBOT_EVENT_KEYBOARD			(0x30), // Keyboard Events
+    KEYBOARD			(0x30), // Keyboard Events
     
-    ROBOT_EVENT_DISPLAY				(0x40), // Display info events
-    ROBOT_EVENT_GUI					(0x41), // GUI event i.e. Button pushes
-    ROBOT_EVENT_TIMER               (0x50), // Timer events
-    ROBOT_EVENT_MOTOR               (0x60), // Motor events
-    ROBOT_EVENT_SOLENOID			(0x70), // Solenoid events for pneumatics and relays
-    ROBOT_EVENT_POSE				(0x80), // Pose events for states
-    ROBOT_EVENT_ADC                 (0x90), // ADC events
-    ROBOT_EVENT_VARIABLE            (0xA0), // Variable events
-    ROBOT_EVENT_IMU		            (0xB0), // IMU events
-    ROBOT_EVENT_PID					(0xB1), // PID events
-	ROBOT_EVENT_ENCODER				(0xC0), // Encoder events
-    ROBOT_EVENT_EEPROM				(0xD0), // Send data to be stored in eeprom
-    ROBOT_EVENT_IO					(0xE0), // Send generic IO events
-    UNKNOWN_EVENT					(0xFF); // Unknown Event
+    DISPLAY				(0x40), // Display info events
+    GUI					(0x41), // GUI event i.e. Button pushes
+    TIMER               (0x50), // Timer events
+    MOTOR               (0x60), // Motor events
+    SOLENOID			(0x70), // Solenoid events for pneumatics and relays
+    POSE				(0x80), // Pose events for states
+    ADC                 (0x90), // ADC events
+    VARIABLE            (0xA0), // Variable events
+    IMU		            (0xB0), // IMU events
+    PID					(0xB1), // PID events
+	ENCODER				(0xC0), // Encoder events
+    EEPROM				(0xD0), // Send data to be stored in eeprom
+    IO					(0xE0), // Send generic IO events
+    UNKNOWN_EVENT		(0xFF); // Unknown Event
     
-    // Feel free to add more commands but set different values. Try to do it with the available commands first 
-    // Don't remove events please 
+    // Feel free to add more commands but set different values. 
+    // Try to do it with the available commands first 
+    // Don't remove events please
+    // Don't forget to add the new events to any other depenency code
     
     private int value;
     

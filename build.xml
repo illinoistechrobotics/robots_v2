@@ -31,6 +31,7 @@
 	
 	<path id="robots.classpath">
 		<path refid="common.classpath"/>
+		<pathelement location="${lib}/args4j-2.0.29.jar"/>
 	</path>
 	
 	<target depends="buildControllers,buildRobots" name="buildAll"/>
@@ -54,14 +55,16 @@
 	    
 	<target depends="init" name="buildControllers">
         <javac debug="true" debuglevel="${debuglevel}" destdir="${bin}" includeantruntime="false" source="${source}" target="${target}">
-            <src path="${src}"/>
+            <src path="${src}/org/illinoistechrobotics/common"/>
+            <src path="${src}/org/illinoistechrobotics/controller"/>
             <classpath refid="controllers.classpath"/>
         </javac>
     </target>
 	
 	<target depends="init" name="buildRobots">
 	        <javac debug="true" debuglevel="${debuglevel}" destdir="${bin}" includeantruntime="false" source="${source}" target="${target}">
-	            <src path="${src}"/>
+	        	<src path="${src}/org/illinoistechrobotics/common"/>
+	        	<src path="${src}/org/illinoistechrobotics/robot"/>
 	            <classpath refid="robots.classpath"/>
 	        </javac>
 	    </target>

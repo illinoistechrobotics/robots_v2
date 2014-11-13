@@ -110,7 +110,7 @@ public class SerialTest {
     		{
     			Event ev = queue.poll();
     			switch(ev.getCommand()){
-    			case ROBOT_EVENT_CMD_HEARTBEAT:
+    			case CMD_HEARTBEAT:
     				//check the heartbeat and update connection status
     				break;
 				default:
@@ -136,11 +136,11 @@ public class SerialTest {
 			public void actionPerformed(ActionEvent e) {
 				if(comboBox_SerialPort.getSelectedItem() != null){
 					if(serial.isOpen() == false){
-						serial.OpenSerial(9600,comboBox_SerialPort.getSelectedItem().toString());
+						serial.openSerial(9600,comboBox_SerialPort.getSelectedItem().toString());
 					}
 					else if(serial.getPortName().equals(((JComboBox<String>)e.getSource()).getSelectedItem().toString()) == false){
 						serial.closeSerial();
-						serial.OpenSerial(9600,comboBox_SerialPort.getSelectedItem().toString());
+						serial.openSerial(9600,comboBox_SerialPort.getSelectedItem().toString());
 					}
 				}
 			}

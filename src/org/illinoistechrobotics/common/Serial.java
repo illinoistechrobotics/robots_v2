@@ -54,7 +54,7 @@ public class Serial extends Communication implements SerialPortEventListener {
 	/**
 	 * Opens the Serial port with the baud and port_name given
 	 */
-	public boolean OpenSerial(int baud, String port){
+	public boolean openSerial(int baud, String port){
 		serialPortName = port;
 		baudRate = baud;
 		comId = null;

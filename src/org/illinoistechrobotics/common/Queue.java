@@ -33,12 +33,12 @@ public class Queue {
 	}
 	
 	private int size;
-	private int max_size;
+	private int maxSize;
 	private Node first;
 	private Node last;
 	
-	public Queue(int ms){
-		this.max_size = ms;
+	public Queue(int maxSize){
+		this.maxSize = maxSize;
 		this.size = 0;
 		this.first = null;
 		this.last = null;
@@ -60,7 +60,7 @@ public class Queue {
 	}
 	
 	public synchronized boolean add(Event da){
-		if(size >= max_size){
+		if(size >= maxSize){
 			return false;
 		}
 		Event newda = da.copy();
@@ -106,7 +106,7 @@ public class Queue {
 			}
 			cursor = cursor.next;
 		}
-		if(size >= max_size){
+		if(size >= maxSize){
 			return false;
 		}
 		size++;

@@ -146,15 +146,15 @@ public class Penguin extends Robot{
 	public void on_axis_change(Event ev){
 		if(ev.getIndex() == 3){
 			float scale = (ev.getValue()-127)/8*(-1);
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE, PenguinControlEnum.INPUT_PITCH.value, scale));
+			comm.sendEvent(new Event(EventEnum.VARIABLE, PenguinControlEnum.INPUT_PITCH.value, scale));
 		}
 		else if(ev.getIndex() == 2){
 			float scale = (ev.getValue()-127)/8*(1);
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE, PenguinControlEnum.INPUT_ROLL.value, scale));
+			comm.sendEvent(new Event(EventEnum.VARIABLE, PenguinControlEnum.INPUT_ROLL.value, scale));
 		}
 		else if(ev.getIndex() == 0){
 			float scale = (ev.getValue()-127)/8*(1);
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE, PenguinControlEnum.INPUT_YAW.value, scale));
+			comm.sendEvent(new Event(EventEnum.VARIABLE, PenguinControlEnum.INPUT_YAW.value, scale));
 		}
 	}
 	
@@ -188,7 +188,7 @@ public class Penguin extends Robot{
 		}
 		else if(ev.getIndex() == 1){
 			output_motors ^= 0x01;
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OUTPUT_MOTORS.value,output_motors));
+			comm.sendEvent(new Event(EventEnum.VARIABLE,PenguinControlEnum.OUTPUT_MOTORS.value,output_motors));
 		}
 	}
 	
@@ -255,15 +255,15 @@ public class Penguin extends Robot{
 	public void on_gui(Event ev){
 		if(ev.getIndex() == GUI.GUIEnum.PENGUIN_UPDATE_PID.value){
 			try{
-				comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_PID,PenguinPIDEnum.PITCH_P.value,Double.parseDouble(dis.txtPP.getText())));
-				comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_PID,PenguinPIDEnum.PITCH_I.value,Double.parseDouble(dis.txtPI.getText())));
-				comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_PID,PenguinPIDEnum.PITCH_D.value,Double.parseDouble(dis.txtPD.getText())));
-				comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_PID,PenguinPIDEnum.ROLL_P.value,Double.parseDouble(dis.txtRP.getText())));
-				comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_PID,PenguinPIDEnum.ROLL_I.value,Double.parseDouble(dis.txtRI.getText())));
-				comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_PID,PenguinPIDEnum.ROLL_D.value,Double.parseDouble(dis.txtRD.getText())));
-				comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_PID,PenguinPIDEnum.YAW_P.value,Double.parseDouble(dis.txtYP.getText())));
-				comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_PID,PenguinPIDEnum.YAW_I.value,Double.parseDouble(dis.txtYI.getText())));
-				comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_PID,PenguinPIDEnum.YAW_D.value,Double.parseDouble(dis.txtYD.getText())));
+				comm.sendEvent(new Event(EventEnum.PID,PenguinPIDEnum.PITCH_P.value,Double.parseDouble(dis.txtPP.getText())));
+				comm.sendEvent(new Event(EventEnum.PID,PenguinPIDEnum.PITCH_I.value,Double.parseDouble(dis.txtPI.getText())));
+				comm.sendEvent(new Event(EventEnum.PID,PenguinPIDEnum.PITCH_D.value,Double.parseDouble(dis.txtPD.getText())));
+				comm.sendEvent(new Event(EventEnum.PID,PenguinPIDEnum.ROLL_P.value,Double.parseDouble(dis.txtRP.getText())));
+				comm.sendEvent(new Event(EventEnum.PID,PenguinPIDEnum.ROLL_I.value,Double.parseDouble(dis.txtRI.getText())));
+				comm.sendEvent(new Event(EventEnum.PID,PenguinPIDEnum.ROLL_D.value,Double.parseDouble(dis.txtRD.getText())));
+				comm.sendEvent(new Event(EventEnum.PID,PenguinPIDEnum.YAW_P.value,Double.parseDouble(dis.txtYP.getText())));
+				comm.sendEvent(new Event(EventEnum.PID,PenguinPIDEnum.YAW_I.value,Double.parseDouble(dis.txtYI.getText())));
+				comm.sendEvent(new Event(EventEnum.PID,PenguinPIDEnum.YAW_D.value,Double.parseDouble(dis.txtYD.getText())));
 			}catch(Exception e){
 				System.out.println("ERROR - Cannot parse PID values.");
 			}
@@ -280,29 +280,29 @@ public class Penguin extends Robot{
 	
 	public void on_20hz_timer(Event ev){
 		if(throttle_up){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.INPUT_THRUST.value,10.0));
+			comm.sendEvent(new Event(EventEnum.VARIABLE,PenguinControlEnum.INPUT_THRUST.value,10.0));
 		}
 		if(throttle_down){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.INPUT_THRUST.value,-10.0));
+			comm.sendEvent(new Event(EventEnum.VARIABLE,PenguinControlEnum.INPUT_THRUST.value,-10.0));
 		}
 		
 		if(pitch_off_plus){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_PITCH.value,1.0));
+			comm.sendEvent(new Event(EventEnum.VARIABLE,PenguinControlEnum.OFF_PITCH.value,1.0));
 		}
 		if(pitch_off_neg){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_PITCH.value,-1.0));
+			comm.sendEvent(new Event(EventEnum.VARIABLE,PenguinControlEnum.OFF_PITCH.value,-1.0));
 		}
 		if(roll_off_plus){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_ROLL.value,1.0));
+			comm.sendEvent(new Event(EventEnum.VARIABLE,PenguinControlEnum.OFF_ROLL.value,1.0));
 		}
 		if(roll_off_neg){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_ROLL.value,-1.0));
+			comm.sendEvent(new Event(EventEnum.VARIABLE,PenguinControlEnum.OFF_ROLL.value,-1.0));
 		}
 		if(yaw_off_plus){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_YAW.value,1.0));
+			comm.sendEvent(new Event(EventEnum.VARIABLE,PenguinControlEnum.OFF_YAW.value,1.0));
 		}
 		if(yaw_off_neg){
-			comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_YAW.value,-1.0));
+			comm.sendEvent(new Event(EventEnum.VARIABLE,PenguinControlEnum.OFF_YAW.value,-1.0));
 		}
 	}
 	

@@ -58,6 +58,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 import org.illinoistechrobotics.common.Communication;
 import org.illinoistechrobotics.common.Ethernet;
@@ -66,13 +69,13 @@ import org.illinoistechrobotics.common.EventEnum;
 import org.illinoistechrobotics.common.Joystick;
 import org.illinoistechrobotics.common.Keyboard;
 import org.illinoistechrobotics.common.Queue;
+import org.illinoistechrobotics.common.RobotEnum;
 import org.illinoistechrobotics.common.Serial;
 import org.illinoistechrobotics.common.Timer.TimerEnum;
 
 public class GUI extends Thread{
 
 	public JFrame frmIllinoisTechRobotics;
-	private JTextField txtMessage;
 	public JButton btnGeneralStatus;
 	private JRadioButton rdbtnXbee;
 	private JRadioButton rdbtnWifi;
@@ -85,6 +88,8 @@ public class GUI extends Thread{
 	private JComboBox<Integer> comboBox_BaudRate;
 	private JComboBox<String> comboBox_JoyStick;
 	private JTabbedPane tabbedPane;
+	private JTextField txtMessage;
+	private JTextArea textArea;
 	
 	private JButton[] btnBut = new JButton[12];
 	private JButton[] btnD_Pad = new JButton[9];
@@ -114,7 +119,7 @@ public class GUI extends Thread{
 	public JToggleButton tglbtnConnectToModulus;
 	
 	//TODO:
-	//Public Declerations
+	//Public decelerations for button and toggle button and other GUI objects for each robot
 	public JButton btnSampleConnected;
 	public JToggleButton tglbtnConnectToSample;
 	
@@ -172,6 +177,7 @@ public class GUI extends Thread{
 	 */
 	public GUI() {
 		initialize();
+		redirectSystemStreams();
 	}
 	
 	public class deviceChecker extends TimerTask{
@@ -202,7 +208,7 @@ public class GUI extends Thread{
         			if(serial.isOpen() == false)
         			{
         				if(comboBox_BaudRate.getSelectedItem()!=null && comboBox_SerialPort.getSelectedItem()!=null){
-        					serial.OpenSerial(Integer.parseInt(comboBox_BaudRate.getSelectedItem().toString()),comboBox_SerialPort.getSelectedItem().toString());	
+        					serial.openSerial(Integer.parseInt(comboBox_BaudRate.getSelectedItem().toString()),comboBox_SerialPort.getSelectedItem().toString());	
         				}
         			}
         		}
@@ -283,13 +289,13 @@ public class GUI extends Thread{
     		{
     			Event ev = queue.take();
     			switch(ev.getCommand()){
-    			case ROBOT_EVENT_CMD_HEARTBEAT:
+    			case CMD_HEARTBEAT:
     				//check the heartbeat and update connection status
     				heartbeatcount = 0;
     				btnGeneralStatus.setBackground(Color.GREEN);
-    				btnGeneralStatus.setText(Robot.RobotEnum.getRobot(ev.getIndex()).toString());
+    				btnGeneralStatus.setText(RobotEnum.getRobot(ev.getIndex()).toString());
     				break;
-    			case ROBOT_EVENT_TIMER:
+    			case TIMER:
     				//ethernet.sendEvent(new Event(EventEnum.ROBOT_EVENT_CMD_HEARTBEAT,(short)RobotEnum.COMPUTER.getValue(),(short)0));
     				if (ev.getIndex() == TimerEnum.TIMER_HEARTBEAT.value){
     					heartbeatcount++;
@@ -298,14 +304,17 @@ public class GUI extends Thread{
     	    				btnGeneralStatus.setText("");
     					}
     				}
-    			case ROBOT_EVENT_JOY_AXIS:
+    			case JOY_AXIS:
     				updateAxisGUI(ev);
     				break;
-    			case ROBOT_EVENT_JOY_BUTTON:
+    			case JOY_BUTTON:
     				updateButtonGUI(ev);
     				break;
-    			case ROBOT_EVENT_JOY_HAT:
+    			case JOY_HAT:
     				updateHatGUI(ev);
+    				break;
+    			case JOY_STATUS:
+    				updateJoyStatus(ev);
     				break;
 				default:
 					break;
@@ -374,7 +383,6 @@ public class GUI extends Thread{
 	  				return;
 	  			}
 	  			robot.start();
-	  			
 	  		}
 	  		else
 	  		{
@@ -388,6 +396,24 @@ public class GUI extends Thread{
 	}
 	
 	//joystick page updates
+	public void updateJoyStatus(Event ev){
+		if(ev.getIndex()>=50 && ev.getIndex()<100){
+			ev.setCommand(EventEnum.JOY_AXIS);
+			ev.setIndex((short)(ev.getIndex()-50));
+			updateAxisGUI(ev);
+		}
+		else if(ev.getIndex()>=100 && ev.getIndex()<200){
+			ev.setCommand(EventEnum.JOY_BUTTON);
+			ev.setIndex((short)(ev.getIndex()-100));
+			updateButtonGUI(ev);
+		}
+		else if(ev.getIndex()>=200){
+			ev.setCommand(EventEnum.JOY_HAT);
+			ev.setIndex((short)(ev.getIndex()-200));
+			updateHatGUI(ev);
+		}
+	}
+	
 	public void updateButtonGUI(Event ev){
 		if(ev.getValue() == 0)
 			btnBut[ev.getIndex()].setBackground(Color.BLUE);
@@ -739,7 +765,7 @@ public class GUI extends Thread{
 		btnUpdatePid = new JButton("Update PID");
 		btnUpdatePid.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				queue.add(new Event(EventEnum.ROBOT_EVENT_GUI,GUIEnum.PENGUIN_UPDATE_PID.value,0));
+				queue.add(new Event(EventEnum.GUI,GUIEnum.PENGUIN_UPDATE_PID.value,0));
 			}
 		});
 		btnUpdatePid.setBounds(432, 309, 147, 23);
@@ -1108,7 +1134,7 @@ public class GUI extends Thread{
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
-		JTextArea textArea = new JTextArea();
+		textArea = new JTextArea();
 		textArea.setEditable(false);
 		
 		scrollPane.setViewportView(textArea);
@@ -1137,5 +1163,35 @@ public class GUI extends Thread{
 					.addContainerGap())
 		);
 		panTerminal.setLayout(gl_panTerminal);
+	}
+	
+	/**
+	 * changes the System.out and System.err to print to the textbox area 
+	 */
+	private void redirectSystemStreams() {  
+		  OutputStream out = new OutputStream() {  
+		    @Override  
+		    public void write(int b) throws IOException {  
+		    	textArea.append(String.valueOf((char) b)); 
+		    	textArea.setCaretPosition(textArea.getDocument().getLength());
+		    	textArea.repaint();
+		    }  
+		  
+		    @Override  
+		    public void write(byte[] b, int off, int len) throws IOException {  
+		    	textArea.append(new String(b, off, len));
+		    	textArea.setCaretPosition(textArea.getDocument().getLength());
+		    	textArea.repaint();
+		    }  
+		  
+		    @Override  
+		    public void write(byte[] b) throws IOException {  
+		    	write(b, 0, b.length); 
+		    	textArea.setCaretPosition(textArea.getDocument().getLength());
+		    	textArea.repaint();
+		    }  
+		  }; 
+		  System.setOut(new PrintStream(out, true));  
+		  System.setErr(new PrintStream(out, true)); 
 	}
 }

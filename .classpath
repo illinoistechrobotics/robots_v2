@@ -12,5 +12,6 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="robots_v2/lib/RXTX"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/args4j-2.0.29.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
