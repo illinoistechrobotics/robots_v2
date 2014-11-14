@@ -1,5 +1,5 @@
 /*
-Copyright 2013 (c) Illinois Tech Robotics <robotics.iit@gmail.com>
+Copyright 2014 (c) Illinois Tech Robotics <robotics.iit@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -37,6 +37,8 @@ import gnu.io.SerialPortEventListener;
 
 public class Serial extends Communication implements SerialPortEventListener {
 
+	private static final int BUF_SIZE = 1024;
+	
 	private SerialPort serialPort = null;
 	private CommPortIdentifier comId = null;
 	private InputStream input = null;
@@ -45,8 +47,8 @@ public class Serial extends Communication implements SerialPortEventListener {
 	private String serialPortName;
 	private int baudRate = 0;
 	
-	private byte[] buf = new byte[1024];
-
+	private byte[] buf = new byte[BUF_SIZE];
+	
 	public Serial(Queue r){
 		super(r);
 	}
@@ -74,6 +76,7 @@ public class Serial extends Communication implements SerialPortEventListener {
 		}
 		
 		try{
+			//Register the name the name and timeout of the port
 			serialPort = (SerialPort) comId.open(this.getClass().getName(),2000);
 			
 			serialPort.setSerialPortParams(baud, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
@@ -83,7 +86,6 @@ public class Serial extends Communication implements SerialPortEventListener {
 			
 			serialPort.addEventListener(this);
 			serialPort.notifyOnDataAvailable(true);
-			Thread.sleep(1500);
 			isOpen = true;
 		}
 		catch(Exception e){
@@ -122,7 +124,7 @@ public class Serial extends Communication implements SerialPortEventListener {
 		if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {		
 			int length = 0;
 			try {
-				length = input.read(buf, 0, 1024);
+				length = input.read(buf, 0, BUF_SIZE);
 			} catch (IOException e) {
 			}
 			

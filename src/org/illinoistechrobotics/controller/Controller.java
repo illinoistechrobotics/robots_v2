@@ -1,5 +1,5 @@
 /*
-Copyright 2013 (c) Illinois Tech Robotics <robotics.iit@gmail.com>
+Copyright 2014 (c) Illinois Tech Robotics <robotics.iit@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

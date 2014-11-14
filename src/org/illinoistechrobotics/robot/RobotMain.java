@@ -1,5 +1,5 @@
 /*
-Copyright 2013 (c) Illinois Tech Robotics <robotics.iit@gmail.com>
+Copyright 2014 (c) Illinois Tech Robotics <robotics.iit@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -27,8 +27,6 @@ import gnu.io.CommPortIdentifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
-
-import net.java.games.input.Controller;
 
 import org.illinoistechrobotics.common.Communication;
 import org.illinoistechrobotics.common.Ethernet;
@@ -85,6 +83,7 @@ public class RobotMain {
 	private Ethernet ethernet = new Ethernet(queue);
 	private Joystick joy = new Joystick(queue);
 	private Keyboard key = new Keyboard(queue);
+	Communication comm = null;
 	
 	public RobotMain(String[] args) {
 		
@@ -125,14 +124,12 @@ public class RobotMain {
 			}
 			System.out.println();
 			System.out.println("Controllers");
-			List<Controller> controllers = Joystick.getJoysticks();
-			for(Controller c:controllers){
-				System.out.println(c.getName());
+			List<String> controllers = Joystick.getJoystickNames();
+			for(String c:controllers){
+				System.out.println(c);
 			}
 			System.exit(0);
 		}
-		
-		Communication comm = null;
 		
 		if(serialPort!=null){
 			if(serial.openSerial(serialBaud, serialPort)){
@@ -231,12 +228,13 @@ public class RobotMain {
 	
 	public void exit(){
 		
-		serial.sendEvent(new Event(EventEnum.CMD_SHUTDOWN, (short)0, 0));
-		
-		try{
-        	Thread.sleep(1000);
-        } catch(InterruptedException e) {	
-        }
+		if(comm != null){
+			comm.sendEvent(new Event(EventEnum.CMD_SHUTDOWN, (short)0, 0));
+			try{
+	        	Thread.sleep(1000);
+	        } catch(InterruptedException e) {	
+	        }
+		}
 		
 		if(serial.isOpen()){
 			serial.closeSerial();
