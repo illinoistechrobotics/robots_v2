@@ -92,7 +92,7 @@
 			<jar destfile="${build_robots}/robots.jar">
 				<manifest>
 					<attribute name="Main-Class" value="org.illinoistechrobotics.robot.RobotMain"/>
-					<attribute name="Class-Path" value=". lib/JInput/jinput.jar lib/RXTX/RXTXcomm.jar"/>
+					<attribute name="Class-Path" value=". lib/JInput/jinput.jar lib/RXTX/RXTXcomm.jar lib/args4j-2.0.29.jar"/>
 				</manifest>
 				<fileset dir="${bin}"/>
 			</jar>
@@ -105,6 +105,7 @@
 			<copy todir="${build_robots}">
 				<fileset dir="${conf}/robots"/>
 			</copy>	
+			<copy file="${lib}/args4j-2.0.29.jar" todir="${build_robots_lib}"/>
 		</target>
 	
 	<target depends="packageAll" name="deployAll">

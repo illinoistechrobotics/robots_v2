@@ -60,7 +60,7 @@ public class RobotMain {
 	@Option(name="-ip", aliases={"--ipAddress"}, usage="report ip address")
 	private String ipAddress = null;
 
-	@Option(name="-r", aliases={"--robot"}, usage="robot that will be running", required=true)
+	@Option(name="-r", aliases={"--robot"}, usage="robot that will be running")
 	private String robotName = "Unknown";
 	
 	@Option(name="-j", aliases={"--joy"}, usage="name of joy stick to use")
@@ -131,6 +131,12 @@ public class RobotMain {
 			System.exit(0);
 		}
 		
+		if(robotName == null){
+			System.err.println("Option \"-r (--robot)\" is required");
+			parser.printUsage(System.err);
+			System.exit(1);
+		}
+		
 		if(serialPort!=null){
 			if(serial.openSerial(serialBaud, serialPort)){
 				System.out.println("Serial port " + serialPort + " at " + serialBaud + " baud.");
@@ -166,18 +172,20 @@ public class RobotMain {
 		
 		//TODO:
 		//Add new if else for each robot
-		if(robotName.equals("Modulus")){
+		if("Modulus".equals(robotName)){ //did reverse way so don't need to worry about null pointer
 			System.out.println("Creating Modulus Robot.");
 			robot = new Modulus(queue, comm, timer);
 		}
-		else if(robotName.equals("SampleRobot")){
+		else if("SampleRobot".equals(robotName)){
 			System.out.println("Creating Sample Robot.");
 			robot = new SampleRobot(queue, comm, timer);
 		}
-		
-		if(robot == null){
+		else{
+			System.err.println("Robot " + robot + " is not a valid robot name");
 			System.exit(1);
 		}
+			
+		
 		
 		robot.start();
 	}
