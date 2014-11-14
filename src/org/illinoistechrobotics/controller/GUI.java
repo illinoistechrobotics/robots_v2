@@ -181,7 +181,8 @@ public class GUI extends Thread{
 	}
 	
 	public class deviceChecker extends TimerTask{
-	       
+	    
+		@Override
         public void run(){
         	try{
         		List<CommPortIdentifier> com = Serial.getSerialPorts();
@@ -284,7 +285,9 @@ public class GUI extends Thread{
 	public class StanbyQueueReading extends TimerTask{
 	    
 		int heartbeatcount = 0;
-        public void run(){
+        
+		@Override
+		public void run(){
     		while(queue.getSize() > 0)
     		{
     			Event ev = queue.take();
@@ -334,7 +337,7 @@ public class GUI extends Thread{
 	
 	private boolean running = false;
 	
-	private Robot robot;
+	private Controller robot;
 	public JTextField txtPD;
 	public JTextField txtPI;
 	public JTextField txtPP;
@@ -346,7 +349,9 @@ public class GUI extends Thread{
 	public JTextField txtYD;
 	
 	private class btnStartListener implements ActionListener{
-	  	public void actionPerformed(ActionEvent event){
+	  	
+		@Override
+		public void actionPerformed(ActionEvent event){
 	  		JToggleButton btnTemp = (JToggleButton)event.getSource();
 	  		
 	  		if(running == true && btnTemp.getText().equals("Connect")){
@@ -395,7 +400,7 @@ public class GUI extends Thread{
 	   	}
 	}
 	
-	//joystick page updates
+	//joy stick page updates
 	public void updateJoyStatus(Event ev){
 		if(ev.getIndex()>=50 && ev.getIndex()<100){
 			ev.setCommand(EventEnum.JOY_AXIS);
@@ -464,7 +469,8 @@ public class GUI extends Thread{
 		frmIllinoisTechRobotics.setFocusable(true);
 		
 		frmIllinoisTechRobotics.addWindowListener(new WindowAdapter() {
-		    @Override
+		    
+			@Override
 		    public void windowClosing(WindowEvent windowEvent) {
 		    	if(serial.isOpen()){
     				serial.closeSerial();
@@ -764,6 +770,8 @@ public class GUI extends Thread{
 		
 		btnUpdatePid = new JButton("Update PID");
 		btnUpdatePid.addActionListener(new ActionListener() {
+			
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				queue.add(new Event(EventEnum.GUI,GUIEnum.PENGUIN_UPDATE_PID.value,0));
 			}
@@ -1169,13 +1177,15 @@ public class GUI extends Thread{
 	 * changes the System.out and System.err to print to the textbox area 
 	 */
 	private void redirectSystemStreams() {  
-		  OutputStream out = new OutputStream() {  
-		    @Override  
-		    public void write(int b) throws IOException {  
-		    	textArea.append(String.valueOf((char) b)); 
+			
+		OutputStream out = new OutputStream() {  
+			
+			@Override  
+			public void write(int b) throws IOException {  
+				textArea.append(String.valueOf((char) b)); 
 		    	textArea.setCaretPosition(textArea.getDocument().getLength());
 		    	textArea.repaint();
-		    }  
+			}  
 		  
 		    @Override  
 		    public void write(byte[] b, int off, int len) throws IOException {  
@@ -1190,8 +1200,8 @@ public class GUI extends Thread{
 		    	textArea.setCaretPosition(textArea.getDocument().getLength());
 		    	textArea.repaint();
 		    }  
-		  }; 
-		  System.setOut(new PrintStream(out, true));  
-		  System.setErr(new PrintStream(out, true)); 
+		}; 
+		System.setOut(new PrintStream(out, true));  
+		System.setErr(new PrintStream(out, true)); 
 	}
 }

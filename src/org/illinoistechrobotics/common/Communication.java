@@ -124,7 +124,6 @@ public abstract class Communication extends Thread{
 		}
 	}
 	
-	
 	public abstract void sendEvent(Event ev);
 	
 }

@@ -72,6 +72,7 @@ public class Ethernet extends Communication{
         isConnected = false;
     }
 	
+	@Override
 	public void run() {
         run = true;	
         while (run){
@@ -109,6 +110,7 @@ public class Ethernet extends Communication{
 		return isConnected;
 	}
     
+	@Override
 	public synchronized void sendEvent(Event ev) {
         try {
         	String s = ev.toStringSend();

@@ -67,6 +67,7 @@ public class Timer extends Thread{
 		}
 	}
 	
+	@Override
 	public void run(){
 		run = true;
 		long  last_sent_P1hz = 0;

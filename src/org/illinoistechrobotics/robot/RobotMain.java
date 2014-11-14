@@ -34,6 +34,7 @@ import org.illinoistechrobotics.common.Communication;
 import org.illinoistechrobotics.common.Ethernet;
 import org.illinoistechrobotics.common.Event;
 import org.illinoistechrobotics.common.EventEnum;
+import org.illinoistechrobotics.common.EventManager;
 import org.illinoistechrobotics.common.Joystick;
 import org.illinoistechrobotics.common.Keyboard;
 import org.illinoistechrobotics.common.Queue;
@@ -88,7 +89,8 @@ public class RobotMain {
 	public RobotMain(String[] args) {
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
-		    public void run() { 
+			@Override
+			public void run() { 
 		    	exit();
 		    }
 		});
@@ -163,7 +165,7 @@ public class RobotMain {
 		
 		timer.start();
 		
-		Robot robot = null;
+		EventManager robot = null;
 		
 		//TODO:
 		//Add new if else for each robot
@@ -184,7 +186,8 @@ public class RobotMain {
 	}
 	
 	public class deviceChecker extends TimerTask{
-	       
+	    
+		@Override
         public void run(){
         	try{
         		List<CommPortIdentifier> com = Serial.getSerialPorts();

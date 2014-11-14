@@ -1,5 +1,5 @@
 /*
-Copyright 2013 (c) Illinois Tech Robotics <robotics.iit@gmail.com>
+Copyright 2014 (c) Illinois Tech Robotics <robotics.iit@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -20,7 +20,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package org.illinoistechrobotics.robot;
+package org.illinoistechrobotics.common;
 
 import org.illinoistechrobotics.common.Communication;
 import org.illinoistechrobotics.common.Event;
@@ -30,22 +30,22 @@ import org.illinoistechrobotics.common.RobotEnum;
 import org.illinoistechrobotics.common.Timer;
 import org.illinoistechrobotics.common.Timer.TimerEnum;
 
-public abstract class Robot extends Thread{
-
+public abstract class EventManager extends Thread{
+	
 	protected Queue recv_q;
 	protected Communication comm;
 	protected Timer timer;
-	protected RobotEnum robot = RobotEnum.UNKNOWN_ROBOT;
+	protected RobotEnum robotEnum;
 	
-	public Robot(Queue q, Communication c, Timer t, RobotEnum r){
+	public EventManager(Queue q, Communication c, Timer t, RobotEnum r){
 		recv_q = q;	
 		comm = c;
 		timer = t;
-		robot = r;
+		robotEnum = r;
 		on_init();
 	}
 	
-	private volatile Boolean run = true;
+	protected volatile Boolean run = true;
 	protected int heartbeat = 20;
 	
 	public void stopThread(){
@@ -56,6 +56,7 @@ public abstract class Robot extends Thread{
 		}
 	}
 	
+	@Override
 	public void run()
 	{	
 		recv_q.flush(); //clear the queue
@@ -75,6 +76,7 @@ public abstract class Robot extends Thread{
 					on_command_code(ev);
 					break;
 				case CMD_HEARTBEAT:
+					//need to update GUI
 					heartbeat = 0;
 					on_heartbeat(ev);
 					break;
@@ -123,8 +125,8 @@ public abstract class Robot extends Thread{
     						on_failsafe();
     					}
 						on_heartbeat_timer(ev);
+						comm.sendEvent(new Event(EventEnum.CMD_HEARTBEAT,robotEnum.getValue(),0));
 						heartbeat++;
-						comm.sendEvent(new Event(EventEnum.CMD_HEARTBEAT,robot.getValue(),0));
 					}
 					break;	
 				case MOTOR:
@@ -170,36 +172,36 @@ public abstract class Robot extends Thread{
 		}
 	}
 	
-	public abstract void on_init();
-	public abstract void on_failsafe();
-	public abstract void on_command_code(Event ev);
-	public abstract void on_heartbeat(Event ev);
-	public abstract void on_status(Event ev);
-	public abstract void on_axis_change(Event ev);
-	public abstract void on_button_down(Event ev);
-	public abstract void on_button_up(Event ev);
-	public abstract void on_joy_hat(Event ev);
-	public abstract void on_joy_status(Event ev);
-	public abstract void on_keyboard(Event ev);
-	public abstract void on_display(Event ev);
-	public abstract void on_gui(Event ev);
-	public abstract void on_1hz_timer(Event ev);
-	public abstract void on_10hz_timer(Event ev);
-	public abstract void on_20hz_timer(Event ev);
-	public abstract void on_25hz_timer(Event ev);
-	public abstract void on_50hz_timer(Event ev);
-	public abstract void on_100hz_timer(Event ev);
-	public abstract void on_heartbeat_timer(Event ev);
-	public abstract void on_motor(Event ev);
-	public abstract void on_solenoid(Event ev);
-	public abstract void on_pose(Event ev);
-	public abstract void on_adc(Event ev);
-	public abstract void on_variable(Event ev);
-	public abstract void on_imu(Event ev);
-	public abstract void on_pid(Event ev);
-	public abstract void on_encoder(Event ev);
-	public abstract void on_eeprom(Event ev);
-	public abstract void on_io(Event ev);
-	public abstract void on_shutdown(Event ev);
-	public abstract void on_unknown_command(Event ev);
+	public void on_init(){}
+	public void on_failsafe(){}
+	public void on_command_code(Event ev){}
+	public void on_heartbeat(Event ev){}
+	public void on_status(Event ev){}
+	public void on_axis_change(Event ev){}
+	public void on_button_down(Event ev){}
+	public void on_button_up(Event ev){}
+	public void on_joy_hat(Event ev){}
+	public void on_joy_status(Event ev){}
+	public void on_keyboard(Event ev){}
+	public void on_display(Event ev){}
+	public void on_gui(Event ev){}
+	public void on_1hz_timer(Event ev){}
+	public void on_10hz_timer(Event ev){}
+	public void on_20hz_timer(Event ev){}
+	public void on_25hz_timer(Event ev){}
+	public void on_50hz_timer(Event ev){}
+	public void on_100hz_timer(Event ev){}
+	public void on_heartbeat_timer(Event ev){}
+	public void on_motor(Event ev){}
+	public void on_solenoid(Event ev){}
+	public void on_pose(Event ev){}
+	public void on_adc(Event ev){}
+	public void on_variable(Event ev){}
+	public void on_imu(Event ev){}
+	public void on_pid(Event ev){}
+	public void on_encoder(Event ev){}
+	public void on_eeprom(Event ev){}
+	public void on_io(Event ev){}
+	public void on_shutdown(Event ev){}
+	public void on_unknown_command(Event ev){}
 }

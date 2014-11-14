@@ -20,18 +20,35 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package org.illinoistechrobotics.robot;
+package org.illinoistechrobotics.controller;
+
+import java.awt.Color;
 
 import org.illinoistechrobotics.common.Communication;
+import org.illinoistechrobotics.common.Event;
 import org.illinoistechrobotics.common.EventManager;
 import org.illinoistechrobotics.common.Queue;
 import org.illinoistechrobotics.common.RobotEnum;
 import org.illinoistechrobotics.common.Timer;
 
-public class Modulus extends EventManager{
+public abstract class Controller extends EventManager{
 	
-	public Modulus(Queue q, Communication c, Timer t){
-		super(q,c,t,RobotEnum.MODULUS);
+	protected GUI dis;
+	
+	public Controller(Queue q, Communication c, GUI d, Timer t){
+		super(q,c,t,RobotEnum.COMPUTER);
+		dis = d;
 	}
-
+	
+	@Override
+	public void on_failsafe(){
+		dis.btnGeneralStatus.setBackground(Color.RED);
+		dis.btnGeneralStatus.setText("");
+	};
+	
+	@Override
+	public void on_heartbeat(Event ev){
+		dis.btnGeneralStatus.setBackground(Color.GREEN);
+		dis.btnGeneralStatus.setText(RobotEnum.getRobot(ev.getIndex()).toString());	
+	}
 }

@@ -116,7 +116,8 @@ public class Serial extends Communication implements SerialPortEventListener {
 			isOpen = false;
 		}
 	}
-		
+	
+	@Override
 	public synchronized void serialEvent(SerialPortEvent oEvent) {
 		if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {		
 			int length = 0;
@@ -147,6 +148,7 @@ public class Serial extends Communication implements SerialPortEventListener {
 		return comId;
 	}
 	
+	@Override
 	public synchronized void sendEvent(Event ev){
 		try{
 			output.write(ev.toStringSend().getBytes());   //write needs a byte array instead of a string

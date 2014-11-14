@@ -34,7 +34,7 @@ import org.illinoistechrobotics.common.EventEnum;
 import org.illinoistechrobotics.common.Queue;
 import org.illinoistechrobotics.common.Timer;
 
-public class Penguin extends Robot{
+public class Penguin extends Controller{
 
 	public enum PenguinControlEnum
 	{
@@ -127,22 +127,12 @@ public class Penguin extends Robot{
 		super(q,c,d,t);
 	}
 	
+	@Override
 	public void on_init(){
 		timer.timer20hz = true;
 	}
 	
-	public void on_command_code(Event ev){
-		
-	}
-	
-	public void on_heartbeat(Event ev) {
-		
-	}
-	
-	public void on_status(Event ev){
-		
-	}
-	
+	@Override
 	public void on_axis_change(Event ev){
 		if(ev.getIndex() == 3){
 			float scale = (ev.getValue()-127)/8*(-1);
@@ -169,6 +159,8 @@ public class Penguin extends Robot{
 	boolean roll_off_plus = false;
 	boolean roll_off_neg = false;
 	int output_motors = 0;
+	
+	@Override
 	public void on_button_down(Event ev){
 		if(ev.getIndex() == 5){
 			throttle_down = false;
@@ -192,6 +184,7 @@ public class Penguin extends Robot{
 		}
 	}
 	
+	@Override
 	public void on_button_up(Event ev){
 		if(ev.getIndex() == 5)
 			throttle_up = false;
@@ -203,6 +196,7 @@ public class Penguin extends Robot{
 			yaw_off_neg = false;
 	}
 	
+	@Override
 	public void on_joy_hat(Event ev){
 		if(ev.getValue() == 3){
 			//comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_PITCH.value,10.0));
@@ -240,18 +234,7 @@ public class Penguin extends Robot{
 		}
 	}
 	
-	public void on_joy_status(Event ev){
-		
-	}
-	
-	public void on_keyboard(Event ev){
-		
-	}
-	
-	public void on_display(Event ev){
-		
-	}
-	
+	@Override	
 	public void on_gui(Event ev){
 		if(ev.getIndex() == GUI.GUIEnum.PENGUIN_UPDATE_PID.value){
 			try{
@@ -270,14 +253,7 @@ public class Penguin extends Robot{
 		}
 	}
 	
-	public void on_1hz_timer(Event ev){
-		
-	}
-	
-	public void on_10hz_timer(Event ev){
-		
-	}
-	
+	@Override
 	public void on_20hz_timer(Event ev){
 		if(throttle_up){
 			comm.sendEvent(new Event(EventEnum.VARIABLE,PenguinControlEnum.INPUT_THRUST.value,10.0));
@@ -305,19 +281,8 @@ public class Penguin extends Robot{
 			comm.sendEvent(new Event(EventEnum.VARIABLE,PenguinControlEnum.OFF_YAW.value,-1.0));
 		}
 	}
-	
-	public void on_25hz_timer(Event ev){
-		
-	}
-	
-	public void on_50hz_timer(Event ev){
-		
-	}
-	
-	public void on_100hz_timer(Event ev){
-		
-	}
-	
+
+	@Override
 	public void on_heartbeat_timer(Event ev){
 		if(heartbeat <= 5){
 			dis.btnPenguinConnected.setBackground(Color.GREEN);
@@ -327,27 +292,8 @@ public class Penguin extends Robot{
 		}
 		
 	}
-	
-	public void on_motor(Event ev){
-		
-	}
-	
-	public void on_solenoid(Event ev) {
-		
-	}
-	
-	public void on_pose(Event ev) {
-		
-	}
-	
-	public void on_adc(Event ev) {
-		
-	}
 
-	public void on_variable(Event ev){
-		
-	}
-	
+	@Override
 	public void on_imu(Event ev){
 		DecimalFormat df = new DecimalFormat("#.##");
 		if(ev.getIndex()==PenguinStateEnum.PITCH.value){
@@ -379,30 +325,16 @@ public class Penguin extends Robot{
 		}
 	}
 	
+	@Override
 	public void on_pid(Event ev){
 		if(ev.getIndex()==PenguinPIDEnum.PID_UPDATE_SUCCESS.value){
 			System.out.println("PID successfully updated."); 
 		}
 	}
 	
-	public void on_encoder(Event ev){
-		
-	}
-
-	public void on_eeprom(Event ev){
-		
-	}
-
-	public void on_io(Event ev){
-		
-	}
-	
+	@Override
 	public void on_shutdown(Event ev){
 		dis.btnPenguinConnected.setBackground(Color.RED);
-	}
-	
-	public void on_unknown_command(Event ev){
-		
 	}
 
 }

@@ -24,142 +24,43 @@ package org.illinoistechrobotics.robot;
 
 import org.illinoistechrobotics.common.Communication;
 import org.illinoistechrobotics.common.Event;
+import org.illinoistechrobotics.common.EventManager;
 import org.illinoistechrobotics.common.Queue;
 import org.illinoistechrobotics.common.RobotEnum;
 import org.illinoistechrobotics.common.Timer;
 
-public class SampleRobot extends Robot{
+public class SampleRobot extends EventManager{
 	
 	public SampleRobot(Queue q, Communication c, Timer t){
 		super(q,c,t,RobotEnum.UNKNOWN_ROBOT);
 	}
 	
+	//Sample of all events
+	//Don't need to include then all
+	//just the ones you need
+	//Please use the @Override annotation to make sure that the method will be called
+	
+	@Override
 	public void on_init(){
-
+		//init timer that will be used if any
 	}
 	
+	@Override
 	public void on_failsafe(){
-		
+		//place code to place the robot into a safe state
+		//ie STOP all the motors and moving components
 	}
 	
-	public void on_command_code(Event ev){
-		
-	}
-	
+	@Override
 	public void on_heartbeat(Event ev) {
-		
+		//place code that indicate robot is connected to computer
+		//ie blink LED
 	}
 	
-	public void on_status(Event ev){
-		
-	}
-	
-	public void on_axis_change(Event ev){
-
-	}
-
-	public void on_button_down(Event ev){
-
-	}
-	
-	public void on_button_up(Event ev){
-		
-	}
-	
-	public void on_joy_hat(Event ev){
-
-	}
-	
-	public void on_joy_status(Event ev){
-		
-	}
-	
-	public void on_keyboard(Event ev){
-		
-	}
-	
-	public void on_display(Event ev){
-		
-	}
-	
-	public void on_gui(Event ev){
-
-	}
-	
-	public void on_1hz_timer(Event ev){
-		
-	}
-	
-	public void on_10hz_timer(Event ev){
-		
-	}
-	
-	public void on_20hz_timer(Event ev){
-
-	}
-	
-	public void on_25hz_timer(Event ev){
-		
-	}
-	
-	public void on_50hz_timer(Event ev){
-		
-	}
-	
-	public void on_100hz_timer(Event ev){
-		
-	}
-	
+	@Override
 	public void on_heartbeat_timer(Event ev){
-
-	}
-	
-	public void on_motor(Event ev){
-		
-	}
-	
-	public void on_solenoid(Event ev) {
-		
-	}
-	
-	public void on_pose(Event ev) {
-		
-	}
-	
-	public void on_adc(Event ev) {
-		
-	}
-
-	public void on_variable(Event ev){
-		
-	}
-	
-	public void on_imu(Event ev){
-		
-	}
-	
-	public void on_pid(Event ev){
-
-	}
-	
-	public void on_encoder(Event ev){
-		
-	}
-
-	public void on_eeprom(Event ev){
-		
-	}
-
-	public void on_io(Event ev){
-		
-	}
-	
-	public void on_shutdown(Event ev){
-
-	}
-	
-	public void on_unknown_command(Event ev){
-		
+		//place code that indicate code is running
+		//ie blink LED
 	}
 
 }
