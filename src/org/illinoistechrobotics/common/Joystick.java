@@ -22,6 +22,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 package org.illinoistechrobotics.common;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +31,6 @@ import net.java.games.input.Component;
 import net.java.games.input.Component.Identifier;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
-import net.java.games.input.DirectInputEnvironmentPlugin;
 import net.java.games.input.EventQueue;
 
 public class Joystick extends Thread{
@@ -57,13 +58,22 @@ public class Joystick extends Thread{
 		List<Controller> csList = new ArrayList<Controller>();
 		Controller[] cs;
 		if(System.getProperty("os.name").toLowerCase().contains("win")){
-			DirectInputEnvironmentPlugin diep = new DirectInputEnvironmentPlugin();
-			cs = diep.getControllers();
+			try {
+	            Class<?> clazz = Class.forName("net.java.games.input.DefaultControllerEnvironment");
+	            Constructor<?> defaultConstructor = clazz.getDeclaredConstructor();
+	            defaultConstructor.setAccessible(true); // set visibility to public
+
+	            Field defaultEnvironementField = ControllerEnvironment.class.getDeclaredField("defaultEnvironment");
+	            defaultEnvironementField.setAccessible(true);
+	            defaultEnvironementField.set(ControllerEnvironment.getDefaultEnvironment(), defaultConstructor.newInstance());
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
 		}
-		else {
-			ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment(); 
-			cs = ce.getControllers(); 
-		}
+
+		ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment(); 
+		cs = ce.getControllers(); 
+		
 		for(int i=0; i<cs.length; i++){
 			//this will only output the controllers
 			if(cs[i].getType() == Controller.Type.STICK || cs[i].getType() == Controller.Type.GAMEPAD){
@@ -415,24 +425,37 @@ public class Joystick extends Thread{
 	}
 	
 	public boolean checkJoystick(){	
+
 		if(System.getProperty("os.name").toLowerCase().contains("win")){
-			DirectInputEnvironmentPlugin diep = new DirectInputEnvironmentPlugin();
-			Controller[] cs = diep.getControllers();
-			int j=0;
-			for(int i=0; i<cs.length; i++){
-				//this will only output the controllers
-				if(cs[i].getType() == Controller.Type.STICK || cs[i].getType() == Controller.Type.GAMEPAD){
-					j++;
-				}
+			try {
+				Class<?> clazz = Class.forName("net.java.games.input.DefaultControllerEnvironment");
+				Constructor<?> defaultConstructor = clazz.getDeclaredConstructor();
+				defaultConstructor.setAccessible(true); // set visibility to public
+
+				Field defaultEnvironementField = ControllerEnvironment.class.getDeclaredField("defaultEnvironment");
+				defaultEnvironementField.setAccessible(true);
+				defaultEnvironementField.set(ControllerEnvironment.getDefaultEnvironment(), defaultConstructor.newInstance());
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		
-			if(j==0){
-				Event ev = new Event(EventEnum.JOY_STATUS,(short)0,0);
-				queue.put(ev);
-				this.stopThread();
-				return false;
+		}
+
+		ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment(); 
+		Controller[] cs = ce.getControllers();
+
+		int j=0;
+		for(int i=0; i<cs.length; i++){
+			//this will only output the controllers
+			if(cs[i].getType() == Controller.Type.STICK || cs[i].getType() == Controller.Type.GAMEPAD){
+				j++;
 			}
-			return true;
+		}
+
+		if(j==0){
+			Event ev = new Event(EventEnum.JOY_STATUS,(short)0,0);
+			queue.put(ev);
+			this.stopThread();
+			return false;
 		}
 		return true;
 	}
