@@ -21,8 +21,8 @@
 	
 	<path id="common.classpath">
         <pathelement location="${bin}"/>
-        <pathelement location="${lib}/JInput/jinput.jar"/>
-        <pathelement location="${lib}/RXTX/RXTXcomm.jar"/>
+        <pathelement location="${lib}/JInput/x86/jinput.jar"/>
+        <pathelement location="${lib}/RXTX/x86/RXTXcomm.jar"/>
     </path>
 	
 	<path id="controllers.classpath">
@@ -73,7 +73,6 @@
 		<jar destfile="${build_controllers}/controllers.jar">
 			<manifest>
 				<attribute name="Main-Class" value="org.illinoistechrobotics.controller.GUI"/>
-				<attribute name="Class-Path" value=". lib/JInput/jinput.jar lib/RXTX/RXTXcomm.jar"/>
 			</manifest>
 			<fileset dir="${bin}"/>
 		</jar>
@@ -86,13 +85,15 @@
 		<copy todir="${build_controllers}">
 			<fileset dir="${conf}/controllers"/>
 		</copy>	
+		
+		<chmod file="${build_controllers}/LinRun.sh" perm="+x"/>
+		<chmod file="${build_controllers}/BBBRun.sh" perm="+x"/>
 	</target>
 	
 	<target depends="buildRobots" name="packageRobots">
 			<jar destfile="${build_robots}/robots.jar">
 				<manifest>
 					<attribute name="Main-Class" value="org.illinoistechrobotics.robot.RobotMain"/>
-					<attribute name="Class-Path" value=". lib/JInput/jinput.jar lib/RXTX/RXTXcomm.jar lib/args4j-2.0.29.jar"/>
 				</manifest>
 				<fileset dir="${bin}"/>
 			</jar>
@@ -106,6 +107,9 @@
 				<fileset dir="${conf}/robots"/>
 			</copy>	
 			<copy file="${lib}/args4j-2.0.29.jar" todir="${build_robots_lib}"/>
+		
+			<chmod file="${build_robots}/LinRun.sh" perm="+x"/>
+			<chmod file="${build_robots}/BBBRun.sh" perm="+x"/>
 		</target>
 	
 	<target depends="packageAll" name="deployAll">

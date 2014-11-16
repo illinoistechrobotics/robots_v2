@@ -26,6 +26,7 @@ import gnu.io.CommPortIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 import java.util.TimerTask;
 
 import org.illinoistechrobotics.common.Communication;
@@ -37,7 +38,6 @@ import org.illinoistechrobotics.common.Joystick;
 import org.illinoistechrobotics.common.Keyboard;
 import org.illinoistechrobotics.common.Queue;
 import org.illinoistechrobotics.common.Serial;
-import org.illinoistechrobotics.common.Timer;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -77,8 +77,9 @@ public class RobotMain {
 	@Argument
     private List<String> arguments = new ArrayList<String>();
 	
+	private Timer trDeviceChecker;
 	private Queue queue = new Queue(1000);
-	private Timer timer = new Timer(queue);
+	private org.illinoistechrobotics.common.Timer timer = new org.illinoistechrobotics.common.Timer(queue);
 	private Serial serial = new Serial(queue);
 	private Ethernet ethernet = new Ethernet(queue);
 	private Joystick joy = new Joystick(queue);
@@ -184,10 +185,11 @@ public class RobotMain {
 			System.err.println("Robot " + robot + " is not a valid robot name");
 			System.exit(1);
 		}
-			
 		
-		
+		trDeviceChecker = new Timer();
+		trDeviceChecker.schedule(new deviceChecker(), 0, 1000);
 		robot.start();
+		
 	}
 	
 	public class deviceChecker extends TimerTask{
@@ -259,6 +261,10 @@ public class RobotMain {
     	if(key.isListening()){
 			key.stop();
 		}
+    	
+    	if(trDeviceChecker != null){
+    		trDeviceChecker.cancel();
+    	}
     	
         try{
         	Thread.sleep(1000);

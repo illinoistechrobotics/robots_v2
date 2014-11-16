@@ -123,7 +123,7 @@ public class GUI extends Thread{
 	public JButton btnSampleConnected;
 	public JToggleButton tglbtnConnectToSample;
 	
-	private Timer trSerialCommChecker;
+	private Timer trDeviceChecker;
 	private Timer trStanbyQueueReading;
 	private Queue queue = new Queue(1000);
 	private org.illinoistechrobotics.common.Timer timer = new org.illinoistechrobotics.common.Timer(queue);
@@ -334,8 +334,8 @@ public class GUI extends Thread{
 	public void init()
 	{
 		timer.start();
-        trSerialCommChecker = new Timer();
-        trSerialCommChecker.schedule(new deviceChecker(), 0, 1000);
+		trDeviceChecker = new Timer();
+		trDeviceChecker.schedule(new deviceChecker(), 0, 1000);
         trStanbyQueueReading = new Timer();
         trStanbyQueueReading.schedule(new StanbyQueueReading(), 0, 25);
 	}
@@ -493,7 +493,7 @@ public class GUI extends Thread{
         			key.stop();
         		}
 		    	
-		    	trSerialCommChecker.cancel();
+		    	trDeviceChecker.cancel();
 		        trStanbyQueueReading.cancel();
 		    	
 		        try{

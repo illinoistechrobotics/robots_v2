@@ -1,0 +1,1 @@
+java -cp lib\JInput\x86\jinput.jar;lib\RXTX\x86\RXTXcomm.jar -Djava.ext.dirs=lib\JInput\x86;lib\RXTX\x86 -jar robots.jar -l
