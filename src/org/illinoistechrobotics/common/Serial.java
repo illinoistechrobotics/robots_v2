@@ -71,7 +71,7 @@ public class Serial extends Communication implements SerialPortEventListener {
 		}
 		
 		if(comId == null){
-			System.err.println("Can not open serial port");
+			System.err.println("Can not open serial port " + port + ".");
 			return false;
 		}
 		
@@ -89,6 +89,7 @@ public class Serial extends Communication implements SerialPortEventListener {
 			isOpen = true;
 		}
 		catch(Exception e){
+			System.out.println("Can not open serial port " + port + ".");
 			return false;
 		}
 		
@@ -126,6 +127,7 @@ public class Serial extends Communication implements SerialPortEventListener {
 			try {
 				length = input.read(buf, 0, BUF_SIZE);
 			} catch (IOException e) {
+				System.out.println("Error reading serial port.");
 			}
 			
 			StringBuffer received = new StringBuffer();
@@ -152,10 +154,14 @@ public class Serial extends Communication implements SerialPortEventListener {
 	
 	@Override
 	public synchronized void sendEvent(Event ev){
-		try{
-			output.write(ev.toStringSend().getBytes());   //write needs a byte array instead of a string
-		}
-		catch(Exception e){
+		if(isOpen){
+			try{
+				output.write(ev.toStringSend().getBytes());   //write needs a byte array instead of a string
+			}
+			catch(Exception e){
+				System.out.println("Error reading serial port.");
+				closeSerial();
+			}
 		}
 	}	
 }

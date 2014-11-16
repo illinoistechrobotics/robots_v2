@@ -57,18 +57,16 @@ public class Joystick extends Thread{
 	public static List<Controller> getJoysticks(){
 		List<Controller> csList = new ArrayList<Controller>();
 		Controller[] cs;
-		if(System.getProperty("os.name").toLowerCase().contains("win")){
-			try {
-	            Class<?> clazz = Class.forName("net.java.games.input.DefaultControllerEnvironment");
-	            Constructor<?> defaultConstructor = clazz.getDeclaredConstructor();
-	            defaultConstructor.setAccessible(true); // set visibility to public
+		try {
+			Class<?> clazz = Class.forName("net.java.games.input.DefaultControllerEnvironment");
+			Constructor<?> defaultConstructor = clazz.getDeclaredConstructor();
+			defaultConstructor.setAccessible(true); // set visibility to public
 
-	            Field defaultEnvironementField = ControllerEnvironment.class.getDeclaredField("defaultEnvironment");
-	            defaultEnvironementField.setAccessible(true);
-	            defaultEnvironementField.set(ControllerEnvironment.getDefaultEnvironment(), defaultConstructor.newInstance());
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
+			Field defaultEnvironementField = ControllerEnvironment.class.getDeclaredField("defaultEnvironment");
+			defaultEnvironementField.setAccessible(true);
+			defaultEnvironementField.set(ControllerEnvironment.getDefaultEnvironment(), defaultConstructor.newInstance());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment(); 
@@ -344,7 +342,6 @@ public class Joystick extends Thread{
 			queue.put(ev);
 		}
 		else if(System.getProperty("os.name").contains("nux")){
-			ev.setCommand(EventEnum.JOY_BUTTON);
 			ev.setIndex((short)100);
 			ev.setValue((int)(joy.getComponent(Identifier.Button.TRIGGER).getPollData()));
 			queue.put(ev);
@@ -426,18 +423,16 @@ public class Joystick extends Thread{
 	
 	public boolean checkJoystick(){	
 
-		if(System.getProperty("os.name").toLowerCase().contains("win")){
-			try {
-				Class<?> clazz = Class.forName("net.java.games.input.DefaultControllerEnvironment");
-				Constructor<?> defaultConstructor = clazz.getDeclaredConstructor();
-				defaultConstructor.setAccessible(true); // set visibility to public
+		try {
+			Class<?> clazz = Class.forName("net.java.games.input.DefaultControllerEnvironment");
+			Constructor<?> defaultConstructor = clazz.getDeclaredConstructor();
+			defaultConstructor.setAccessible(true); // set visibility to public
 
-				Field defaultEnvironementField = ControllerEnvironment.class.getDeclaredField("defaultEnvironment");
-				defaultEnvironementField.setAccessible(true);
-				defaultEnvironementField.set(ControllerEnvironment.getDefaultEnvironment(), defaultConstructor.newInstance());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			Field defaultEnvironementField = ControllerEnvironment.class.getDeclaredField("defaultEnvironment");
+			defaultEnvironementField.setAccessible(true);
+			defaultEnvironementField.set(ControllerEnvironment.getDefaultEnvironment(), defaultConstructor.newInstance());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		ControllerEnvironment ce = ControllerEnvironment.getDefaultEnvironment(); 

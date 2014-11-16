@@ -1,3 +1,3 @@
 #!/bin/bash
 
-javaw -Djava.ext.dirs=lib/JInput:lib/RXTX -jar "controllers.jar" &
+java -Djava.ext.dirs=lib/JInput:lib/RXTX -jar "controllers.jar"

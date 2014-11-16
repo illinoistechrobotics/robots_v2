@@ -185,25 +185,15 @@ public class GUI extends Thread{
 		@Override
         public void run(){
         	try{
-        		List<CommPortIdentifier> com = Serial.getSerialPorts();
-    			//only change the layout if the number of ports changed
-    			if( com.size() != comboBox_SerialPort.getItemCount()){
-    				comboBox_SerialPort.removeAllItems();
-    				for(int i=com.size()-1; i>=0; i--){ //put them on in reverse order since high comm port is the more likely to be chosen
-    					comboBox_SerialPort.addItem(com.get(i).getName());
-    					if(serial.isOpen() && serial.getName().equals(com.get(i).getName())){
-    						comboBox_SerialPort.setSelectedIndex(i);
-    					}
-    				}
-    			}
         		
         		if(rdbtnXbee.isSelected()){		
         			if(serial.isOpen() && 
-        				!(serial.getName().equals(comboBox_SerialPort.getSelectedIndex())
+        				!(serial.getPortName().equals(comboBox_SerialPort.getSelectedItem().toString())
         				&&
         				serial.getBaudRate() == Integer.parseInt(comboBox_BaudRate.getSelectedItem().toString()))		
         			){
         				serial.closeSerial();
+        				System.out.println(serial.getPortName() + "," + comboBox_SerialPort.getSelectedIndex() + "," + serial.getBaudRate() + "," + comboBox_BaudRate.getSelectedItem().toString());
         			}
 
         			if(serial.isOpen() == false)
@@ -217,6 +207,21 @@ public class GUI extends Thread{
         			if(serial.isOpen()){
         				serial.closeSerial();
         			}
+        		}
+        		
+        		List<CommPortIdentifier> com = Serial.getSerialPorts();
+        		comboBox_SerialPort.removeAllItems();
+        		for(int i=com.size()-1; i>=0; i--){ //put them on in reverse order since high comm port is the more likely to be chosen
+        			comboBox_SerialPort.addItem(com.get(i).getName());
+        			if(serial.isOpen() && serial.getName().equals(com.get(i).getName())){
+        				comboBox_SerialPort.setSelectedIndex(i);
+        			}
+        		}
+        		
+        		//For linux need to add the open port
+        		if(System.getProperty("os.name").contains("nux") && serial.isOpen()){
+        			comboBox_SerialPort.addItem(serial.getPortName());
+        			comboBox_SerialPort.setSelectedIndex(comboBox_SerialPort.getItemCount()-1);
         		}
         		
         		if(rdbtnWifi.isSelected()){
@@ -299,7 +304,6 @@ public class GUI extends Thread{
     				btnGeneralStatus.setText(RobotEnum.getRobot(ev.getIndex()).toString());
     				break;
     			case TIMER:
-    				//ethernet.sendEvent(new Event(EventEnum.ROBOT_EVENT_CMD_HEARTBEAT,(short)RobotEnum.COMPUTER.getValue(),(short)0));
     				if (ev.getIndex() == TimerEnum.TIMER_HEARTBEAT.value){
     					heartbeatcount++;
     					if(heartbeatcount > 4){
@@ -307,6 +311,7 @@ public class GUI extends Thread{
     	    				btnGeneralStatus.setText("");
     					}
     				}
+    				break;
     			case JOY_AXIS:
     				updateAxisGUI(ev);
     				break;
