@@ -1,4 +1,4 @@
 #!/bin/bash
 
 #Need to list the ACM* type Serial Ports since RXTX doesn't auto detect them
-java -cp lib/JInput/x86/jinput.jar:lib/RXTX/x86/RXTXcomm.jar -Dgnu.io.rxtx.SerialPorts=/dev/ttyACM0:/dev/ttyACM1:/dev/ttyACM2:/dev/ttyACM3 -Djava.ext.dirs=lib/JInput/x86:lib/RXTX/x86 -jar "controllers.jar"
+java -Dgnu.io.rxtx.SerialPorts=/dev/ttyACM0:/dev/ttyACM1:/dev/ttyACM2:/dev/ttyACM3 -Djava.ext.dirs=lib/JInput/x86:lib/RXTX/x86 -jar "controllers.jar"
