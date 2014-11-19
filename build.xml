@@ -32,6 +32,7 @@
 	<path id="robots.classpath">
 		<path refid="common.classpath"/>
 		<pathelement location="${lib}/args4j-2.0.29.jar"/>
+		<pathelement location="${lib}/BullDog/Debian_Ubunut/bulldog.beagleboneblack.hardfp.jar"/>
 	</path>
 	
 	<target depends="buildControllers,buildRobots" name="buildAll"/>
@@ -102,6 +103,9 @@
 			</copy>
 			<copy todir="${build_robots_lib}/RXTX">
 				<fileset dir="${lib}/RXTX"/>
+			</copy>
+			<copy todir="${build_robots_lib}/BullDog">
+				<fileset dir="${lib}/BullDog"/>
 			</copy>
 			<copy todir="${build_robots}">
 				<fileset dir="${conf}/robots"/>

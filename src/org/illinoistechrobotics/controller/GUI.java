@@ -477,7 +477,11 @@ public class GUI extends Thread{
 		    
 			@Override
 		    public void windowClosing(WindowEvent windowEvent) {
-		    	if(serial.isOpen()){
+		    	
+				trDeviceChecker.cancel();
+		        trStanbyQueueReading.cancel();
+		        
+				if(serial.isOpen()){
     				serial.closeSerial();
     			}
 		    	
@@ -492,10 +496,7 @@ public class GUI extends Thread{
 		    	if(key.isListening()){
         			key.stop();
         		}
-		    	
-		    	trDeviceChecker.cancel();
-		        trStanbyQueueReading.cancel();
-		    	
+
 		        try{
 		        	Thread.sleep(1000);
 		        } catch(InterruptedException e) {	

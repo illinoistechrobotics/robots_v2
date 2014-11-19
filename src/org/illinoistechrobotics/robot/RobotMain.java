@@ -84,7 +84,8 @@ public class RobotMain {
 	private Ethernet ethernet = new Ethernet(queue);
 	private Joystick joy = new Joystick(queue);
 	private Keyboard key = new Keyboard(queue);
-	Communication comm = null;
+	private Communication comm = null;
+	private EventManager robot = null;
 	
 	public RobotMain(String[] args) {
 		
@@ -169,8 +170,6 @@ public class RobotMain {
 		
 		timer.start();
 		
-		EventManager robot = null;
-		
 		//TODO:
 		//Add new if else for each robot
 		if("Modulus".equals(robotName)){ //did reverse way so don't need to worry about null pointer
@@ -182,7 +181,7 @@ public class RobotMain {
 			robot = new SampleRobot(queue, comm, timer);
 		}
 		else{
-			System.err.println("Robot " + robot + " is not a valid robot name");
+			System.err.println("Robot " + robotName + " is not a valid robot name");
 			System.exit(1);
 		}
 		
@@ -241,6 +240,14 @@ public class RobotMain {
 	        }
 		}
 		
+		if(robot != null){
+			robot.stopThread();
+		}
+		
+		if(trDeviceChecker != null){
+    		trDeviceChecker.cancel();
+    	}
+		
 		if(serial.isOpen()){
 			serial.closeSerial();
 		}
@@ -256,10 +263,6 @@ public class RobotMain {
     	if(key.isListening()){
 			key.stop();
 		}
-    	
-    	if(trDeviceChecker != null){
-    		trDeviceChecker.cancel();
-    	}
     	
         try{
         	Thread.sleep(1000);

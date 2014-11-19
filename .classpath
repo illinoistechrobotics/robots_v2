@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="lib/junit-4.11.jar"/>
 	<classpathentry kind="lib" path="lib/JInput/x86/jinput.jar"/>
 	<classpathentry kind="lib" path="lib/RXTX/x86/RXTXcomm.jar"/>
+	<classpathentry kind="lib" path="lib/BullDog/Debian_Ubuntu/bulldog.beagleboneblack.hardfp.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -22,6 +22,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 package org.illinoistechrobotics.robot;
 
+import org.bulldog.beagleboneblack.BBBNames;
+import org.bulldog.core.Signal;
+import org.bulldog.core.gpio.DigitalOutput;
+import org.bulldog.core.platform.Board;
+import org.bulldog.core.platform.Platform;
 import org.illinoistechrobotics.common.Communication;
 import org.illinoistechrobotics.common.Event;
 import org.illinoistechrobotics.common.EventManager;
@@ -31,8 +36,20 @@ import org.illinoistechrobotics.common.Timer;
 
 public class Modulus extends EventManager{
 	
+	private Board board;
+	private DigitalOutput output;
+	
 	public Modulus(Queue q, Communication c, Timer t){
 		super(q,c,t,RobotEnum.MODULUS);
+	}
+	
+	@Override
+	public void on_init(){
+		super.on_init();
+		board = Platform.createBoard();
+		output = board.getPin(BBBNames.P8_12).as(DigitalOutput.class);
+		output.write(Signal.High);
+		timer.timer1hz = true;
 	}
 	
 	@Override
@@ -42,7 +59,17 @@ public class Modulus extends EventManager{
 	
 	@Override
     public void on_axis_change(Event ev){
-            System.out.println(ev.toString());
-    }
+		super.on_axis_change(ev);
+		System.out.println(ev.toString());
+		
+	}
+	
+	@Override
+    public void on_1hz_timer(Event ev){
+		super.on_1hz_timer(ev);
+		output.toggle();
+	}
+	
+	
 	
 }
