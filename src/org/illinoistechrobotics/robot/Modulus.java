@@ -36,8 +36,13 @@ public class Modulus extends EventManager{
 	}
 	
 	@Override
-	public void on_axis_change(Event ev){
-		System.out.println(ev.toString());
+	public void on_failsafe(){
+		
 	}
-
+	
+	@Override
+    public void on_axis_change(Event ev){
+            System.out.println(ev.toString());
+    }
+	
 }

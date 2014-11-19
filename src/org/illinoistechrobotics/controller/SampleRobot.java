@@ -39,20 +39,25 @@ public class SampleRobot extends Controller{
 	//Don't need to include then all
 	//just the ones you need
 	//Please use the @Override annotation to make sure that the method will be called
+	//Please place super.{function name}(ev) at the top of each function since there 
+	//might be some default use for each event
 	
 	@Override
 	public void on_init(){
+		super.on_init();
 		//init timer that will be used if any
 	}
 	
 	@Override
 	public void on_failsafe(){
+		super.on_failsafe();
 		//place code to place the robot into a safe state
 		//ie STOP all the motors and moving components
 	}
 	
 	@Override
 	public void on_heartbeat_timer(Event ev){
+		super.on_heartbeat_timer(ev);
 		//TODO:
 		//Add code here for changing the connection status of robot
 		//Example code
@@ -66,6 +71,7 @@ public class SampleRobot extends Controller{
 	
 	@Override
 	public void on_shutdown(Event ev){
+		super.on_shutdown(ev);
 		//TODO:
 		//Set status to disconnected
 		//Example code

@@ -173,7 +173,7 @@ public abstract class EventManager extends Thread{
 	}
 	
 	public void on_init(){}
-	public void on_failsafe(){}
+	public abstract void on_failsafe();
 	public void on_command_code(Event ev){}
 	public void on_heartbeat(Event ev){}
 	public void on_status(Event ev){}

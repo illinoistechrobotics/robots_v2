@@ -37,6 +37,7 @@ public class Modulus extends Controller{
 	
 	@Override
 	public void on_heartbeat_timer(Event ev){
+		super.on_heartbeat_timer(ev);
 		if(heartbeat <= 5){
 			dis.btnModulusConnected.setBackground(Color.GREEN);
 		}
@@ -47,6 +48,7 @@ public class Modulus extends Controller{
 	
 	@Override
 	public void on_shutdown(Event ev){
+		super.on_shutdown(ev);
 		dis.btnModulusConnected.setBackground(Color.RED);
 	}
 

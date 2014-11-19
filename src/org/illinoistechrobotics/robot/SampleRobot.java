@@ -42,6 +42,7 @@ public class SampleRobot extends EventManager{
 	
 	@Override
 	public void on_init(){
+		super.on_init();
 		//init timer that will be used if any
 	}
 	
@@ -53,12 +54,14 @@ public class SampleRobot extends EventManager{
 	
 	@Override
 	public void on_heartbeat(Event ev) {
+		super.on_heartbeat(ev);
 		//place code that indicate robot is connected to computer
 		//ie blink LED
 	}
 	
 	@Override
 	public void on_heartbeat_timer(Event ev){
+		super.on_heartbeat_timer(ev);
 		//place code that indicate code is running
 		//ie blink LED
 	}

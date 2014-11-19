@@ -49,7 +49,7 @@ public class RobotMain {
 	private String serialPort = null;
 	
 	@Option(name="-sb", aliases={"--serialBaud"}, usage="serial communication port baud rate")
-	private int serialBaud = 0;
+	private int serialBaud = 57600;
 	
 	@Option(name="-esp", aliases={"--ethernetServerPort"}, usage="ethernet server port")
 	private int ethernetServerPort = 0;
@@ -189,7 +189,6 @@ public class RobotMain {
 		trDeviceChecker = new Timer();
 		trDeviceChecker.schedule(new deviceChecker(), 0, 1000);
 		robot.start();
-		
 	}
 	
 	public class deviceChecker extends TimerTask{
@@ -203,32 +202,28 @@ public class RobotMain {
     				if(serial.isOpen() && serial.getName().equals(com.get(i).getName())){
     					serialConnected = true;
     				}	
+    				else if(!serial.isOpen() && serial.getName().equals(com.get(i).getName())){
+    					serial.openSerial(serialBaud, serialPort);
+    				}
     			}
         		if(!serialConnected){
 					serial.closeSerial();
 				}
-        		else if(!serial.isOpen()){
-        			if(Serial.getSerialPorts().contains(serialPort)){
-        				serial.openSerial(serialBaud, serialPort);
-        			}
-        		}
         		
         		List<String> con = Joystick.getJoystickNames();
         		boolean joyConnected = false;
     			for(int i=0; i<con.size(); i++){
-    				if(joy.getJoy() != null){
+    				if(joy.getJoyName() != null && joy.getJoyName().equals(joyName)){
     					joyConnected = true;
+    				}
+    				if(joy.getJoyName() == null && joy.getJoyName().equals(joyName)){
+    					joy.listen(joyName);
     				}
     			}
     			if(!joyConnected){
 					joy.stopThread();
 					joy = new Joystick(queue);
-				}
-        		else if(!serial.isOpen()){
-        			if(Joystick.getJoystickNames().contains(joyName)){
-        				joy.listen(joyName);
-        			}
-        		}      		
+				}     		
         	}
         	catch(Exception e){
         		e.printStackTrace();

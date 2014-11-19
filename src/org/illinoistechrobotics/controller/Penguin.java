@@ -129,11 +129,13 @@ public class Penguin extends Controller{
 	
 	@Override
 	public void on_init(){
+		super.on_init();
 		timer.timer20hz = true;
 	}
 	
 	@Override
 	public void on_axis_change(Event ev){
+		super.on_axis_change(ev);
 		if(ev.getIndex() == 3){
 			float scale = (ev.getValue()-127)/8*(-1);
 			comm.sendEvent(new Event(EventEnum.VARIABLE, PenguinControlEnum.INPUT_PITCH.value, scale));
@@ -162,6 +164,7 @@ public class Penguin extends Controller{
 	
 	@Override
 	public void on_button_down(Event ev){
+		super.on_button_down(ev);
 		if(ev.getIndex() == 5){
 			throttle_down = false;
 			throttle_up = true;
@@ -186,6 +189,7 @@ public class Penguin extends Controller{
 	
 	@Override
 	public void on_button_up(Event ev){
+		super.on_button_up(ev);
 		if(ev.getIndex() == 5)
 			throttle_up = false;
 		else if(ev.getIndex() == 7)
@@ -198,6 +202,7 @@ public class Penguin extends Controller{
 	
 	@Override
 	public void on_joy_hat(Event ev){
+		super.on_joy_hat(ev);
 		if(ev.getValue() == 3){
 			//comm.sendEvent(new Event(EventEnum.ROBOT_EVENT_VARIABLE,PenguinControlEnum.OFF_PITCH.value,10.0));
 			pitch_off_plus = false;
@@ -236,6 +241,7 @@ public class Penguin extends Controller{
 	
 	@Override	
 	public void on_gui(Event ev){
+		super.on_gui(ev);
 		if(ev.getIndex() == GUI.GUIEnum.PENGUIN_UPDATE_PID.value){
 			try{
 				comm.sendEvent(new Event(EventEnum.PID,PenguinPIDEnum.PITCH_P.value,Double.parseDouble(dis.txtPP.getText())));
@@ -255,6 +261,7 @@ public class Penguin extends Controller{
 	
 	@Override
 	public void on_20hz_timer(Event ev){
+		super.on_20hz_timer(ev);
 		if(throttle_up){
 			comm.sendEvent(new Event(EventEnum.VARIABLE,PenguinControlEnum.INPUT_THRUST.value,10.0));
 		}
@@ -284,6 +291,7 @@ public class Penguin extends Controller{
 
 	@Override
 	public void on_heartbeat_timer(Event ev){
+		super.on_heartbeat_timer(ev);
 		if(heartbeat <= 5){
 			dis.btnPenguinConnected.setBackground(Color.GREEN);
 		}
@@ -295,6 +303,7 @@ public class Penguin extends Controller{
 
 	@Override
 	public void on_imu(Event ev){
+		super.on_imu(ev);
 		DecimalFormat df = new DecimalFormat("#.##");
 		if(ev.getIndex()==PenguinStateEnum.PITCH.value){
 			dis.lblPitch.setText(df.format(ev.getFValue()));
@@ -327,6 +336,7 @@ public class Penguin extends Controller{
 	
 	@Override
 	public void on_pid(Event ev){
+		super.on_pid(ev);
 		if(ev.getIndex()==PenguinPIDEnum.PID_UPDATE_SUCCESS.value){
 			System.out.println("PID successfully updated."); 
 		}
@@ -334,6 +344,7 @@ public class Penguin extends Controller{
 	
 	@Override
 	public void on_shutdown(Event ev){
+		super.on_shutdown(ev);
 		dis.btnPenguinConnected.setBackground(Color.RED);
 	}
 

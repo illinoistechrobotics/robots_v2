@@ -48,6 +48,7 @@ public abstract class Controller extends EventManager{
 	
 	@Override
 	public void on_heartbeat(Event ev){
+		super.on_heartbeat(ev);
 		dis.btnGeneralStatus.setBackground(Color.GREEN);
 		dis.btnGeneralStatus.setText(RobotEnum.getRobot(ev.getIndex()).toString());	
 	}
