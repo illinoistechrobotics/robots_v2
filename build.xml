@@ -6,8 +6,8 @@
 	<!--Set to 1.6 to be able to run on all systems.
 		Recommend to switch to 1.8 java once more people have it.
 		Java 1.8 has really cool features, (cough lambdas cough)-->
-	<property name="source" value="1.6"/>
-	<property name="target" value="1.6"/>  
+	<property name="source" value="1.7"/>
+	<property name="target" value="1.7"/>  
 	
 	<property name="bin" location="bin"/>
 	<property name="lib" location="lib"/>
@@ -32,7 +32,7 @@
 	<path id="robots.classpath">
 		<path refid="common.classpath"/>
 		<pathelement location="${lib}/args4j-2.0.29.jar"/>
-		<pathelement location="${lib}/BullDog/Debian_Ubunut/bulldog.beagleboneblack.hardfp.jar"/>
+		<pathelement location="${lib}/BullDog/Debian_Ubuntu/bulldog.beagleboneblack.hardfp.jar"/>
 	</path>
 	
 	<target depends="buildControllers,buildRobots" name="buildAll"/>
@@ -66,6 +66,7 @@
 	        <javac debug="true" debuglevel="${debuglevel}" destdir="${bin}" includeantruntime="false" source="${source}" target="${target}">
 	        	<src path="${src}/org/illinoistechrobotics/common"/>
 	        	<src path="${src}/org/illinoistechrobotics/robot"/>
+	        	<src path="${src}/org/illinoistechrobotics/jaguar"/>
 	            <classpath refid="robots.classpath"/>
 	        </javac>
 	    </target>

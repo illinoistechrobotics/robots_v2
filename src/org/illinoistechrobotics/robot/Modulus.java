@@ -33,11 +33,13 @@ import org.illinoistechrobotics.common.EventManager;
 import org.illinoistechrobotics.common.Queue;
 import org.illinoistechrobotics.common.RobotEnum;
 import org.illinoistechrobotics.common.Timer;
+import org.illinoistechrobotics.jaguar.Jaguar;
 
 public class Modulus extends EventManager{
 	
 	private Board board;
 	private DigitalOutput output;
+	private Jaguar jaguar;
 	
 	public Modulus(Queue q, Communication c, Timer t){
 		super(q,c,t,RobotEnum.MODULUS);
@@ -50,6 +52,10 @@ public class Modulus extends EventManager{
 		output = board.getPin(BBBNames.P8_12).as(DigitalOutput.class);
 		output.write(Signal.High);
 		timer.timer1hz = true;
+		
+		String port = System.getProperty("jaguar.port", "/dev/ttyO0");
+		jaguar = new Jaguar();
+		jaguar.open("port");
 	}
 	
 	@Override
@@ -68,6 +74,7 @@ public class Modulus extends EventManager{
     public void on_1hz_timer(Event ev){
 		super.on_1hz_timer(ev);
 		output.toggle();
+		System.out.println("1hz");
 	}
 	
 	
