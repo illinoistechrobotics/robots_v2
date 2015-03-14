@@ -26,6 +26,7 @@ import java.awt.Color;
 
 import org.illinoistechrobotics.common.Communication;
 import org.illinoistechrobotics.common.Event;
+import org.illinoistechrobotics.common.EventEnum;
 import org.illinoistechrobotics.common.Queue;
 import org.illinoistechrobotics.common.Timer;
 
@@ -51,5 +52,77 @@ public class Modulus extends Controller{
 		super.on_shutdown(ev);
 		dis.btnModulusConnected.setBackground(Color.RED);
 	}
+	
+	
+	private int x1Axis = 0;
+	private int x2Axis = 0;
+	private int rAxis = 0;
+	
+	@Override
+	public void on_axis_change(Event ev){
+		int axis = ev.getIndex();
+		
+		if(axis == 1){
+			x1Axis = ((ev.getValue() - 128)/3) * (-1);
+			comm.sendEvent(new Event(EventEnum.MOTOR, 5, (int)x1Axis + 102));
+			comm.sendEvent(new Event(EventEnum.MOTOR, 6, (int)x1Axis + 102));
+		}
+		else if(axis == 3){
+			x2Axis = ((ev.getValue() - 128)/3) * (-1);
+			comm.sendEvent(new Event(EventEnum.MOTOR, 7, (int)x2Axis + 102));
+			comm.sendEvent(new Event(EventEnum.MOTOR, 8, (int)x2Axis + 102));
+		}
+		
+		//double speed = Math.hypot(xAxis, yAxis);
+		//speed = speed/5.0;
+		
+		//if(yAxis < 0){
+		//	speed = speed * -1;
+		//}
 
+		//System.out.println(speed);
+		
+		
+		
+		
+		//double strafe = Math.atan2(yAxis, xAxis)*255/(2*Math.PI);
+		//System.out.println(strafe);
+		
+		//double front = strafe + rAxis;
+		//double back = strafe - rAxis;
+		
+		//System.out.println(front + "," + back);
+		
+		//comm.sendEvent(new Event(EventEnum.MOTOR, 1, (int)front));
+		//comm.sendEvent(new Event(EventEnum.MOTOR, 2, (int)front));
+		//comm.sendEvent(new Event(EventEnum.MOTOR, 3, (int)back));
+		//comm.sendEvent(new Event(EventEnum.MOTOR, 4, (int)back));
+		
+		//comm.sendEvent(new Event(EventEnum.MOTOR, 5, xAxis+102));
+	}
+
+	@Override
+	public void on_button_down(Event ev){
+		
+		if(ev.getIndex() == 5){
+			comm.sendEvent(new Event(EventEnum.SOLENOID, 1, 1));
+		}
+		if(ev.getIndex() == 7){
+			comm.sendEvent(new Event(EventEnum.SOLENOID, 2, 1));
+		}
+		
+	}
+	
+	@Override
+	public void on_button_up(Event ev){
+		if(ev.getIndex() == 5){
+			comm.sendEvent(new Event(EventEnum.SOLENOID, 1, 0));
+		}
+		if(ev.getIndex() == 7){
+			comm.sendEvent(new Event(EventEnum.SOLENOID, 2, 0));
+		}
+		
+	}
+	
+	
 }

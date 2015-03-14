@@ -228,9 +228,9 @@ public class GUI extends Thread{
         			if(ethernet.isConnected() &&
         					!(ethernet.getIPAddress().equals(txtIPAddress.getText()) 
         					&&
-        					ethernet.getPortNumber() != Integer.parseInt(txtPortNumber.getText())
+        					ethernet.getPortNumber() == Integer.parseInt(txtPortNumber.getText())
         					&&
-        					ethernet.getListeningPort() != Integer.parseInt(txtListeningPort.getText()))
+        					ethernet.getListeningPort() == Integer.parseInt(txtListeningPort.getText()))
         			){
         				ethernet.stopThread(); 
         				ethernet = new Ethernet(queue);
@@ -540,13 +540,13 @@ public class GUI extends Thread{
 		JLabel lblIpAdress = new JLabel("IP Address");
 		
 		txtIPAddress = new JTextField();
-		txtIPAddress.setText("192.168.20.92");
+		txtIPAddress.setText("192.168.7.2");
 		txtIPAddress.setColumns(10);
 		
 		JLabel lblPortNumber = new JLabel("Port Number");
 		
 		txtPortNumber = new JTextField();
-		txtPortNumber.setText("2000");
+		txtPortNumber.setText("5600");
 		txtPortNumber.setColumns(10);
 		
 		JLabel lblInputDevice = new JLabel("Input Device");
@@ -563,7 +563,7 @@ public class GUI extends Thread{
 		JLabel lblListeningPort = new JLabel("Listening Port");
 		
 		txtListeningPort = new JTextField();
-		txtListeningPort.setText("2001");
+		txtListeningPort.setText("5500");
 		txtListeningPort.setColumns(10);
 		
 		JLabel lblJoyStick = new JLabel("Joy Stick");

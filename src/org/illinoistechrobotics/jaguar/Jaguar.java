@@ -159,9 +159,9 @@ public class Jaguar {
 					Thread.sleep(10);
 				}
 			}
-			return (int)buf[1] & 0xFF; //treat as unsigned byte, need this trick
+			return (int)buf[0] & 0xFF; //treat as unsigned byte, need this trick
 		}
-		catch(InterruptedException | IOException e){
+		catch(Exception e){
 			return -1;
 		}
 	}
@@ -385,9 +385,9 @@ public class Jaguar {
 		m.setDataAsLong(position);
 		
 		this.send(m);
-		Message ack = this.read();
+		//Message ack = this.read();
 		
-		return m.isValidAck(ack);
+		return true;// m.isValidAck(ack);
 	}
 	
 	public boolean positionDisable(int device){
@@ -410,9 +410,9 @@ public class Jaguar {
 		m.setDataAsLong(position);
 		
 		this.send(m);
-		Message ack = this.read();
+		//Message ack = this.read();
 		
-		return m.isValidAck(ack);
+		return true;// m.isValidAck(ack);
 	}
 	
 	public boolean positionSetSync(int device, int position, int group){
@@ -469,9 +469,9 @@ public class Jaguar {
 		m.setDataAsLong(p);
 		
 		this.send(m);
-		Message ack = this.read();
+		//Message ack = this.read();
 		
-		return m.isValidAck(ack);
+		return true;//m.isValidAck(ack);
 	}
 	
 	public boolean positionI(int device, int i){
@@ -482,9 +482,9 @@ public class Jaguar {
 		m.setDataAsLong(i);
 		
 		this.send(m);
-		Message ack = this.read();
+		//Message ack = this.read();
 		
-		return m.isValidAck(ack);
+		return true; //m.isValidAck(ack);
 	}
 	
 	public boolean positionD(int device, int d){
@@ -495,9 +495,9 @@ public class Jaguar {
 		m.setDataAsLong(d);
 		
 		this.send(m);
-		Message ack = this.read();
+		//Message ack = this.read();
 		
-		return m.isValidAck(ack);
+		return true;//m.isValidAck(ack);
 	}
 	
 	public boolean positionPID(int device, int p, int i, int d){
@@ -514,9 +514,9 @@ public class Jaguar {
 		m.setDataAsInt(lines);
 		
 		this.send(m);
-		Message ack = this.read();
+		//Message ack = this.read();
 		
-		return m.isValidAck(ack);
+		return true; //m.isValidAck(ack);
 	}
 	
 	public int getEncoderLines(int device){

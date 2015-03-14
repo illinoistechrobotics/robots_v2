@@ -47,6 +47,7 @@ public abstract class EventManager extends Thread{
 	
 	protected volatile Boolean run = true;
 	protected int heartbeat = 20;
+	protected boolean failsafe = true;
 	
 	public void stopThread(){
 		if(run != false){
@@ -78,6 +79,7 @@ public abstract class EventManager extends Thread{
 				case CMD_HEARTBEAT:
 					//need to update GUI
 					heartbeat = 0;
+					failsafe = false;
 					on_heartbeat(ev);
 					break;
 				case STATUS:
@@ -123,6 +125,7 @@ public abstract class EventManager extends Thread{
 					else if(ev.getIndex() == TimerEnum.TIMER_HEARTBEAT.value){
 						if(heartbeat > 4){
     						on_failsafe();
+    						failsafe = true;
     					}
 						on_heartbeat_timer(ev);
 						comm.sendEvent(new Event(EventEnum.CMD_HEARTBEAT,robotEnum.getValue(),0));

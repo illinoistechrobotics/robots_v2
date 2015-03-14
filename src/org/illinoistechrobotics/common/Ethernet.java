@@ -118,6 +118,7 @@ public class Ethernet extends Communication{
             sockRevc.send(packet);
         } 
         catch (Exception e) {
+        	System.out.println("Can not send Ethernet Data");
         }
 
     }

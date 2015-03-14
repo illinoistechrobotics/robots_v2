@@ -147,7 +147,7 @@ public class RobotMain {
 		}
 		
 		if(ipAddress!=null){
-			if(ethernet.connect(ipAddress, ethernetServerPort, ethernetServerPort)){
+			if(ethernet.connect(ipAddress, ethernetServerPort, ethernetListenerPort)){
 				System.out.println("Listening on ethernet port " + ethernetListenerPort + " and sending messages to " + ipAddress + ":" + ethernetServerPort + ".");
 				comm = ethernet;
 			}
